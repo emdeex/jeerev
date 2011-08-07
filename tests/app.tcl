@@ -9,7 +9,7 @@ proc start {args} {
       namespace import tcltest::*
       configure {*}[lrange $argv 1 end]
       singleProcess true ;# run without forking
-      testsDirectory $::application::mydir
+      testsDirectory $::app::mydir
       runAllTests
   }
 }
