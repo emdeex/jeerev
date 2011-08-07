@@ -7,6 +7,15 @@ test [incr t] {commands available from the command line} {
   lrange [exec [info nameofexe] env commands] 1 end
 } $CMDS
 
+set env(JEEREV_RIG_DIRS) x
+
+test [incr t] {modified JEEREV_RIG_DIRS will fail} {
+  set r [catch { exec [info nameofexe] env commands } e]
+  list $r [regsub { ".*} $e {}]
+} {1 {invalid command name}}
+
+set env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
+
 test [incr t] {check the "env" command} {
   set result [exec [info nameofexe] env usage]
   regexp {options:(.*)These} $result - cmdlist ;# extract the list of commands
@@ -36,11 +45,6 @@ test [incr t] {symbolic link to jeemon} {
   lrange [exec $DIR/jm env commands] 1 end
 } $CMDS
 
-test [incr t] {modified JEEREV_RIG_DIRS will fail} {
-  set env(JEEREV_RIG_DIRS) x
-  set r [catch { exec [info nameofexe] env commands } e]
-  unset env(JEEREV_RIG_DIRS)
-  list $r [regsub { ".*} $e {}]
-} {1 {invalid command name}}
+unset env(JEEREV_RIG_DIRS)
 
 cleanupTests
