@@ -7,3 +7,5 @@ test [incr t] {Tcl version check} {
 test [incr t] {current namespace} {
   namespace current
 } ::
+
+cleanupTests
