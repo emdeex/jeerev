@@ -43,6 +43,7 @@ namespace eval Jm {
     namespace inscope $newns source $path
     return $name
   }
+  
   proc autoLoader {path {match *} {ns ""}} {
     # Scan a directory tree and set up autmoatic loading of rigs on first use.
     # path: path to directory tree where rigs files are found
@@ -78,17 +79,17 @@ namespace eval Jm {
       return $unused
     }
   }
+  
   proc setupRigPaths {} {
     # Initialize the default paths where rigs will be loaded from.
     variable root_dir
     
     # set up a number of directories for auto-loading, if they exist
-    autoLoader $root_dir/rigs
+    set dirs {rigs1 rigs2 rigs3}
     # the default directory set can be changed with the JEEREV_RIG_DIRS env var
-    set dirs [list $root_dir/rigs2 $root_dir/rigs3]
     catch { set dirs $::env(JEEREV_RIG_DIRS) }
     foreach d $dirs {
-      autoLoader $d
+      autoLoader [file join $root_dir $d]
     }
 
     # if ./application.tcl exists, use it before falling back to above version
