@@ -40,7 +40,7 @@ proc start {args} {
 
 proc fail {msg} {
   puts stderr $msg
-  after 1000
+  after 250 ;# slight delay so the msg can always be read, even if only briefly
 	exit 1
 }
 

@@ -1,10 +1,10 @@
 Jm doc "Quick initial smoke tests."
 
-test [incr t] {Tcl version check} {
+test z00/version {Tcl version check} {
   package vcompare [package require Tcl] 8.6b1
 } 1
 
-test [incr t] {current namespace} {
+test z00/namespace {current namespace} {
   namespace current
 } ::
 

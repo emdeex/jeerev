@@ -3,33 +3,43 @@ Jm doc "Test the lowest level rigs."
 set DIR [makeDirectory z01-tmp]
 set CMDS {cmd env tcl web}
 
-test [incr t] {commands available from the command line} {
+test z01/noarg {fail when called without args} {
+  catch { exec [info nameofexe] } e ;# slow due to delay in app::fail
+  set e
+} {No default application files found.}
+
+test z01/badarg {fail when called with one unknown cmd arg} {
+  catch { exec [info nameofexe] x } e
+  set e
+} {Cannot start, unknown command: x}
+
+test z01/cmds {commands available from the command line} {
   lrange [exec [info nameofexe] env commands] 1 end
 } $CMDS
 
 set env(JEEREV_RIG_DIRS) x
 
-test [incr t] {modified JEEREV_RIG_DIRS will fail} {
-  set r [catch { exec [info nameofexe] env commands } e]
-  list $r [regsub { ".*} $e {}]
-} {1 {invalid command name}}
+test z01/rigdirs {modified JEEREV_RIG_DIRS will fail} {
+  catch { exec [info nameofexe] env commands } e
+  regsub { ".*} $e {}
+} {invalid command name}
 
 set env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
 
-test [incr t] {check the "env" command} {
+test z01/env {check the "env" command} {
   set result [exec [info nameofexe] env usage]
   regexp {options:(.*)These} $result - cmdlist ;# extract the list of commands
   lrange $cmdlist 0 end ;# turn into a list to normalize whitespace
 } {autopath commands encodings general loaded\
    machdep packages rigs tmpath usage}
 
-test [incr t] {check the "tcl" command} {
+test z01/tcl {check the "tcl" command} {
   exec [info nameofexe] tcl expr 1 + 2
 } 3
 
-test [incr t] {check the "web" command} -body {
+test z01/web {check the "web" command} -body {
   set pid [exec [info nameofexe] web >$DIR/out &]
-  after 500 ;# wait for socket listener to be set up
+  after 250 ;# wait for socket listener to be set up
   set fd [socket localhost 8080]
   puts $fd "GET / HTTP/1.0\n"
   flush $fd
@@ -38,12 +48,18 @@ test [incr t] {check the "web" command} -body {
            {HTTP/1.1 200}} \
   -cleanup { close $fd; exec kill $pid }
 
-test [incr t] {symbolic link to jeemon} {
+test z01/symlink {symbolic link to jeemon} {
   #FIXME weird error: socket operation on non-socket
   # file link -symbolic $DIR/jm [info nameofexe]
   exec ln -s [info nameofexe] $DIR/jm
   lrange [exec $DIR/jm env commands] 1 end
 } $CMDS
+
+test z01/feature {check that feature code gets loaded} {
+	makeDirectory app-features
+	makeFile { puts yes; exit } yes.tcl app-features
+	exec [info nameofexe]
+} yes
 
 unset env(JEEREV_RIG_DIRS)
 
