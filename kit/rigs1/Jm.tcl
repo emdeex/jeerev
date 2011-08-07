@@ -23,7 +23,7 @@ proc launch {} {
   setupStarkit
   setupConsoleWindow
   #showAddedNames ;# debug
-  return [list [locateApplication] start {*}$::argv]
+  return [list [locateApp] start {*}$::argv]
 }
 
 proc listGlobalVars {} {
@@ -147,7 +147,7 @@ proc setupConsoleWindow {} {
   }
 }
 
-proc locateApplication {} {
+proc locateApp {} {
   # Standard logic for locating and loading the main application cmd.
   global argv argv0 argv1
   variable root_dir
@@ -162,7 +162,7 @@ proc locateApplication {} {
     return [Jm loadRig $starkit::topdir/cmds/$argv0.tcl]
   }
   # else use auto-loading to find and load the actual application
-  return application
+  return app
 }
 
 proc reloadRigs {} {

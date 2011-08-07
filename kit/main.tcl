@@ -92,8 +92,8 @@ namespace eval Jm {
       autoLoader [file join $root_dir $d]
     }
 
-    # if ./application.tcl exists, use it before falling back to above version
-    autoLoader . application.tcl
+    # if ./app.tcl exists, use it before falling back to above version
+    autoLoader . app.tcl
 
     # need to deal with two cases: unwrapped "kit" and wrapped "JeeMon_kit"
     set rigsBase [file join [file dir $root_dir] JeeMon]
