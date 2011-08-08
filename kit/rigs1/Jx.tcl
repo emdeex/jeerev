@@ -73,8 +73,8 @@ namespace eval dict-extensions {
 
     if {![info exists dvar] || ![dict exists $dvar {*}$name]} {
       dict set dvar {*}$name $val
-      return $args
     }
+		return $dvar
   }
 
   proc extract {value args} {

@@ -1,12 +1,14 @@
 Jm doc "Test the lowest level rigs."
 
-set DIR [makeDirectory z01-tmp]
 set CMDS {cmd env tcl web}
 
+makeDirectory z01-features
+makeDirectory z01-tmp
+
 test z01/noarg {fail when called without args} {
-  catch { exec [info nameofexe] } e ;# slow due to delay in app::fail
+  catch { exec [info nameofexe] -app z01 } e ;# slow due to delay in app::fail
   set e
-} {No default application files found.}
+} {No application code found.}
 
 test z01/badarg {fail when called with one unknown cmd arg} {
   catch { exec [info nameofexe] x } e
@@ -27,8 +29,8 @@ test z01/rigdirs {modified JEEREV_RIG_DIRS will fail} {
 set env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
 
 test z01/env {check the "env" command} {
-  set result [exec [info nameofexe] env usage]
-  regexp {options:(.*)These} $result - cmdlist ;# extract the list of commands
+  set r [exec [info nameofexe] env usage]
+  regexp {options:(.*)These} $r - cmdlist ;# extract the list of commands
   lrange $cmdlist 0 end ;# turn into a list to normalize whitespace
 } {autopath commands encodings general loaded\
    machdep packages rigs tmpath usage}
@@ -38,28 +40,71 @@ test z01/tcl {check the "tcl" command} {
 } 3
 
 test z01/web {check the "web" command} -body {
-  set pid [exec [info nameofexe] web >$DIR/out &]
+  set pid [exec [info nameofexe] web >z01-tmp/out &]
   after 250 ;# wait for socket listener to be set up
   set fd [socket localhost 8080]
   puts $fd "GET / HTTP/1.0\n"
   flush $fd
-  list [viewFile $DIR/out] [gets $fd]
+  list [viewFile z01-tmp/out] [gets $fd]
 } -result {{Starting demo web server at http://127.0.0.1:8080/ ...}\
            {HTTP/1.1 200}} \
   -cleanup { close $fd; exec kill $pid }
 
 test z01/symlink {symbolic link to jeemon} {
   #FIXME weird error: socket operation on non-socket
-  # file link -symbolic $DIR/jm [info nameofexe]
-  exec ln -s [info nameofexe] $DIR/jm
-  lrange [exec $DIR/jm env commands] 1 end
+  # file link -symbolic z01-tmp/jm [info nameofexe]
+  exec ln -s [info nameofexe] z01-tmp/jm
+  lrange [exec z01-tmp/jm env commands] 1 end
 } $CMDS
 
 test z01/feature {check that feature code gets loaded} {
-	makeDirectory app-features
-	makeFile { puts yes; exit } yes.tcl app-features
-	exec [info nameofexe]
-} yes
+	makeFile { puts blah; exit } blah.tcl z01-features
+	exec [info nameofexe] -app z01
+} blah
+
+test z01/get? {dict get? extension} {
+	set d [dict create a A]
+	list [dict get? $d a] [dict get? $d b]
+} {A {}}
+
+test z01/set? {dict set? extension} {
+	set d [dict create a A]
+	dict set? d a A1
+	dict set? d b B1
+	dict set? d b B2
+} {a A b B1}
+
+test z01/extract {dict extract extension} {
+	set d [dict create a A]
+	dict extract $d a b
+	list $a $b
+} {A {}}
+
+test z01/inject {dict inject extension} {
+	set d [dict create a A]
+	set a A1
+	set b B
+	unset -nocomplain c
+	dict inject d a b c
+} {a A1 b B}
+
+test z01/oo {all oo commands should be in ::} {
+	foreach x {class copy define objdefine object} {
+		if {[namespace which $x] ne "::$x"} { error huh? }
+	}
+} {}
+
+test z01/mathop {math ops should be in ::} {
+	namespace which +
+} ::+
+
+test z01/mathfunc {math functions should be in ::} {
+	namespace which abs
+} ::abs
+
+test z01/msgcat {msgcat::mc command should be aliased in ::} {
+	interp alias {} :
+} msgcat::mc
 
 unset env(JEEREV_RIG_DIRS)
 

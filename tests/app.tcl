@@ -1,4 +1,4 @@
-Jm doc "Tests for the pool and tequila functionality."
+Jm doc "Standard tests for JeeRev."
 
 variable mydir [file normalize [file dir [info script]]]
 

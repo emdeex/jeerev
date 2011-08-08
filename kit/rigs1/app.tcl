@@ -19,7 +19,7 @@ proc start {args} {
   Jm autoLoader $path
 	
 	if {[catch { glob -dir $path -tails *.tcl } files]} {
-	  fail "No default application files found."
+	  fail "No application code found."
 	}
 	
   foreach f [lsort -dict $files] {
@@ -27,13 +27,13 @@ proc start {args} {
   }
 
   # include "app" here so that global searches in the code will find these calls
-  app hooks HUB.BOOT {*}$args
-  app hooks HUB.INIT
+  app hook APP.BOOT {*}$args
+  app hook APP.INIT
   if {![info exists exit]} {
-    app hooks HUB.READY
+    app hook APP.READY
     vwait exit
   }
-  app hooks HUB.EXIT
+  app hook APP.EXIT
 
   exit $exit
 }
@@ -44,12 +44,12 @@ proc fail {msg} {
 	exit 1
 }
 
-proc hooks {hook args} {
+proc hook {hook args} {
   # Apply hooks in each enabled plugin that defines it.
   # hook: name of the hook proc
   # args: arguments to pass to the hook proc
   # Returns a dict: append single results to key "*", merge the rest as dicts.
-  Log hooks+ {$hook $args}
+  Log hook+ {$hook $args}
   set results {}
   foreach path [PathsOfLoadedRigs] {
     set cmd ${path}::$hook
@@ -62,7 +62,7 @@ proc hooks {hook args} {
     }
   }
   if {[dict size $results] > 0} {
-    Log hooks- {$hook [dict keys $results]}
+    Log hook- {$hook [dict keys $results]}
   }
   return $results
 }
