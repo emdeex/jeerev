@@ -1,4 +1,4 @@
-Jm doc "Test the lowest level rigs."
+Jm doc "Tests for the basic rigs."
 
 set CMDS {cmd env tcl web}
 
