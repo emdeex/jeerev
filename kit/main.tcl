@@ -2,8 +2,8 @@
 
 namespace eval Jm {
   variable root_dir [file dir [dict get [info frame 0] file]]
-  variable rigs_loaded
-  variable rigs_extra
+  variable rigs_loaded	;# array of rigs currelty loaded
+  variable rigs_extra		;# array of files skipped by autoloader
 
   namespace eval initial {
     # Collect info about environment before anything is defined
@@ -62,7 +62,8 @@ namespace eval Jm {
       set path [file normalize $path]
       set unused {}
       foreach tail [glob -nocomplain -dir $path -tails $match] {
-        set name [regsub -- {-[^-]*$} [file root $tail] {}]
+        set name [file root $tail]
+        # set name [regsub -- {-[^-]*$} $name {}]
         set full [file join $path $tail]
         if {[file isfile $full] && [file ext $tail] eq ".tcl"} {
           set prefix $ns
@@ -71,6 +72,7 @@ namespace eval Jm {
           }
           set ::auto_index(${prefix}$name) [list ::Jm::loadRig $full $prefix]
         } elseif {[file exists [file join $full $name.tcl]]} {
+					#TODO rigs_extra is not very useful this way, it forgets the top level
           set rigs_extra(::${ns}${name}) [autoLoader $full * ${ns}${name}::]
         } else {
           lappend unused $tail

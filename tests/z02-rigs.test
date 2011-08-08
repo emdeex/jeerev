@@ -1,0 +1,29 @@
+Jm doc "Tests for the rig mechanism."
+
+test z02/rigs_loaded {keys of Jm::rigs_loaded} {
+	lsort [array names Jm::rigs_loaded]
+} {::Jm ::Jx ::app}
+
+makeDirectory z02-rigs
+makeFile { puts one } one.tcl z02-rigs
+makeFile { blah1 } blah1.txt z02-rigs
+
+test z02/simple {simple rig loading} {
+	# result is list of files not used for autoloading
+	Jm autoLoader z02-rigs
+} blah1.txt
+
+makeDirectory z02-rigs/two
+makeFile { puts two } two.tcl z02-rigs/two
+makeFile { puts three } three.tcl z02-rigs/two
+makeFile { blah2 } blah2.txt z02-rigs/two
+
+test z02/nested {nested rig loading} {
+	Jm autoLoader z02-rigs
+} blah1.txt
+
+test z02/rigs_extra {keys of Jm::rigs_extra} {
+	array get Jm::rigs_extra
+} {::two blah2.txt}
+
+cleanupTests
