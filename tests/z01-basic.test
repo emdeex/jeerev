@@ -19,14 +19,14 @@ test z01/cmds {commands available from the command line} {
   lrange [exec [info nameofexe] env commands] 1 end
 } $CMDS
 
-set env(JEEREV_RIG_DIRS) x
+set ::env(JEEREV_RIG_DIRS) x
 
 test z01/rigdirs {modified JEEREV_RIG_DIRS will fail} {
   catch { exec [info nameofexe] env commands } e
   regsub { ".*} $e {}
 } {invalid command name}
 
-set env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
+set ::env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
 
 test z01/env {check the "env" command} {
   set r [exec [info nameofexe] env usage]
@@ -106,6 +106,6 @@ test z01/msgcat {msgcat::mc command should be aliased in ::} {
 	interp alias {} :
 } msgcat::mc
 
-unset env(JEEREV_RIG_DIRS)
+unset ::env(JEEREV_RIG_DIRS)
 
 cleanupTests

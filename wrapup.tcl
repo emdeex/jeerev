@@ -22,11 +22,9 @@ fconfigure $fd -translation binary
 puts -nonewline $fd $prefix
 close $fd
 
-# copy the rest of the kit directory as Metakit starkit
+# copy the kit directory as Metakit starkit
 set db [vfs::mk4::Mount $dest $dest]
-foreach f [glob kit/*] {
-  file copy $f $dest/[file tail $f]
-}
+file copy -force kit/. $dest
 vfs::mk4::Unmount $db $dest
 
 catch { file attributes $dest -permissions +x }

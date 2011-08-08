@@ -4,8 +4,4 @@ test z00/version {Tcl version check} {
   package vcompare [package require Tcl] 8.6b1
 } 1
 
-test z00/namespace {current namespace} {
-  namespace current
-} ::
-
 cleanupTests

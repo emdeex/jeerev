@@ -5,7 +5,7 @@ test z02/rigs_loaded {keys of Jm::rigs_loaded} {
 } {::Jm ::Jx ::app}
 
 makeDirectory z02-rigs
-makeFile { puts one } one.tcl z02-rigs
+makeFile { puts one!; proc do {} { return one } } one.tcl z02-rigs
 makeFile { blah1 } blah1.txt z02-rigs
 
 test z02/simple {simple rig loading} {
@@ -13,17 +13,35 @@ test z02/simple {simple rig loading} {
 	Jm autoLoader z02-rigs
 } blah1.txt
 
+test z02/no-rigs_extra {Jm::rigs_extra does not yet exist} {
+	info exists Jm::rigs_extra
+} 0
+
 makeDirectory z02-rigs/two
-makeFile { puts two } two.tcl z02-rigs/two
-makeFile { puts three } three.tcl z02-rigs/two
+makeFile { puts two!; proc do {} { return two } } two.tcl z02-rigs/two
+makeFile { puts three!; proc do {} { return three } } three.tcl z02-rigs/two
 makeFile { blah2 } blah2.txt z02-rigs/two
 
 test z02/nested {nested rig loading} {
 	Jm autoLoader z02-rigs
 } blah1.txt
 
-test z02/rigs_extra {keys of Jm::rigs_extra} {
+test z02/rigs_extra {contents of Jm::rigs_extra} {
 	array get Jm::rigs_extra
 } {::two blah2.txt}
+
+test z02/notexist {commands should not exist at this point} {
+  foreach x {one two two::three} {
+    if {[namespace which $x] ne ""} { error huh? }
+  }
+} {}
+
+test z01/load {autoload rigs} -body {
+  list [one do] [two do] [two three do]
+} -result {one two three} -output "one!\ntwo!\nthree!\n"
+
+test z01/reuse {second use should not autoload} -body {
+  list [one do] [two do] [two three do]
+} -result {one two three} -output ""
 
 cleanupTests

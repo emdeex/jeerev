@@ -45,10 +45,10 @@ proc fail {msg} {
 }
 
 proc hook {hook args} {
-  # Apply hooks in each enabled plugin that defines it.
+  # Apply hooks in each loaded rig that defines it.
   # hook: name of the hook proc
   # args: arguments to pass to the hook proc
-  # Returns a dict: append single results to key "*", merge the rest as dicts.
+  # Returns a dict: each result is added with the hook proc path as key.
   Log hook+ {$hook $args}
   set results {}
   foreach path [PathsOfLoadedRigs] {
