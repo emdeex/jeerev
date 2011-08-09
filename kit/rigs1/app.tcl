@@ -3,17 +3,17 @@ Jm doc "Start as a modular app, using hooks to connect features together."
 proc start {args} {
   global exit
 
-	if {[llength $args] == 1} {
-	  # generates a nice error for the most common case, doesn't catch > 1 args
-		fail "Cannot start, unknown command: $args"
-	}
+  if {[llength $args] == 1} {
+    # generates a nice error for the most common case, doesn't catch > 1 args
+    fail "Cannot start, unknown command: $args"
+  }
 
   # include "app" so that global searches in the code will find these calls
   Jm autoLoader [app path features]
   
   if {![file exists [app path main.tcl]]} {
-	  fail "No application code found."
-	}
+    fail "No application code found."
+  }
 
   Jm autoLoader [app path] main.tcl ;# only autoload this one file
   Jm autoLoader [app path features]
@@ -39,7 +39,7 @@ proc path {{tail ""}} {
 proc fail {msg} {
   puts stderr $msg
   after 250 ;# slight delay so the msg can always be read, even if only briefly
-	exit 1
+  exit 1
 }
 
 proc hook {hook args} {

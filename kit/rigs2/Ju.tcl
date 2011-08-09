@@ -13,7 +13,7 @@ proc map {args} {
   # Maps a function to each element of a list, and returns list of the results.
   set result {}
   foreach item [lindex $args end] {
-	  lappend result [uplevel 1 [lreplace $args end end $item]]
+    lappend result [uplevel 1 [lreplace $args end end $item]]
   }
   return $result
 }
@@ -118,7 +118,7 @@ proc mySourceDir {} {
     # assume we're at source script level
     set path [info script]
   }
-	return [file normalize [file dir $path]]
+  return [file normalize [file dir $path]]
 }
 
 proc launchBrowser {url} {
@@ -136,12 +136,12 @@ proc launchBrowser {url} {
     default {
       foreach cmd {firefox mozilla netscape iexplorer opera lynx w3m links
                     epiphany galeon konqueror mosaic amaya browsex elinks} {
-  	    set exe [auto_execok $cmd]
-  	    if {$exe ne ""} {
-  	      exec $exe $url &
-  	      break
-  	    }
-  	  }  	  
+        set exe [auto_execok $cmd]
+        if {$exe ne ""} {
+          exec $exe $url &
+          break
+        }
+      }     
     }
   }
 }

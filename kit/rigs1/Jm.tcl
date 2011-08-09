@@ -122,12 +122,12 @@ proc fixModulePaths {} {
   variable root_dir
   set exe [info nameofexe]
   # remove all paths which don't point inside the JeeMon exe starpack
-	foreach x [::tcl::tm::path list] {
-	  if {![string match $exe/* $x]} {
+  foreach x [::tcl::tm::path list] {
+    if {![string match $exe/* $x]} {
       ::tcl::tm::path remove $x
-	  }
-	}
-	::tcl::tm::path add $root_dir/tm
+    }
+  }
+  ::tcl::tm::path add $root_dir/tm
 }
 
 proc setupStarkit {} {

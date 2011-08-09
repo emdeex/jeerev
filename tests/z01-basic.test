@@ -59,52 +59,52 @@ test z01/symlink {symbolic link to jeemon} {
 } $CMDS
 
 test z01/feature {check that main app code gets loaded} {
-	makeFile { puts blah; exit } main.tcl z01
-	exec [info nameofexe] -app z01
+  makeFile { puts blah; exit } main.tcl z01
+  exec [info nameofexe] -app z01
 } blah
 
 test z01/get? {dict get? extension} {
-	set d [dict create a A]
-	list [dict get? $d a] [dict get? $d b]
+  set d [dict create a A]
+  list [dict get? $d a] [dict get? $d b]
 } {A {}}
 
 test z01/set? {dict set? extension} {
-	set d [dict create a A]
-	dict set? d a A1
-	dict set? d b B1
-	dict set? d b B2
+  set d [dict create a A]
+  dict set? d a A1
+  dict set? d b B1
+  dict set? d b B2
 } {a A b B1}
 
 test z01/extract {dict extract extension} {
-	set d [dict create a A]
-	dict extract $d a b
-	list $a $b
+  set d [dict create a A]
+  dict extract $d a b
+  list $a $b
 } {A {}}
 
 test z01/inject {dict inject extension} {
-	set d [dict create a A]
-	set a A1
-	set b B
-	unset -nocomplain c
-	dict inject d a b c
+  set d [dict create a A]
+  set a A1
+  set b B
+  unset -nocomplain c
+  dict inject d a b c
 } {a A1 b B}
 
 test z01/oo {all oo commands should be in ::} {
-	foreach x {class copy define objdefine object} {
-		if {[namespace which $x] ne "::$x"} { error huh? }
-	}
+  foreach x {class copy define objdefine object} {
+    if {[namespace which $x] ne "::$x"} { error huh? }
+  }
 } {}
 
 test z01/mathop {math ops should be in ::} {
-	namespace which +
+  namespace which +
 } ::+
 
 test z01/mathfunc {math functions should be in ::} {
-	namespace which abs
+  namespace which abs
 } ::abs
 
 test z01/msgcat {msgcat::mc command should be aliased in ::} {
-	interp alias {} :
+  interp alias {} :
 } msgcat::mc
 
 unset ::env(JEEREV_RIG_DIRS)

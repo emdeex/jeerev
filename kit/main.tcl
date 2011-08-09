@@ -2,8 +2,8 @@
 
 namespace eval Jm {
   variable root_dir [file dir [dict get [info frame 0] file]]
-  variable rigs_loaded	;# array of rigs currelty loaded
-  variable rigs_extra		;# array of files skipped by autoloader
+  variable rigs_loaded  ;# array of rigs currelty loaded
+  variable rigs_extra   ;# array of files skipped by autoloader
 
   namespace eval initial {
     # Collect info about the current interp state before anything is defined
@@ -72,7 +72,7 @@ namespace eval Jm {
           }
           set ::auto_index(${prefix}$name) [list ::Jm::loadRig $full $prefix]
         } elseif {[file exists [file join $full $name.tcl]]} {
-					#TODO rigs_extra is not very useful this way, it forgets the top level
+          #TODO rigs_extra is not very useful this way, it forgets the top level
           set rigs_extra(::${ns}${name}) [autoLoader $full * ${ns}${name}::]
         } else {
           lappend unused $tail
