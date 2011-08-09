@@ -1,7 +1,7 @@
 Jm doc "Web server architecture."
 
 proc APP.READY {} {
-  launch 8181
+  launch [Config webserver:port 8181]
 }
 
 proc launch {port {root ""}} {
