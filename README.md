@@ -9,15 +9,18 @@ For more information about JeeRev, see the [JeeRev home page][2].
 Usage
 -----
 
-The default `jeemon-rev` core library is automatically downloaded by JeeMon on
-startup. The download site at JeeLabs is <http://dl.jeelabs.org/>. To download
-an updated version, delete the `jeemon-rev` file and relaunch JeeMon.
+To run in development mode with all the JeeRev files unpacked, `jeemon` must be
+launched from this top-level directory so it will see the `kit/main.tcl` file.
 
-For easy development, if a `kit` directory is present, it'll be used instead.
+Otherwise, the latest `jeemon-rev` release will automatically be downloaded by
+JeeMon on startup. The download site at JeeLabs is <http://dl.jeelabs.org/>. To
+download an updated version, delete the `jeemon-rev` file and relaunch JeeMon.
 
-To run the test suites, type `make`.
+The `examples` directory contains some apps to illustrate the basic features.
 
-To generate the `jeemon-rev` file, type `make wrap`.
+To run the test suites, type `make test`.
+
+To generate a `jeemon-rev` file release, type `make wrap`.
 
   [1]: http://jeelabs.net/projects/jeemon/wiki
   [2]: http://jeelabs.net/projects/jeerev/wiki
