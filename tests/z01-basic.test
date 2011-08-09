@@ -2,7 +2,8 @@ Jm doc "Tests for the basic rigs."
 
 set CMDS {cmd env tcl web}
 
-makeDirectory z01-features
+makeDirectory z01
+makeDirectory z01/features
 makeDirectory z01-tmp
 
 test z01/noarg {fail when called without args} {
@@ -30,7 +31,7 @@ set ::env(JEEREV_RIG_DIRS) rigs1 ;# only use the rigs1 directory
 
 test z01/env {check the "env" command} {
   set r [exec [info nameofexe] env usage]
-  regexp {options:(.*)These} $r - cmdlist ;# extract the list of commands
+  regexp {options:(.*)These} $r _ cmdlist ;# extract the list of commands
   lrange $cmdlist 0 end ;# turn into a list to normalize whitespace
 } {autopath commands encodings general loaded\
    machdep packages rigs tmpath usage}
@@ -57,8 +58,8 @@ test z01/symlink {symbolic link to jeemon} {
   lrange [exec z01-tmp/jm env commands] 1 end
 } $CMDS
 
-test z01/feature {check that feature code gets loaded} {
-	makeFile { puts blah; exit } blah.tcl z01-features
+test z01/feature {check that main app code gets loaded} {
+	makeFile { puts blah; exit } main.tcl z01
 	exec [info nameofexe] -app z01
 } blah
 

@@ -6,8 +6,8 @@ namespace eval Jm {
   variable rigs_extra		;# array of files skipped by autoloader
 
   namespace eval initial {
-    # Collect info about environment before anything is defined
-    variable vars [info vars ::*] 
+    # Collect info about the current interp state before anything is defined
+    variable variables [info vars ::*] 
     variable commands [info commands ::*]
     variable namespaces [namespace children ::]
   }  

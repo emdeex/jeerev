@@ -2,31 +2,20 @@ Jm doc "Start as a modular app, using hooks to connect features together."
 
 proc start {args} {
   global exit
-  variable opts
 
 	if {[llength $args] == 1} {
+	  # generates a nice error for the most common case, doesn't catch > 1 args
 		fail "Cannot start, unknown command: $args"
 	}
 
-  array set opts { -mask "" -host -server -port 7489 -app app }
-  array set opts $args
-
-  Log mask $opts(-mask)
-
-  # [Socket rpc $opts(-host) $opts(-port)] setupDispatcher
-
-  set path $opts(-app)-features
-  Jm autoLoader $path
-	
-	if {[catch { glob -dir $path -tails *.tcl } files]} {
+  # include "app" so that global searches in the code will find these calls
+  Jm autoLoader [app path features]
+  
+  if {![file exists [app path main.tcl]]} {
 	  fail "No application code found."
 	}
-	
-  foreach f [lsort -dict $files] {
-    Jm needs [file root $f]
-  }
+  source [app path main.tcl]
 
-  # include "app" here so that global searches in the code will find these calls
   app hook APP.BOOT {*}$args
   app hook APP.INIT
   if {![info exists exit]} {
@@ -36,6 +25,12 @@ proc start {args} {
   app hook APP.EXIT
 
   exit $exit
+}
+
+proc path {tail} {
+  # Returns a normalized path relative to the application directory.
+  global argv
+  file normalize [file join [dict get? $argv -app] $tail]
 }
 
 proc fail {msg} {

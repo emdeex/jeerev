@@ -111,6 +111,9 @@ proc loadExtensions {} {
 proc loadNow {rig} {
   # Loads (or re-loads) a rig, without running any subcommands.
   # rig: name of the rig to load, relative to ::
+  if {![info exists ::auto_index($rig)]} {
+    return -code error "no such rig: $rig"
+  }
   uplevel #0 $::auto_index($rig)
 }
 

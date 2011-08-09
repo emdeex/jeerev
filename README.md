@@ -10,8 +10,8 @@ Usage
 -----
 
 The default `jeemon-rev` core library is automatically downloaded by JeeMon on
-startup. The default download site is <http://dl.jeelabs.org/>. To download an
-updated version, delete the `jeemon-rev` file and relaunch JeeMon.
+startup. The download site at JeeLabs is <http://dl.jeelabs.org/>. To download
+an updated version, delete the `jeemon-rev` file and relaunch JeeMon.
 
 For easy development, if a `kit` directory is present, it'll be used instead.
 
