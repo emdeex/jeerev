@@ -10,7 +10,7 @@ Usage
 -----
 
 To run in development mode with all the JeeRev files unpacked, `jeemon` must be
-launched from this top-level directory so it will see the `kit/main.tcl` file.
+launched from this top-level directory so it can find the `kit/main.tcl` file.
 
 Otherwise, the latest `jeemon-rev` release will automatically be downloaded by
 JeeMon on startup. The download site at JeeLabs is <http://dl.jeelabs.org/>. To
