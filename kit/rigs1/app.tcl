@@ -14,7 +14,10 @@ proc start {args} {
   if {![file exists [app path main.tcl]]} {
 	  fail "No application code found."
 	}
-  source [app path main.tcl]
+
+  Jm autoLoader [app path] main.tcl ;# only autoload this one file
+  Jm autoLoader [app path features]
+  Jm loadNow main
 
   app hook APP.BOOT {*}$args
   app hook APP.INIT
@@ -27,7 +30,7 @@ proc start {args} {
   exit $exit
 }
 
-proc path {tail} {
+proc path {{tail ""}} {
   # Returns a normalized path relative to the application directory.
   global argv
   file normalize [file join [dict get? $argv -app] $tail]

@@ -46,7 +46,7 @@ proc DoIt {type msg} {
   variable mask
   if {![string match $mask $type]} {
     set msg [uplevel [list subst $msg]]
-    reportLine [format {%s %8.8s %s} [timestamp] $type $msg]
+    reportLine [format {%s %8s %s} [timestamp] $type $msg]
   }
 }
 
