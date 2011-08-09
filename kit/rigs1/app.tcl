@@ -5,18 +5,15 @@ proc start {args} {
 
   if {[llength $args] == 1} {
     # generates a nice error for the most common case, doesn't catch > 1 args
-    fail "Cannot start, unknown command: $args"
+    app fail "Cannot start, unknown command: $args"
   }
-
-  # include "app" so that global searches in the code will find these calls
-  Jm autoLoader [app path features]
   
   if {![file exists [app path main.tcl]]} {
-    fail "No application code found."
+    app fail "No application code found."
   }
 
-  Jm autoLoader [app path] main.tcl ;# only autoload this one file
   Jm autoLoader [app path features]
+  Jm autoLoader [app path] main.tcl ;# only autoload one file
   Jm loadNow main
 
   app hook APP.BOOT {*}$args
@@ -24,6 +21,9 @@ proc start {args} {
   if {![info exists exit]} {
     app hook APP.READY
     vwait exit
+  }
+  if {$exit} {
+    app hook APP.FAIL $exit
   }
   app hook APP.EXIT
 
@@ -36,10 +36,18 @@ proc path {{tail ""}} {
   file normalize [file join [dict get? $argv -app] $tail]
 }
 
-proc fail {msg} {
+proc fail {msg {cleanup 0}} {
+  # Catastrophic failure, print message and exit the application.
+  # msg: the text to display
+  # cleanup: perform a controlled shotdown if non-zero
   puts stderr $msg
   after 250 ;# slight delay so the msg can always be read, even if only briefly
-  exit 1
+  if {$cleanup} {
+    set ::exit $cleanup ;# will terminate the vwait in app start
+  } else {
+    app hook APP.FAIL 0 ;# one last hook, then bail out right away
+    exit 1
+  }
 }
 
 proc hook {hook args} {

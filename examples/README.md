@@ -8,5 +8,5 @@ adjust a configuration file (called `config.txt`) to match your setup:
 Examples
 --------
 
-* **helloRF12** - Collect and display data from a JeeNode running RF12demo.
-* **helloWeb** - The simplest possible web server.
+* **hello-rf12** - Collect and display data from a JeeNode running RF12demo.
+* **hello-web** - The simplest possible web server.
