@@ -19,8 +19,8 @@ proc start {{port 8080} {root .}} {
       video/quicktime mov|qt                  video/x-ms-wmv  wmv
   }
   wibble handle / zone::staticfile root $root
-  wibble handle / zone::templatefile root $root
   wibble handle / zone::scriptfile root $root
+  wibble handle / zone::templatefile root $root
   wibble handle / zone::dirlist root $root
   wibble handle / zone::notfound
 
