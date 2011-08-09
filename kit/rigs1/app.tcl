@@ -47,20 +47,12 @@ proc hook {hook args} {
   # hook: name of the hook proc
   # args: arguments to pass to the hook proc
   # Returns a dict: each result is added with the hook proc path as key.
-  Log hook+ {$hook $args}
   set results {}
   foreach path [PathsOfLoadedRigs] {
     set cmd ${path}::$hook
     if {[llength [info commands $cmd]] > 0} {
-      try {
-        dict set results $path [uplevel $cmd $args]
-      } on error {e o} {
-        Log traceback $e $o
-      }
+      dict set results $path [uplevel $cmd $args]
     }
-  }
-  if {[dict size $results] > 0} {
-    Log hook- {$hook [dict keys $results]}
   }
   return $results
 }

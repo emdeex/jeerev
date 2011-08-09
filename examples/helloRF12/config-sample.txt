@@ -1,0 +1,23 @@
+# Sample configuration file for "rf12server".
+
+# Serial device and configuration of the JeeNode running RF12demo.
+#
+# Example settings for Windows, Mac OSX, and Linux, respectively:
+#
+#     connect: { config "8b 5g 1i" device COM7 }
+#     connect: { config "8b 5g 1i" device /dev/tty.usbserial-A700fdxv }
+#     connect: { config "8b 5g 1i" device /dev/ttyUSB0 }
+#
+# With FTDI-based devices such as the USB-BUB and JeeNode USB, the
+# serial device can (normally) also be specified as "usb-XXXXXXXX".
+
+connect: {
+  device A700fdxv
+  config "8b 5g 1i"
+}
+
+# Which port to use for the web server:
+
+webserver: {
+  port 8181
+}
