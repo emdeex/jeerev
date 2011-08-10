@@ -60,6 +60,17 @@ Ju classDef Connection {
       puts -nonewline $fd $line
     }
   }
+  
+  method onMessage {vname script} {
+    my variable context
+    set context [list $vname $script [uplevel namespace current]]
+    objdefine [self] method onReceive {msg} {
+      my variable context
+      lassign $context vname script ns
+      namespace eval $ns [list set $vname $msg]
+      namespace eval $ns $script
+    }
+  }
 
   method onReceive {msg} {
     # Called whenever there is data to process.

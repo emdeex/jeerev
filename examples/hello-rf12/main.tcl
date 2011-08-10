@@ -1,35 +1,29 @@
 Jm doc "Collect and display data from a JeeNode running RF12demo."
 
-# This is a very basic demo, which just shows the last 25 received packets as
-# a plain text page. No formatting, just enough for testing or web-scraping.
+# This is a very basic demo, showing the last 25 received packets as plain text.
+# No formatting, no HTML, but enough for a quick test or for web-scraping.
 
 Webserver hasUrlHandlers
 
 proc APP.READY {} {
   # Called once during application startup.
-  set device [Config connect:device usb-A700fdxv]
+  variable seqnum
+  variable history {}
 
   # create a connection object
+  set device [Config connect:device usb-A700fdxv]
   set conn [Serial connect $device 57600]
 
-  # wait for startup, then reconfigure the JeeNode as specified
+  # wait 1 sec for startup, then configure the JeeNode as specified
   after 1000 [list $conn send [Config connect:config "8b 5g 1i"]]
   
-  # adjust the connection to pick up and save the last 25 incoming messages
-  variable history {}
-  
-  #TODO - This approach of "overriding a method in a connection object" is too
-  # complicated and exposes more complexity than needed. Should be simplified!
-
-  objdefine $conn method onReceive {msg} {
-    my variable seqnum
-    namespace upvar ::main history history
-    
+  # update the history of the last 25 messages as each one comes in
+  $conn onMessage msg {
     if {[string match "OK *" $msg]} {
       lappend history "#[incr seqnum] [Log now] - $msg"
       set history [lrange $history end-24 end]
     } else {
-      next $msg ;# log unrecognized messages
+      Log rf12? {$msg}
     }
   }
 }
