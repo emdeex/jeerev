@@ -37,10 +37,10 @@ proc launch {port {root ""}} {
 }
 
 proc hasUrlHandlers {} {
-	# Create a hook in the caller's context so that its "/*:" procs will be found.
-	set ns [uplevel namespace current]
-	interp alias {} ${ns}::WEBSERVER.PATHS \
-								{} namespace eval $ns { info commands /*: }
+  # Create a hook in the caller's context so that its "/*:" procs will be found.
+  set ns [uplevel namespace current]
+  interp alias {} ${ns}::WEBSERVER.PATHS \
+                {} namespace eval $ns { info commands /*: }
 }
 
 proc state {} {
