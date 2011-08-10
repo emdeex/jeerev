@@ -1,11 +1,6 @@
 Jm doc "The simplest possible web server."
 
-Jm needs Webserver
-
-proc WEBSERVER.PATHS {} {
-  # Return the list of commands which repond to specific URLs.
-  info commands /*:
-}
+Webserver hasUrlHandlers
 
 proc /: {} {
   # Respond to "/" url requests.

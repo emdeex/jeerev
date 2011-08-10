@@ -3,7 +3,7 @@ Jm doc "Collect and display data from a JeeNode running RF12demo."
 # This is a very basic demo, which just shows the last 25 received packets as
 # a plain text page. No formatting, just enough for testing or web-scraping.
 
-Jm needs Webserver
+Webserver hasUrlHandlers
 
 proc APP.READY {} {
   # Called once during application startup.
@@ -32,11 +32,6 @@ proc APP.READY {} {
       next $msg ;# log unrecognized messages
     }
   }
-}
-
-proc WEBSERVER.PATHS {} {
-  # Return the list of commands which repond to specific URLs.
-  info commands /*:
 }
 
 proc /: {} {
