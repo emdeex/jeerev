@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>KAKU send</title>
+    [jquery includes]
+    [jquery script {
+      $(".toggles, #group").buttonset();
+      $("input[name=g][value=I]").click();
+      // use an ajax request to respond to each button
+      $("button").click(function () {
+        var hc = $("select").val();
+        var gr = $(":checked").val();
+        $.get("do/" + this.id + "/" + gr + "/" + hc);
+      });
+    }]
+  </head>
+  <body id="page" onload="">
+%   foreach x {1 2 3 4} {
+      <p class="toggles">
+        <button id="on$x">On $x</button>
+        <button id="off$x">Off $x</button>
+      </p>
+%   }
+    <p id="group">
+      <label>Group:</label>
+%     foreach x {I II III IV} {
+        <input type="radio" id="g$x" name="g" value="$x" />
+          <label for="g$x">$x</label>
+%     }
+    </p>
+    <p>
+      <label>House code:</label>
+      <select id="hc">
+%       foreach x {A B C D E F G H I J K L M N O P} {
+          <option value="$x">$x</option>
+%       }
+      </select>
+    </p>
+  </body>
+</html>
