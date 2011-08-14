@@ -5,7 +5,7 @@
     [jquery includes]
     [jquery script {
       $(".toggles, #group").buttonset();
-      $("input[name=g][value=I]").click();
+      $("#gI").click();
       // use an ajax request to respond to each button
       $("button").click(function () {
         var hc = $("select").val();
@@ -14,7 +14,7 @@
       });
     }]
   </head>
-  <body id="page" onload="">
+  <body>
 %   foreach x {1 2 3 4} {
       <p class="toggles">
         <button id="on$x">On $x</button>
@@ -29,8 +29,8 @@
 %     }
     </p>
     <p>
-      <label>House code:</label>
-      <select id="hc">
+      <label>House Code:</label>
+      <select>
 %       foreach x {A B C D E F G H I J K L M N O P} {
           <option value="$x">$x</option>
 %       }
