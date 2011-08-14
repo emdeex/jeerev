@@ -13,11 +13,17 @@ tabcheck:
 
 # generate a wrapped file from the "kit" directory
 wrap:
-	$(JEEMON) wrapup.tcl
+	$(JEEMON) kit/wrapup.tcl
 
 # this target is for private use only
 dist: tabcheck test wrap
 	rsync -a jeemon-rev $(DISTDIR)
+
+# called on F6 by TextMate on MacOSX to refresh the current window in Camino
+testmate:
+	osascript -e 'tell application "Camino"' \
+		  -e 'open location (get URL of current tab of window 1)' \
+	  	  -e 'end tell'
 
 clean:
 	rm -rf jeemon-rev
