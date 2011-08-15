@@ -1,5 +1,4 @@
 Jm doc "The simplest possible web server."
-
 Webserver hasUrlHandlers
 
 proc /: {} {

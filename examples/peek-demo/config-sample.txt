@@ -1,0 +1,7 @@
+# Sample configuration file for "peek-demo".
+
+# Which port to use for the web server:
+
+webserver: {
+  port 8181
+}

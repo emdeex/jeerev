@@ -1,9 +1,8 @@
 Jm doc "Collect and display data from a JeeNode running RF12demo."
+Webserver hasUrlHandlers
 
 # This is a very basic demo, showing the last 25 received packets as plain text.
 # No formatting, no HTML, but enough for a quick test or for web-scraping.
-
-Webserver hasUrlHandlers
 
 proc APP.READY {} {
   # Called once during application startup.

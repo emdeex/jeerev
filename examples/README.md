@@ -10,4 +10,5 @@ Examples
 
 * **hello-rf12** - Collect and display data from a JeeNode running RF12demo.
 * **hello-web** - The simplest possible web server.
-* **kaku-send** - Send a command to the KlikAanKlikUit remote control
+* **kaku-send** - Send a command to the KlikAanKlikUit remote control.
+* **peek-demo** - Peeking into a running system to see vars, procs, etc.
