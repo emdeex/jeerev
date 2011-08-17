@@ -12,3 +12,4 @@ Examples
 * **hello-web** - The simplest possible web server.
 * **kaku-send** - Send a command to the KlikAanKlikUit remote control.
 * **peek-demo** - Peeking into a running system to see vars, procs, etc.
+* **update-demo** - Demonstrate real-time web updates using Server-Sent Events.

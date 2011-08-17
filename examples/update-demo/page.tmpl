@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Server-Sent Events demo</title>
+    [jquery includes knockout eventsource]
+    [jquery script {
+      var viewModel = { counter : ko.observable("?") };
+      ko.applyBindings(viewModel);
+
+      $.eventsource({
+        url: 'events/test',
+        message: function (data) { viewModel.counter(data.counter); }
+      });
+    }]
+  </head>
+  <body>
+    Random value:
+    <blockquote data-bind="text: counter"></blockquote>
+    (should update once a second)
+  </body>
+</html>
