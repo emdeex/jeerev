@@ -1,44 +1,67 @@
 Jm doc "Support for jQuery, jQuery UI, etc"
 
-# use files from the jQuery CDN servers
-variable urls
-array set urls {
-  core-js
-    http://code.jquery.com/jquery.min.js
-  ui-js
-    http://code.jquery.com/ui/1.8.15/jquery-ui.min.js
-  ui-css
-    http://code.jquery.com/ui/1.8.15/themes/ui-lightness/jquery-ui.css
-  tmpl-js
-    http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js
-  knockout-js
-    http://cdnjs.cloudflare.com/ajax/libs/knockout/1.2.1/knockout-min.js
-  eventsource-js
-    http://github.com/rwldrn/jquery.eventsource/raw/master/jquery.eventsource.js
+# public URLs for some common JavaScript and CSS files
+Ju cachedVar urls . {
+  variable urls {
+    core.js
+      JQ:jquery.min.js
+    ui.js
+      JQ:ui/1.8.15/jquery-ui.min.js
+    ui.css
+      JQ:ui/1.8.15/themes/ui-lightness/jquery-ui.css
+    mobile.js
+      JQ:mobile/latest/jquery.mobile.js
+    tmpl.js
+      MS:jquery.templates/beta1/jquery.tmpl.min.js
+    validate.js
+      MS:jquery.validate/1.8.1/jquery.validate.min.js
+    knockout.js
+      CF:knockout/1.2.1/knockout-min.js
+    eventsource.js
+      GH:rwldrn/jquery.eventsource/master/jquery.eventsource.js
+    flot.js
+      GH:flot/flot/master/jquery.flot.js
+    datatables.js
+      GH:DataTables/DataTables/master/media/js/jquery.dataTables.js
+    raphael.js
+      CF:raphael/1.5.2/raphael-min.js
+    dateformat.js
+      GH:phstc/jquery-dateFormat/master/jquery.dateFormat-1.0.js
+    modernizr.js
+      CF:modernizr/2.0.6/modernizr.min.js
+  }
 }
 
 proc includes {args} {
-  variable urls
+  # Generate the HTML needed to insert a number of CSS and JavaScript files.
   set css {}
-  lappend js \
-    "<script type='text/javascript' src='$urls(core-js)'></script>"
-  foreach x $args {
-    set ok 0
-    if {[info exists urls($x-css)]} {
-      lappend css \
-        "<link type='text/css' href='$urls($x-css)' rel='stylesheet' />"
-      incr ok
+  foreach x [concat core $args] {
+    set u [GetUrl $x.css]
+    if {$u ne ""} {
+      lappend css "<link type='text/css' href='$u' rel='stylesheet' />"
     }
-    if {[info exists urls($x-js)]} {
-      lappend js \
-        "<script type='text/javascript' src='$urls($x-js)'></script>"
-      incr ok
+    set u [GetUrl $x.js]
+    if {$u ne ""} {
+      lappend js "<script type='text/javascript' src='$u'></script>"
+    } else {
+      error "unknown include: $x.js"
     }
-    if {!$ok} { error "unknown include: $x" }
   }
   join [concat $css $js] "\n    "
 }
 
+proc GetUrl {name} {
+  # Expand some shorthand notations while lokking up a URL.
+  variable urls
+  string map {
+    JQ: http://code.jquery.com/
+    GH: https://raw.github.com/
+    CF: http://cdnjs.cloudflare.com/ajax/libs/
+    MS: http://ajax.aspnetcdn.com/ajax/
+  } [dict get? $urls $name]
+}
+
 proc script {code} {
+  # Generate wrapped HTML around JavaScript code (to be loaded on DOM-ready).
   return "<script type='text/javascript'>jQuery(function(){$code});</script>"
 }
