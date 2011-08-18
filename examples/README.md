@@ -8,8 +8,8 @@ adjust a configuration file (called `config.txt`) to match your setup:
 Examples
 --------
 
-* **hello-rf12** - Collect and display data from a JeeNode running RF12demo.
 * **hello-web** - The simplest possible web server.
+* **hello-rf12** - Collect and display data from a JeeNode running RF12demo.
 * **kaku-send** - Send a command to the KlikAanKlikUit remote control.
 * **peek-demo** - Peeking into a running system to see vars, procs, etc.
 * **update-demo** - Demonstrate real-time web updates using Server-Sent Events.
