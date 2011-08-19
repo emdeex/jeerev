@@ -35,16 +35,18 @@ proc put {param value} {
 }
 
 proc dump {{param ""}} {
-  puts [emit [get $param]]
+  puts [emit [get $param] 1]
 }
 
-proc emit {pairs {prefix ""}} {
+proc emit {pairs {sorted 0} {prefix ""}} {
   #: emit nested setting dicts in a readable format
   set out {}
-  foreach x [lsort [dict keys $pairs]] {
+  set keys [dict keys $pairs]
+  if {$sorted} { set keys [lsort $keys] }
+  foreach x $keys {
     set y [dict get $pairs $x]
     if {[string index $x end] eq ":"} {
-      set y [emit $y  "$prefix  "]
+      set y [emit $y $sorted "$prefix  "]
       if {$y ne ""} {
         lappend out "$prefix[list $x] {" $y "$prefix}"
         continue
