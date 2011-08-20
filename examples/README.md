@@ -13,3 +13,4 @@ Examples
 * **kaku-send** - Send a command to the KlikAanKlikUit remote control.
 * **peek-demo** - Peeking into a running system to see vars, procs, etc.
 * **update-demo** - Demonstrate real-time web updates using Server-Sent Events.
+* **collectd-demo** - Listen for 'collectd' info on the std UDP multicast port.

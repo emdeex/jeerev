@@ -33,7 +33,7 @@ test z01/env {check the "env" command} {
   set r [exec [info nameofexe] env usage]
   regexp {options:(.*)These} $r _ cmdlist ;# extract the list of commands
   lrange $cmdlist 0 end ;# turn into a list to normalize whitespace
-} {autopath commands encodings general loaded\
+} {autopath commands dependencies encodings general loaded\
    machdep packages rigs tmpath usage}
 
 test z01/tcl {check the "tcl" command} {
