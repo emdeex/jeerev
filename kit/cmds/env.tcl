@@ -3,7 +3,7 @@ Jm doc "Print out some system and environment info."
 proc start {args} {
   set cmds [string tolower $args]
   switch -- $cmds {
-    all { set cmds {g a c e l m p r t} }
+    all { set cmds {g a c d e l m p r t} }
     "" - "?" - "-h" - "--help" { set cmds {g u}}
   }
   
@@ -36,6 +36,31 @@ namespace eval SubCommand {
     }
   }
 
+  proc dependencies {} {
+    puts "DEPENDENCIES:"
+    set exe [info nameofexe]
+    switch -glob $::tcl_platform(os) {
+      Windows* {
+        puts "  not available - try using a tool such as 'Dependency Walker'"
+      }
+      Darwin {
+        try {
+          set out [exec otool -L $exe]
+          puts [string map {"\t" "  " " (compat" "\n    (compat"} $out]
+        } on error {} {
+          puts "  'otool' not available (requires Xcode)"
+        }
+      }
+      *x {
+        try {
+          puts [exec ldd [info nameofexe]]
+        } on error {} {
+          puts "  'ldd' not available"
+        }
+      }
+    }
+  }
+  
   proc encodings {} {
     puts "ENCODINGS:"
     set all {}
