@@ -2,10 +2,22 @@ Jm doc "Support for collect packets, coming in over UDP."
 
 package require udp
 
-proc APP.READY {} {
-  # Called on app startup, presets some lookup tables.
-  variable types
-  variable level
+#TODO these tuple expansions should not be hard-coded
+variable tuples {
+  df:* {used free}
+  disk:* {read write}
+  interface:* {rx tx}
+  load {short mid long}
+  serial:* {rx tx}
+  *:mysql_octets {rx tx}
+  *:mysql_qcache {hits inserts not_cached prunes size}
+  *:mysql_threads {running connected cached total-created}
+}
+
+variable types
+variable level
+if {![info exists types]} {
+  # prepare some simple lookup tables
   if {![info exists types]} {
     set i -1
     foreach {typ fmt} {
@@ -13,13 +25,6 @@ proc APP.READY {} {
     } {
       set types($typ) $fmt
       set level($typ) [incr i]
-    }
-    variable tuples {
-      df {used free}
-      disk {read write}
-      interface {rx tx}
-      load {short mid long}
-      serial {rx tx}
     }
     variable path {}
   }
@@ -76,14 +81,18 @@ proc ReadUDP {sock handler} {
           set keys [lreplace $keys 2 2]
         }
         set keys [lsearch -all -inline -not $keys _]
-        if {[llength $val] > 1 && [dict exists $tuples $module] &&
-            [llength $val] == [llength [dict get $tuples $module]]} {
-          append keys :
-          set v2 {}
-          foreach k [dict get $tuples $module] v $val {
-            lappend v2 $k $v
+        if {[llength $val] > 1} {
+          set k2 [string map {" " :} $keys]
+          dict for {t t2} $tuples {
+            if {[llength $val] == [llength $t2] && [string match $t $k2]} {
+              append keys :
+              set v2 {}
+              foreach k $t2 v $val {
+                lappend v2 $k $v
+              }
+              set val $v2
+            }
           }
-          set val $v2
         }
         dict set out {*}[string map {" " ": "} $keys] $val
       } elseif {$lvl > 6} {
