@@ -7,9 +7,12 @@ proc keys {{pattern *}} {
 
 proc get {path} {
   variable state
-  if {[info exists state($path)]} {
-    return $state($path)
-  }
+  Ju get state($path)
+}
+
+proc getInfo {path} {
+  variable shadow
+  Ju get shadow($path)
 }
 
 proc put {path value {time 0}} {
@@ -49,12 +52,12 @@ proc putDict {data time {prefix ""}} {
   }
 }
 
-proc periodicSave {fname {period 60}} {
+proc periodicSave {fname} {
   variable state
   variable shadow
   set cmd [list [namespace which periodicSave] $fname]
   after cancel $cmd
-  after [* $period 1000] $cmd
+  after 60000 $cmd
   if {![info exists shadow]} {
     array set shadow [Ju readFile $fname]
     foreach {k v} [array get shadow] {
