@@ -70,8 +70,12 @@ proc ReadUDP {sock handler} {
           set out [dict create host $host time $time]
         }
         dict set out addr [lindex $peer 0]
-        # convert each collected value into a nested dictionary structure
-        set keys [lsearch -all -inline -not [lrange $path 2 end-1] _]
+        # turn each collected value into a simple nested dictionary structure
+        set keys [lrange $path 2 end-1]
+        if {[lindex $keys 0] eq [lindex $keys 2]} {
+          set keys [lreplace $keys 2 2]
+        }
+        set keys [lsearch -all -inline -not $keys _]
         if {[llength $val] > 1 && [dict exists $tuples $module] &&
             [llength $val] == [llength [dict get $tuples $module]]} {
           append keys :
