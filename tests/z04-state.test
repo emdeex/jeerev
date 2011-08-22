@@ -3,3 +3,140 @@ Jm doc "Basic tests for the State rig."
 test z04/empty {check state is empty} {
   State keys
 } {}
+
+set t [clock seconds]
+
+test z04/add {add one state variable} {
+  State put a 123 $t
+  list [State keys] [State get a] [State getInfo a]
+} [list a 123 [list v 123 o {} t $t p 0 m $t]]
+
+incr t
+
+test z04/modify {modify state variable} {
+  State put a 245 $t
+  State getInfo a
+} [list v 245 o 123 t $t p [- $t 1] m $t]
+
+incr t
+
+test z04/no-change {modify state variable with same value} {
+  State put a 245 $t
+  State getInfo a
+} [list v 245 o 123 t $t p [- $t 1] m [- $t 1]]
+
+test z04/remove {remove state variable} {
+  State remove a
+  list [State keys] [State get a] [State getInfo a]
+} {{} {} {}}
+
+test z04/remove2 {remove state variable again} {
+  State remove a
+  list [State keys] [State get a] [State getInfo a]
+} {{} {} {}}
+
+test z04/add-nested {add a dict} {
+  State putDict {a A b B} $t
+  State keys
+} {a b}
+
+test z04/add-prefixed {add a dict with specified prefix} {
+  State putDict {a AA b BB} $t c:
+  State keys
+} {a b c:a c:b}
+
+test z04/add-nested-prefix {add a dict with specified nested prefix} {
+  State putDict {a AAA b BBB} $t c:d:
+  State keys
+} {a b c:a c:b c:d:a c:d:b}
+
+test z04/check-nested {check the state variable values} {
+  Ju map State get [State keys]
+} {A B AA BB AAA BBB}
+
+test z04/remove-all {remove all state variables} {
+  State remove {*}[State keys]
+  State keys
+} {}
+
+proc TrackCalls {vname args} {
+  upvar [namespace current]::$vname v
+  lappend v $args
+}
+
+test z04/subscribe {subscribe to state change} {
+  State subscribe * [list [namespace which TrackCalls] anyState]
+  variable anyState {}
+  State put a 123
+  State put bb 456
+  set anyState
+} {a bb}
+
+test z04/sub-specific {subscribe to specific state changes} {
+  State subscribe bb [list [namespace which TrackCalls] oneState]
+  variable anyState {}
+  variable oneState {}
+  State put a 123
+  State put bb 456
+  State put ccc 789
+  list $anyState $oneState
+} {{a bb ccc} bb}
+
+test z04/sub-match {subscribe to pattern state changes} {
+  State subscribe ?? [list [namespace which TrackCalls] twoState]
+  variable anyState {}
+  variable oneState {}
+  variable twoState {}
+  State put a 123
+  State put bb 456
+  State put ccc 789
+  list $anyState $oneState $twoState
+} {{a bb ccc} bb bb}
+
+test z04/sub-second {second subscription on same pattern} {
+  State subscribe ?? [list [namespace which TrackCalls] threeState]
+  variable oneState {}
+  variable twoState {}
+  variable threeState {}
+  State put a 123
+  State put bb 456
+  State put ccc 789
+  list $oneState $twoState $threeState
+} {bb bb bb}
+
+test z04/sub-remove {remove a subscription} {
+  State unsubscribe ?? [list [namespace which TrackCalls] twoState]
+  variable oneState {}
+  variable twoState {}
+  variable threeState {}
+  State put a 123
+  State put bb 456
+  State put ccc 789
+  list $oneState $twoState $threeState
+} {bb {} bb}
+
+test z04/sub-rem-more {remove more subscriptions} {
+  State unsubscribe bb [list [namespace which TrackCalls] oneState]
+  State unsubscribe ?? [list [namespace which TrackCalls] threeState]
+  variable oneState {}
+  variable twoState {}
+  variable threeState {}
+  State put a 123
+  State put bb 456
+  State put ccc 789
+  list $oneState $twoState $threeState
+} {{} {} {}}
+
+test z04/sub-check {verify remaining subscriptions} {
+  set ::State::traces ;# peek inside the private info of the State rig
+} {* {{::app::TrackCalls anyState}}}
+
+test z04/remain {check that * subscription still works} {
+  variable anyState {}
+  State put a 12
+  State put bb 34
+  State put ccc 56
+  set anyState
+} {a bb ccc}
+
+cleanupTests

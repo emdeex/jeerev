@@ -1,0 +1,59 @@
+Jm doc "Tests for the Ju utility module."
+
+test z01/num {number to JSON} {
+  Ju toJson 123
+} 123
+
+test z01/numstr {number to JSON, force string} {
+  Ju toJson 123 -str
+} {"123"}
+
+test z01/str {string to JSON} {
+  Ju toJson abc
+} {"abc"}
+
+test z01/str {empty string to JSON} {
+  Ju toJson {}
+} {""}
+
+test z01/escape {string with escapes to JSON} {
+  Ju toJson "< \\ \b \f \n \r \t \" \\t >"
+} {"< \\ \b \f \n \r \t \" \\t >"}
+
+test z01/map {map to JSON} {
+  Ju toJson {a A b B c 3 4 {} e E} -map
+} {{"a":"A","b":"B","c":3,"4":"","e":"E"}}
+
+test z01/nested {nested map to JSON} {
+  Ju toJson {a A b: {c C d: {} e 5 f ""} g G} -map
+} {{"a":"A","b":{"c":"C","d":{},"e":5,"f":""},"g":"G"}}
+
+test z01/float {float to JSON} {
+  Ju toJson 1.2345000
+} 1.2345
+
+test z01/float {float to JSON, force string} {
+  Ju toJson 1.2345000 -str
+} {"1.2345000"}
+
+test z01/octal {octal to JSON} {
+  Ju toJson 010
+} 8
+
+test z01/octal {octal to JSON, force string} {
+  Ju toJson 010 -str
+} {"010"}
+
+test z01/hex {hex to JSON} {
+  Ju toJson 0x10
+} 16
+
+test z01/hex {hex to JSON, force string} {
+  Ju toJson 0x10 -str
+} {"0x10"}
+
+test z01/spaces {spaces to JSON} {
+  Ju toJson {  }
+} {"  "}
+
+cleanupTests

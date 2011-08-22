@@ -1,5 +1,7 @@
 Jm doc "JeeMon utilities which don't fit anywhere else. Loaded only if needed."
 
+variable quotes [list "\"" "\\\"" \\ \\\\ \b \\b \f \\f \n \\n \r \\r \t \\t]
+
 proc get {vname {default ""}} {
   # Returns variable or array item value, or a default if not set.
   upvar $vname v
@@ -302,4 +304,23 @@ proc setOrUnset {avar list} {
   } else {
     unset -nocomplain avar
   }
+}
+
+proc toJson {value {flag ""}} {
+  if {$flag eq "-map"} {
+    set out {}
+    dict for {k v} $value {
+      if {[string index $k end] eq ":"} {
+        lappend out "[toJson [string range $k 0 end-1] -str]:[toJson $v -map]"
+      } else {
+        lappend out "[toJson $k -str]:[toJson $v]"
+      }
+    }
+    return "{[join $out ,]}"
+  }
+  if {$flag eq "" && [string is double -strict $value]} {
+    return [expr $value]
+  }
+  variable quotes
+  return "\"[::string map $quotes $value]\""
 }

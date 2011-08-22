@@ -1,46 +1,41 @@
 Jm doc "Manage state variables."
 
-variable state
-variable shadow
-variable traces
-variable patterns
+variable state    ;# array: key = varname, val = info dict
+variable traces   ;# dict: key = pattern, val = subscribed commands
 
-if {![info exists patterns]} {
+if {![info exists traces]} {
   array set state {}
-  array set shadow {}
-  array set traces {}
-  set patterns {}
-  trace add variable shadow write [namespace which Tracer]
+  set traces {}
+  # trace add variable state write [namespace which Tracer]
 }
 
-proc Tracer {ar el op} {
-  variable shadow
-  variable traces
-  variable patterns
-  foreach pat $patterns {
-    if {[string match $pat $el]} {
-      set d $shadow($el)
-      foreach cmd $traces($pat) {
-        uplevel [list {*}$cmd $el $d]
-      }
-    }
-  }
-}
+# proc Tracer {ar el op} {
+#   variable state
+#   variable traces
+#   dict for {pat cmds} $traces {
+#     if {[string match $pat $el]} {
+#       set d $state($el)
+#       foreach cmd $cmds {
+#         uplevel [list {*}$cmd $el $d]
+#       }
+#     }
+#   }
+# }
 
-proc keys {{pattern *}} {
+proc keys {{match *}} {
   variable state
-  lsort [array names state $pattern]
+  lsort [array names state $match]
 }
 
 proc get {path} {
   variable state
-  Ju get state($path)
+  dict get? [Ju get state($path)] v
 }
 
 proc getInfo {path {field ""}} {
-  variable shadow
-  if {[info exists shadow($path)]} {
-    set d $shadow($path)
+  variable state
+  if {[info exists state($path)]} {
+    set d $state($path)
     if {$field ne ""} {
       return [dict get $d $field]
     }
@@ -50,15 +45,15 @@ proc getInfo {path {field ""}} {
 
 proc put {path value {time 0}} {
   variable state
-  variable shadow
+  variable traces
   if {$time == 0} {
     set time [clock seconds]
   }
   # keep track of some change info for each individual value
-  if {![info exists shadow($path)]} {
-    set shadow($path) {v "" o "" t 0 p 0 m 0}
+  if {![info exists state($path)]} {
+    set state($path) {v "" o "" t 0 p 0 m 0}
   }
-  set d $shadow($path)
+  set d $state($path)
   set v [dict get $d v]
   if {$value ne $v} {
     dict set d m $time
@@ -67,66 +62,62 @@ proc put {path value {time 0}} {
   }
   dict set d p [dict get $d t]
   dict set d t $time
-  set shadow($path) $d
-  # now update the state itself, but only if the value has changed
-  if {$value ne $v} {
-    set state($path) $value
+  set state($path) $d
+  # propagate the change to all subscribers
+  dict for {pattern cmds} $traces {
+    if {[string match $pattern $path]} {
+      foreach cmd $cmds {
+        {*}$cmd $path
+      }
+    }
   }
 }
 
 proc putDict {data time {prefix ""}} {
   dict for {k v} $data {
-    set nprefix ${prefix}$k
-    if {[string match *: $k]} {
-      putDict $v $time $nprefix
+    set newprefix ${prefix}$k
+    if {[string index $k end] eq ":"} {
+      putDict $v $time $newprefix
     } else {
-      put $nprefix $v $time
+      put $newprefix $v $time
     }
   }
 }
 
 proc remove {args} {
   variable state
-  variable shadow
   foreach x $args {
-    unset -nocomplain state($x) shadow($x)
+    unset -nocomplain state($x)
   } 
 }
 
 proc subscribe {match cmd} {
   variable traces
-  variable patterns
-  lappend traces($match) $cmd
-  set nonmatching [Ju omit $patterns $match]
-  set patterns [list $match {*}$nonmatching]
+  dict lappend traces $match $cmd
 }
 
 proc unsubscribe {match cmd} {
   variable traces
-  variable patterns
-  set without [Ju omit $patterns $match]
-  if {[llength $without] < [llength $patterns]} {
-    set patterns $without
-    Ju setOrUnset traces(match) [Ju omit $traces($match) $cmd]
+  set cmds [Ju omit [dict get? $traces $match] $cmd]
+  if {[llength $cmds] > 0} {
+    dict set traces $match $cmds
+  } else {
+    dict unset traces $match
   }
 }
 
 proc periodicSave {fname} {
   # Periodically save state to file, and reload it when starting up.
   variable state
-  variable shadow
   set cmd [list [namespace which periodicSave] $fname]
   after cancel $cmd
   after 60000 $cmd
-  if {[array size shadow] == 0} {
-    array set shadow [Ju readFile $fname]
-    foreach {k v} [array get shadow] {
-      set state($k) [dict get $v v]
-    }
-    # puts "  $fname: [array size shadow] state variables"
+  if {[array size state] == 0} {
+    array set state [Ju readFile $fname]
+    # puts "  $fname: [array size state] state variables"
   } else {
     set out {}
-    foreach {k v} [array get shadow] {
+    foreach {k v} [array get state] {
       lappend out [list $k $v]
     }
     Ju writeFile $fname [join [lappend out ""] \n] -atomic
