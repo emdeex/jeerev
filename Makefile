@@ -8,7 +8,7 @@ test:
 	$(JEEMON) tests
 fulltest:
 	$(JEEMON) tests -constraints slow
-	
+
 # fail if there are text files with tabs in them
 tabcheck:
 	grep -rlI --exclude=Makefile "	" *; test $$? = 1

@@ -73,7 +73,7 @@ proc put {path value {time 0}} {
   }
 }
 
-proc putDict {data time {prefix ""}} {
+proc putDict {data {time 0} {prefix ""}} {
   dict for {k v} $data {
     set newprefix ${prefix}$k
     if {[string index $k end] eq ":"} {

@@ -104,6 +104,12 @@ test z04/sub-second {second subscription on same pattern} {
   list $oneState $twoState $threeState
 } {bb bb bb}
 
+test z04/sub-check1 {verify current subscriptions} {
+  set ::State::traces ;# peek inside the private info of the State rig
+} {* {{::app::TrackCalls anyState}}\
+   bb {{::app::TrackCalls oneState}}\
+   ?? {{::app::TrackCalls twoState} {::app::TrackCalls threeState}}}
+
 test z04/sub-remove {remove a subscription} {
   State unsubscribe ?? [list [namespace which TrackCalls] twoState]
   variable oneState {}
@@ -127,7 +133,7 @@ test z04/sub-rem-more {remove more subscriptions} {
   list $oneState $twoState $threeState
 } {{} {} {}}
 
-test z04/sub-check {verify remaining subscriptions} {
+test z04/sub-check2 {verify remaining subscriptions} {
   set ::State::traces ;# peek inside the private info of the State rig
 } {* {{::app::TrackCalls anyState}}}
 
