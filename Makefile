@@ -6,7 +6,9 @@ all: tabcheck test
 # run the test suites
 test:
 	$(JEEMON) tests
-
+fulltest:
+	$(JEEMON) tests -constraints slow
+	
 # fail if there are text files with tabs in them
 tabcheck:
 	grep -rlI --exclude=Makefile "	" *; test $$? = 1
@@ -16,7 +18,7 @@ wrap:
 	$(JEEMON) kit/wrapup.tcl
 
 # this target is for private use only
-dist: tabcheck test wrap
+dist: tabcheck fulltest wrap
 	rsync -a jeemon-rev $(DISTDIR)
 
 # called on F6 by TextMate on MacOSX to refresh the current window in Camino

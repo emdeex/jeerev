@@ -289,3 +289,17 @@ proc tagWithKey {key dod} {
   }
   dict merge {*}$r
 }
+
+proc omit {list key} {
+  # Return a list from which the specified key has been omitted.
+  lsearch -all -inline -exact -not $list $key
+}
+
+proc setOrUnset {avar list} {
+  upvar $avar avar
+  if {[llength $list] > 0} {
+    set avar $list
+  } else {
+    unset -nocomplain avar
+  }
+}

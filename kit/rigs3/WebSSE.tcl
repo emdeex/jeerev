@@ -26,7 +26,7 @@ proc propagate {type msg} {
     } on error {} {
       Log websse {$sock lost connection ($type)}
       catch { close $sock }
-      set sockets [lsearch -all -inline -not [dict get $listeners $type] $sock]
+      set sockets [Ju omit [dict get $listeners $type] $sock]
       if {[llength $sockets] > 0} {
         dict set listeners $type $sockets
       } else {

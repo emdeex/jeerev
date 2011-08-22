@@ -1,5 +1,32 @@
 Jm doc "Manage state variables."
 
+variable state
+variable shadow
+variable traces
+variable patterns
+
+if {![info exists patterns]} {
+  array set state {}
+  array set shadow {}
+  array set traces {}
+  set patterns {}
+  trace add variable shadow write [namespace which Tracer]
+}
+
+proc Tracer {ar el op} {
+  variable shadow
+  variable traces
+  variable patterns
+  foreach pat $patterns {
+    if {[string match $pat $el]} {
+      set d $shadow($el)
+      foreach cmd $traces($pat) {
+        uplevel [list {*}$cmd $el $d]
+      }
+    }
+  }
+}
+
 proc keys {{pattern *}} {
   variable state
   lsort [array names state $pattern]
@@ -10,9 +37,15 @@ proc get {path} {
   Ju get state($path)
 }
 
-proc getInfo {path} {
+proc getInfo {path {field ""}} {
   variable shadow
-  Ju get shadow($path)
+  if {[info exists shadow($path)]} {
+    set d $shadow($path)
+    if {$field ne ""} {
+      return [dict get $d $field]
+    }
+    return $d
+  }
 }
 
 proc put {path value {time 0}} {
@@ -52,13 +85,40 @@ proc putDict {data time {prefix ""}} {
   }
 }
 
+proc remove {args} {
+  variable state
+  variable shadow
+  foreach x $args {
+    unset -nocomplain state($x) shadow($x)
+  } 
+}
+
+proc subscribe {match cmd} {
+  variable traces
+  variable patterns
+  lappend traces($match) $cmd
+  set nonmatching [Ju omit $patterns $match]
+  set patterns [list $match {*}$nonmatching]
+}
+
+proc unsubscribe {match cmd} {
+  variable traces
+  variable patterns
+  set without [Ju omit $patterns $match]
+  if {[llength $without] < [llength $patterns]} {
+    set patterns $without
+    Ju setOrUnset traces(match) [Ju omit $traces($match) $cmd]
+  }
+}
+
 proc periodicSave {fname} {
+  # Periodically save state to file, and reload it when starting up.
   variable state
   variable shadow
   set cmd [list [namespace which periodicSave] $fname]
   after cancel $cmd
   after 60000 $cmd
-  if {![info exists shadow]} {
+  if {[array size shadow] == 0} {
     array set shadow [Ju readFile $fname]
     foreach {k v} [array get shadow] {
       set state($k) [dict get $v v]

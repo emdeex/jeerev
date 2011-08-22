@@ -6,12 +6,12 @@ makeDirectory z01
 makeDirectory z01/features
 makeDirectory z01-tmp
 
-test z01/noarg {fail when called without args} {
+test z01/noarg {fail when called without args} slow {
   catch { exec [info nameofexe] -app z01 } e ;# slow due to delay in app::fail
   set e
 } {No application code found.}
 
-test z01/badarg {fail when called with one unknown cmd arg} {
+test z01/badarg {fail when called with one unknown cmd arg} slow {
   catch { exec [info nameofexe] x } e
   set e
 } {Cannot start, unknown command: x}

@@ -1,0 +1,5 @@
+Jm doc "Basic tests for the State rig."
+
+test z04/empty {check state is empty} {
+  State keys
+} {}
