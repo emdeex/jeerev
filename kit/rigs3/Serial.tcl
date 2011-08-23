@@ -98,6 +98,7 @@ Ju classDef Connection {
       }
     } on error {e o} {
       my onException warn $e $o
+      puts $o
     }
   }
 

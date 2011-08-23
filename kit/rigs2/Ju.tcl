@@ -324,3 +324,13 @@ proc toJson {value {flag ""}} {
   variable quotes
   return "\"[::string map $quotes $value]\""
 }
+
+proc fromJson {text} {
+  package require json
+  json::json2dict $text
+}
+
+proc checkJson {text} {
+  package require json
+  json::validate $text
+}

@@ -55,12 +55,15 @@ proc put {path value {time 0}} {
   }
   set d $state($path)
   set v [dict get $d v]
+  set t [dict get $d t]
   if {$value ne $v} {
     dict set d m $time
     dict set d o $v
     dict set d v $value
+  } elseif {$time == $t} {
+    return ;# ignore duplicate readings
   }
-  dict set d p [dict get $d t]
+  dict set d p $t
   dict set d t $time
   set state($path) $d
   # propagate the change to all subscribers
