@@ -7,14 +7,14 @@ makeDirectory z01/features
 makeDirectory z01-tmp
 
 test z01/noarg {fail when called without args} slow {
-  catch { exec [info nameofexe] app z01 } e ;# slow due to delay in app::fail
+  catch { exec [info nameofexe] z01 } e ;# slow due to delay in app::fail
   set e
-} {No application code found.}
+} {No application startup code found.}
 
 test z01/badarg {fail when called with one unknown cmd arg} slow {
   catch { exec [info nameofexe] x } e
   set e
-} {Cannot start, unknown command: x}
+} {No application startup code found.}
 
 test z01/cmds {commands available from the command line} {
   lrange [exec [info nameofexe] env commands] 1 end
@@ -60,7 +60,7 @@ test z01/symlink {symbolic link to jeemon} {
 
 test z01/feature {check that main app code gets loaded} {
   makeFile { puts blah; exit } main.tcl z01
-  exec [info nameofexe] app z01
+  exec [info nameofexe] z01
 } blah
 
 test z01/get? {dict get? extension} {

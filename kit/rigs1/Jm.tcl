@@ -155,10 +155,10 @@ proc locateApp {} {
   global argv argv0 argv1
   variable root_dir
   # if 1st arg is a dir and 2nd is a script inside, run it directly as rig
-  if {[file exists [lindex $argv 0]/[lindex $argv 1].tcl]} {
-    set argv [lassign $argv argv0 argv1]
-    return [Jm loadRig $argv0/$argv1.tcl]
-  }
+  #if {[file exists [lindex $argv 0]/[lindex $argv 1].tcl]} {
+  #  set argv [lassign $argv argv0 argv1]
+  #  return [Jm loadRig $argv0/$argv1.tcl]
+  #}
   # if 1st arg names one of the built-in commands, load it and start as rig
   if {[file exists $root_dir/cmds/[lindex $argv 0].tcl]} {
     set argv [lassign $argv argv0]

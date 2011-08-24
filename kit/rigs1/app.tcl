@@ -1,22 +1,39 @@
-Jm doc "Start as a modular app, using hooks to connect features together."
+Jm doc "Start up as a modular app, using hooks to connect features together."
 
 proc start {args} {
-  global exit
+  global argv exit
 
-  if {[llength $args] == 1} {
-    # generates a nice error for the most common case, doesn't catch > 1 args
-    app fail "Cannot start, unknown command: $args"
+  # no matter what the cmdline args are, make sure the "-app" key is defined
+  if {[llength $argv] & 1} {
+    set argv [linsert $argv 0 -app] ;# insert "-app" if the arg count is odd
+  } elseif {[lindex $argv 0] eq "app"} {
+    set argv -$argv ;# allow both "app" and "-app" to specify the app to run
+  } else {
+    dict set? argv -app . ;# look for main.tcl in curr dir if no app specified
   }
-  
-  if {![file exists [app path main.tcl]]} {
-    app fail "No application code found."
+  # argv is now a dict and should not be changed any further beyond this point
+
+  # try to give a helpful error message if launching is going to fail
+  if {![file exists [app path]/main.tcl]} {
+    if {[llength $argv] == 2 && [lindex $argv 1] in {-? -h --help ? help}} {
+      puts stderr \
+  "JeeMon is a portable runtime for Physical Computing and Home Automation."
+      puts stderr \
+  "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
+      set exe [file root [file tail [info nameofexe]]]
+      app fail "Usage: $exe ?-app? <dir> ?-option <value> ...?"
+    } else {
+      app fail "No application startup code found."
+    }
   }
 
+  # we're ready to launch the main.tcl script, and optional feature rigs for it
   Jm autoLoader [app path features]
   Jm autoLoader [app path] main.tcl ;# only autoload one file
   Jm loadNow main
 
-  app hook APP.BOOT {*}$args
+  # preliminary loading has been completed, go start the hook-based event loop
+  app hook APP.BOOT {*}$argv
   app hook APP.INIT
   if {![info exists exit]} {
     app hook APP.READY
@@ -27,16 +44,23 @@ proc start {args} {
   }
   app hook APP.EXIT
 
+  # this is the sole "official" exit point for all well-behaved applications
   exit $exit
+}
+
+proc get {key {default ""}} {
+  # Simple access to any option given on the command line during launch.
+  global argv
+  if {![dict exists $argv $key]} {
+    return $default
+  }
+  dict get $argv $key
 }
 
 proc path {{tail ""}} {
   # Returns a normalized path relative to the application directory.
   global argv
-  if {[lindex $argv 0] eq "app"} {
-    set argv -$argv ;# allow both "app" and "-app" to specify the app to run
-  }
-  file normalize [file join [dict get? $argv -app] $tail]
+  file normalize [file join [app get -app] $tail]
 }
 
 proc fail {msg {cleanup 0}} {
