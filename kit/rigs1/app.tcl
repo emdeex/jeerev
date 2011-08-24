@@ -33,6 +33,9 @@ proc start {args} {
 proc path {{tail ""}} {
   # Returns a normalized path relative to the application directory.
   global argv
+  if {[lindex $argv 0] eq "app"} {
+    set argv -$argv ;# allow both "app" and "-app" to specify the app to run
+  }
   file normalize [file join [dict get? $argv -app] $tail]
 }
 
