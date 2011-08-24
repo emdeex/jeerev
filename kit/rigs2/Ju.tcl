@@ -329,8 +329,3 @@ proc fromJson {text} {
   package require json
   json::json2dict $text
 }
-
-proc checkJson {text} {
-  package require json
-  json::validate $text
-}

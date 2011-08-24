@@ -60,59 +60,50 @@ test z04/remove-all {remove all state variables} {
 } {}
 
 proc TrackCalls {vname args} {
-  upvar [namespace current]::$vname v
+  # upvar [namespace current]::$vname v
+  upvar 2 $vname v ;# only works because "State put" is called from same ns
   lappend v $args
 }
-
-incr t
 
 test z04/subscribe {subscribe to state change} {
   State subscribe * [list [namespace which TrackCalls] anyState]
   variable anyState {}
-  State put a 123 $t
-  State put bb 456 $t
+  State put a 12
+  State put bb 45
   set anyState
 } {a bb}
-
-incr t
 
 test z04/sub-specific {subscribe to specific state changes} {
   State subscribe bb [list [namespace which TrackCalls] oneState]
   variable anyState {}
   variable oneState {}
-  State put a 123 $t
-  State put bb 456 $t
-  State put ccc 789 $t
+  State put a 123
+  State put bb 456
+  State put ccc 789
   list $anyState $oneState
 } {{a bb ccc} bb}
-
-incr t
 
 test z04/sub-match {subscribe to pattern state changes} {
   State subscribe ?? [list [namespace which TrackCalls] twoState]
   variable anyState {}
   variable oneState {}
   variable twoState {}
-  State put a 123 $t
-  State put bb 456 $t
-  State put ccc 789 $t
+  State put a 1234
+  State put bb 4567
+  State put ccc 7890
   list $anyState $oneState $twoState
 } {{a bb ccc} bb bb}
-
-incr t
 
 test z04/sub-second {second subscription on same pattern} {
   State subscribe ?? [list [namespace which TrackCalls] threeState]
   variable oneState {}
   variable twoState {}
   variable threeState {}
-  State put a 123 $t
-  State put bb 456 $t
-  State put ccc 789 $t
+  State put a 123
+  State put bb 456
+  State put ccc 789
   list $oneState $twoState $threeState
 } {bb bb bb}
-
-incr t
 
 test z04/sub-check1 {verify current subscriptions} {
   set ::State::traces ;# peek inside the private info of the State rig
@@ -125,13 +116,11 @@ test z04/sub-remove {remove a subscription} {
   variable oneState {}
   variable twoState {}
   variable threeState {}
-  State put a 123 $t
-  State put bb 456 $t
-  State put ccc 789 $t
+  State put a 1234
+  State put bb 4567
+  State put ccc 7890
   list $oneState $twoState $threeState
 } {bb {} bb}
-
-incr t
 
 test z04/sub-rem-more {remove more subscriptions} {
   State unsubscribe bb [list [namespace which TrackCalls] oneState]
@@ -139,9 +128,9 @@ test z04/sub-rem-more {remove more subscriptions} {
   variable oneState {}
   variable twoState {}
   variable threeState {}
-  State put a 123 $t
-  State put bb 456 $t
-  State put ccc 789 $t
+  State put a 123
+  State put bb 456
+  State put ccc 789
   list $oneState $twoState $threeState
 } {{} {} {}}
 
@@ -149,13 +138,11 @@ test z04/sub-check2 {verify remaining subscriptions} {
   set ::State::traces ;# peek inside the private info of the State rig
 } {* {{::app::TrackCalls anyState}}}
 
-incr t
-
 test z04/remain {check that * subscription still works} {
   variable anyState {}
-  State put a 12 $t
-  State put bb 34 $t
-  State put ccc 56 $t
+  State put a 12
+  State put bb 34
+  State put ccc 56
   set anyState
 } {a bb ccc}
 

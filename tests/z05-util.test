@@ -60,20 +60,4 @@ test z01/parse {parse JSON} {
   Ju fromJson {[1,"b",[3,""],"e",{"f":7,"g":"h h"},"i"]}
 } {1 b {3 {}} e {f 7 g {h h}} i}
 
-test z01/check {check JSON} {
-  Ju checkJson {[1,"b",[3,""],"e",{"f":7,"g":"h h"},"i"]}
-} 1
-
-test z01/check-int {check JSON int} {
-  Ju checkJson 123
-} 1
-
-test z01/check-bad {check JSON bad token} {
-  Ju checkJson abc
-} 0
-
-test z01/check-token {check only verifies tokens, not syntax} {
-  Ju checkJson {[123}
-} 1
-
 cleanupTests
