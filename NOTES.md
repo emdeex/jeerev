@@ -46,7 +46,7 @@ live copy includes a "kit" directory, so it's ready for use out of the box.
 **JeeMon** (!) - with the understanding that most of the software being written
 is actually inside "jeemon-rev" (and "kit"). IOW, software development happens
 mostly in the **JeeRev** project on GitHub, but the whole system is still called
-**JeeMon**. JeeMon makes it all work, JeeRev just dances around and evolves.
+**JeeMon**. JeeMon makes it all sing, JeeRev just dances along and evolves.
 
 Design goals
 ------------
@@ -91,7 +91,7 @@ This is the structure of the development area in the code repository:
       ...         most files are Tcl scripts which get auto-loaded on demand
     macosx/       files to build jeemon as a GUI application on Mac OS X
     tests/        test suites for (so far only a small) part of the code
-    Makefile      helps with a few comon tasks during development
+    Makefile      helps with a few common tasks during development
     NOTES.md      this document
     README.md     as shown at the bottom of http://github.com/jcw/jeerev
 
