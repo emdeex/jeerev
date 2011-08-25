@@ -12,7 +12,7 @@ part of the system. Several Windows, Mac OS X, and Linux versions are supported.
 Get it once and then keep it around. Don't use a version older than August 2011.
 
 JeeRev has the main infra-structure supporting all the features one might need
-to connect and control external devices (the *Physicai Computing* part), and to
+to connect and control external devices (the *Physical Computing* part), and to
 build self-contained long-running home monitoring and management solutions.
 
 There is always one "latest" version of JeeRev at any point in time, and it
@@ -27,7 +27,7 @@ a whole set of configuration files, drivers, webpages, images, databases, etc.
 Status
 ------
 
-Since the move GitHub (August 2011), JeeMon + JeeRev are in active developement.
+Since the move to GitHub (Aug 2011), JeeMon + JeeRev are in active developement.
 The code at [github.com](https://github.com/jcw) supercedes the code at JeeLabs
 (but a lot is being reused). The [jeelabs.net](http://jeelabs.net/projects) site
 now refers to older stuff, and its wikis + issue trackers are no longer updated.
