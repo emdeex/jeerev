@@ -68,7 +68,8 @@ proc fail {msg {cleanup 0}} {
   # msg: the text to display
   # cleanup: perform a controlled shotdown if non-zero
   puts stderr $msg
-  after 500 ;# slight delay so the msg can always be read, even if only briefly
+  update
+  after 1000 ;# slight delay so the msg can always be read, even if only briefly
   if {$cleanup} {
     set ::exit $cleanup ;# will terminate the vwait in app start
   } else {

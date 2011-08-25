@@ -28,4 +28,4 @@ testmate:
 	  	  -e 'end tell'
 
 clean:
-	rm -rf jeemon-rev
+	rm -rf jeemon-rev JeeMon.app
