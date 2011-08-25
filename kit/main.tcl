@@ -11,6 +11,12 @@ namespace eval Jm {
     variable commands [info commands ::*]
     variable namespaces [namespace children ::]
   }  
+  
+  if {$::tcl_platform(os) eq "Darwin" && [string match -psn_* $::argv]} {
+    # special handling when launched as bundle app under Mac OS X
+    cd [file dir $root_dir]/../../..
+    set ::argv [lassign $::argv ::Jm::initial::macosx_psn]
+  }
 
   proc loadRig {path {ns ""}} {
     # Load or re-load a rig from file.

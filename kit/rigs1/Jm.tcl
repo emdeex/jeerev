@@ -147,6 +147,14 @@ proc setupConsoleWindow {} {
       }
       console show
     }
+    Darwin {
+      # uses Tk if launched as bundle app, else we're Unix'y with stdout, etc
+      if {[info exists ::Jm::initial::macosx_psn]} {
+        package require Tk
+        wm withdraw .
+        console show
+      }
+    }
   }
 }
 
