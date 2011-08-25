@@ -32,7 +32,7 @@ puts $dest:
 puts "  [file size $dest] bytes"
 
 if {$tcl_platform(os) eq "Darwin"} {
-  puts "JeeMon.app:"
+  puts "JeeMon-MacGUI.zip:"
   file delete -force JeeMon.app
   file mkdir JeeMon.app/Contents/MacOS JeeMon.app/Contents/Resources
   file copy macosx/Info.plist JeeMon.app/Contents/
@@ -40,5 +40,6 @@ if {$tcl_platform(os) eq "Darwin"} {
   file copy macosx/jeemon.icns JeeMon.app/Contents/Resources/
   # can't copy from within Tcl, because the exe is mountes as VFS
   exec cp -a [info nameofexe] JeeMon.app/Contents/MacOS/jeemon
-  puts "  [lindex [exec du -hs JeeMon.app] 0]"
+  exec zip -r JeeMon-MacGUI.zip JeeMon.app
+  puts "  [file size JeeMon-MacGUI.zip] bytes"
 }

@@ -1,13 +1,14 @@
-JEEMON = jeemon
+JMEXE = jeemon
+MACGUI = JeeMon-MacGUI
 DISTDIR = bussie:/home/pub/jeelabs.org/
 
 all: tabcheck test
 
 # run the test suites
 test:
-	$(JEEMON) tests
+	$(JMEXE) tests
 fulltest:
-	$(JEEMON) tests -constraints slow
+	$(JMEXE) tests -constraints slow
 
 # fail if there are text files with tabs in them
 tabcheck:
@@ -15,17 +16,18 @@ tabcheck:
 
 # generate a wrapped file from the "kit" directory
 wrap:
-	$(JEEMON) kit/wrapup.tcl
+	$(JMEXE) kit/wrapup.tcl
 
 # this target is for private use only
 dist: tabcheck fulltest wrap
 	rsync -a jeemon-rev $(DISTDIR)
+	if [ -f $(MACGUI).zip ]; then rsync -a $(MACGUI).zip $(DISTDIR); fi
 
-# called on F6 by TextMate on MacOSX to refresh the current window in Camino
+# called on F6 by TextMate on MacOSXh to refresh the current window in Camino
 testmate:
 	osascript -e 'tell application "Camino"' \
 		  -e 'open location (get URL of current tab of window 1)' \
 	  	  -e 'end tell'
 
 clean:
-	rm -rf jeemon-rev JeeMon.app
+	rm -rf jeemon-rev JeeMon.app $(JMMAC)

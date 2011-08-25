@@ -152,6 +152,10 @@ proc setupConsoleWindow {} {
       if {[info exists ::Jm::initial::macosx_psn]} {
         package require Tk
         wm withdraw .
+        console eval {
+          .console configure -font {Monaco 9}
+          wm protocol . WM_DELETE_WINDOW exit
+        }
         console show
       }
     }

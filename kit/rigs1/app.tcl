@@ -22,8 +22,12 @@ proc start {args} {
   "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
       set exe [file root [file tail [info nameofexe]]]
       app fail "Usage: $exe ?-app? <dir> ?-option <value> ...?"
-    } else {
+    } elseif {[catch { console show }]} {
       app fail "No application startup code found."
+    } else {
+      puts stderr "No application startup code found."
+      set ::tcl_interactive 1
+      return ;# leave console open
     }
   }
 
