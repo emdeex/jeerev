@@ -1,6 +1,6 @@
 Jm doc "Tests for the basic rigs."
 
-set CMDS {cmd env tcl}
+set CMDS {env tcl}
 
 makeDirectory z01
 makeDirectory z01/features
