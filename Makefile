@@ -30,4 +30,4 @@ testmate:
 	  	  -e 'end tell'
 
 clean:
-	rm -rf jeemon-rev JeeMon.app $(JMMAC)
+	rm -rf jeemon-rev JeeMon.app $(MACGUI).zip
