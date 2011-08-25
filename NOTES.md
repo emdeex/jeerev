@@ -80,14 +80,16 @@ So far, I have:
 Directory overview
 ------------------
 
+This is the structure of the development area in the code repository:
+
     drivers/      this is where drivers for various devices are found
     examples/     some self-contained examples
-      hello-web   probably the simplest examples of the entire set
+      hello-web   probably the simplest example of them all
       ...         each example can be run with "jeemon example/<dirname>"
     kit/          all the core code, can be wrapped up as a "jeemon-rev" file
       main.tcl    is the first file executed by the jeemon runtime
       ...         most files are Tcl scripts which get auto-loaded on demand
-    macosx/       files needed to build jeemon as a GUI application on Mac OS X
+    macosx/       files to build jeemon as a GUI application on Mac OS X
     tests/        test suites for (so far only a small) part of the code
     Makefile      helps with a few comon tasks during development
     NOTES.md      this document
@@ -114,8 +116,8 @@ replacing drivers on the fly, to help with quick development and debugging.
 
 **Events** - Drivers generate local events, one per incoming message. Messages
 can be lines of text, network packets, binary data, message batches, anything.
-Events then invoke one or more drivers to decode their content (for incoming
-data), or to initiate some external action (for outgoing data).
+Events then get dispatched to one or more drivers to decode their content (for
+incoming readings), or to lead to some external effect (for outgoing actions).
 
 **State variables** - Once decoded, a driver can submit results in the form of
 readings, each of which gets stored as a state variable with a specific name.
