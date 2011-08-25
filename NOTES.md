@@ -76,3 +76,62 @@ So far, I have:
 * on the client side: JavaScript, HTML5, CSS3
 * standard JavaScript libraries: jQuery, jQuery UI, Knockout, Flot, and more
 * real-time communication with the browser: Server-Side Events
+
+Directory overview
+------------------
+
+    drivers/      this is where drivers for various devices are found
+    examples/     some self-contained examples
+      hello-web   probably the simplest examples of the entire set
+      ...         each example can be run with "jeemon example/<dirname>"
+    kit/          all the core code, can be wrapped up as a "jeemon-rev" file
+      main.tcl    is the first file executed by the jeemon runtime
+      ...         most files are Tcl scripts which get auto-loaded on demand
+    macosx/       files needed to build jeemon as a GUI application on Mac OS X
+    tests/        test suites for (so far only a small) part of the code
+    Makefile      helps with a few comon tasks during development
+    NOTES.md      this document
+    README.md     as shown at the bottom of http://github.com/jcw/jeerev
+
+Concepts
+--------
+
+Much of this is still *totally* in flux, but a first few patterns and choices
+are nevertheless starting to emerge:
+
+**Rigs** - The core logic on the server side is written in the form of "rigs".
+These are Tcl scripts which are loaded in a specific way (similar to Python
+modules, in fact). The two main aspects are that these rigs are "auto-loaded" on
+first use (and can be re-loaded into a running system when the source file has
+been edited), and that each rig is loaded into its own namespace, which turns
+out to make them act quite a bit like singleton objects.
+
+**Loadable drivers** - To support an endless (and ever-changing) range of
+devices, each device can be associated with a specific piece of code. Devices
+can be added, changed, replaced, and removed without having to restart the
+application. Well, that's the plan - for now I'm just focusing on changing /
+replacing drivers on the fly, to help with quick development and debugging.
+
+**Events** - Drivers generate local events, one per incoming message. Messages
+can be lines of text, network packets, binary data, message batches, anything.
+Events then invoke one or more drivers to decode their content (for incoming
+data), or to initiate some external action (for outgoing data).
+
+**State variables** - Once decoded, a driver can submit results in the form of
+readings, each of which gets stored as a state variable with a specific name.
+The name is a "path" in that it consists of one or more nested identifiers,
+joined with colons (e.g. "readings:weathernode:temp"). Values can be anything -
+numbers, strings, binary data, images (Tcl values are conceptually untyped).
+
+**Publish / subscribe** - State variable changes are published locally within
+the application (and optionally also over the network to other applications).
+Any part of the code can subscribe to changes, using a pattern to select the
+subset it is interested in. When triggered, the code can access the new and old
+values of any state variable, as well as a few associated timestamps.
+
+**Hooks** - For triggers which are not related to state variables, there are
+"hooks" (very similar to what the Drupal CMS offers) which allow different parts
+of an application to respond to specific changes (e.g. code reloads, config
+changes, file changes, data changes), and to pass around information in very
+open-ended ways. Defining a hook is a matter of defining a proc with a certain
+naming convention (two or more uppercase identifiers separated by periods).
