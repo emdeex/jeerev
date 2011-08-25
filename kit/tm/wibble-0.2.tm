@@ -380,16 +380,16 @@ proc ::wibble::enheader {header} {
     set str ""
     set nl ""
     dict for {key val} $header {
-        if {![llength $val]} {continue}
+      if {![llength $val]} {continue}
 
-        set comma ""
-        switch $key {
+      set comma ""
+      switch $key {
         set-cookie {
             # Value is a list of cookie definitions.
             dict for {key2 val2} $val {
                 append str "$nl$key: [enhex $key2]=[enhex [dict get $val2 ""]]"
                 dict for {key3 val3} $val2 {
-                    switch $key3 {
+                  switch $key3 {
                     domain - path {
                         append str \;$key3=[string map {; %3b} $val3]
                     } port {
@@ -404,7 +404,8 @@ proc ::wibble::enheader {header} {
                             abstime {append str \;expires=[entime $val3 1]}
                             reltime {append str \;max-age=[lindex $val3 1]}
                         }
-                    }}
+                    }
+                  }
                 }
                 set nl \n
             }
@@ -479,9 +480,9 @@ proc ::wibble::enheader {header} {
         } retry-after {
             # Value is an absolute or relative time.
             switch [lindex $val 0] {
-                abstime {append str "$nl$key: [entime $val 1]"
+                abstime {append str "$nl$key: [entime $val 1]"}
                 reltime {append str "$nl$key: [lindex $val 1]"}
-            }}
+            }
         } etag {
             # Value is an entity tag.
             append str "$nl$key: [entag $val]"
@@ -492,8 +493,9 @@ proc ::wibble::enheader {header} {
         } default {
             # Value is a sometimes-quoted string.
             append str "$nl$key: [enquote $val]"
-        }}
-        set nl \n
+        }
+      }
+      set nl \n
     }
     return $str
 }
@@ -505,10 +507,10 @@ proc ::wibble::deheader {str} {
         ^( [^\s:]+ ) \s*:\s*
         ( (?: "(?:[^\\"]|\\.)*" | \((?:[^\\()]|\\.)*\) | [^\n] | \n[ \t] )* )
     } $str] {
-        set key [string tolower $key]
-        set raw [string trim $raw]
-        set val {}
-        switch $key {
+      set key [string tolower $key]
+      set raw [string trim $raw]
+      set val {}
+      switch $key {
         cookie {
             # Value is one or more cookie definitions.
             set common {}
@@ -611,8 +613,9 @@ proc ::wibble::deheader {str} {
         } default {
             # Value has format "elem".
             set val [dequote $raw]
-        }}
-        dict set header $key $val
+        }
+      }
+      dict set header $key $val
     }
     return $header
 }
@@ -642,22 +645,22 @@ proc ::wibble::icc::lapse {fid} {
 # [icc configure $fid accept|reject ?filter? ?...?]
 # [icc configure $fid lapse ?timeout_milliseconds? ?lapsescript?]
 proc ::wibble::icc::configure {fid operation args} {
-    variable feeds
+  variable feeds
 
-    # Initialize the feed if it doesn't already exist.
-    if {![info exists feeds] || ![dict exists $feeds $fid]} {
-        dict set feeds $fid {acceptable "" lapsetime "" lapsescript ""
-            lapsecancel "" suspended "" pending ""}
-    }
+  # Initialize the feed if it doesn't already exist.
+  if {![info exists feeds] || ![dict exists $feeds $fid]} {
+      dict set feeds $fid {acceptable "" lapsetime "" lapsescript ""
+          lapsecancel "" suspended "" pending ""}
+  }
 
-    # Reset the feed's lapse timeout.
-    if {[dict get $feeds $fid lapsecancel] ne ""} {
-        after cancel [dict get $feeds $fid lapsecancel]
-        dict set feeds $fid lapsecancel ""
-    }
+  # Reset the feed's lapse timeout.
+  if {[dict get $feeds $fid lapsecancel] ne ""} {
+      after cancel [dict get $feeds $fid lapsecancel]
+      dict set feeds $fid lapsecancel ""
+  }
 
-    # Process the requested operation.
-    switch $operation {
+  # Process the requested operation.
+  switch $operation {
     lapse {
         # Store arguments into feed structure, defaulting to "".
         dict set feeds $fid lapsetime [lindex $args 0]
@@ -680,13 +683,14 @@ proc ::wibble::icc::configure {fid operation args} {
             }
             incr index
         }
-    }}
-
-    # Restart the feed's lapse timeout.
-    if {[dict get $feeds $fid lapsetime] ne ""} {
-        dict set feeds $fid lapsecancel [after [dict get $feeds $fid lapsetime]\
-            [list ::wibble::icc::lapse $fid]]
     }
+  }
+
+  # Restart the feed's lapse timeout.
+  if {[dict get $feeds $fid lapsetime] ne ""} {
+      dict set feeds $fid lapsecancel [after [dict get $feeds $fid lapsetime]\
+          [list ::wibble::icc::lapse $fid]]
+  }
 }
 
 # Get a list of events on one or more feeds matching any of the filters.
@@ -900,29 +904,29 @@ proc ::wibble::getrequest {port chan peerhost peerport} {
 
     # Get and parse the request body, if there is one.
     if {$method eq "POST"} {
-        # Get the request body.
-        if {[dict exists $request header transfer-encoding]
-         && [dict get $request header transfer-encoding] eq "chunked"} {
-            # Receive chunked request body.
-            set data ""
-            while {[scan [getline] %x length] == 1 && $length > 0} {
-                chan configure $chan -translation binary
-                append data [getblock $length]
-                chan configure $chan -translation crlf
-            }
-        } else {
-            # Receive non-chunked request body.
-            chan configure $chan -translation binary
-            set data [getblock [dict get $request header content-length]]
-            chan configure $chan -translation crlf
-        }
+      # Get the request body.
+      if {[dict exists $request header transfer-encoding]
+       && [dict get $request header transfer-encoding] eq "chunked"} {
+          # Receive chunked request body.
+          set data ""
+          while {[scan [getline] %x length] == 1 && $length > 0} {
+              chan configure $chan -translation binary
+              append data [getblock $length]
+              chan configure $chan -translation crlf
+          }
+      } else {
+          # Receive non-chunked request body.
+          chan configure $chan -translation binary
+          set data [getblock [dict get $request header content-length]]
+          chan configure $chan -translation crlf
+      }
 
-        # Parse the request body.
-        dict set request rawpost $data
-        set post ""
-        switch [if {[dict exists $request header content-type ""]} {
-            dict get $request header content-type ""
-        }] {
+      # Parse the request body.
+      dict set request rawpost $data
+      set post ""
+      switch [if {[dict exists $request header content-type ""]} {
+          dict get $request header content-type ""
+      }] {
         multipart/form-data {
             # Interpret multipart/form-data (required for file uploads).
             set data \r\n$data
@@ -959,8 +963,9 @@ proc ::wibble::getrequest {port chan peerhost peerport} {
         } application/x-www-form-urlencoded - default {
             # Interpret URL-encoded POSTs (the default).
             set post [dequery $data]
-        }}
-        dict set request post $post
+        }
+      }
+      dict set request post $post
     }
 
     # The request has been received and parsed.  Return it to the caller.
