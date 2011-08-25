@@ -70,6 +70,7 @@ proc Decode-KSX {event raw} {
     }
     default {
       set cleaned [Driver bitRemover $raw 4 1]
+      $event identify KSX-$s
       $event submit hex [binary encode hex $cleaned]
     }
   }
