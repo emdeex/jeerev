@@ -245,14 +245,18 @@ which dynamic processing permeates all aspects of a JeeMon application:
   data, without the sender or receiver having to know anything about each other.
 
 * To notify web browsers of changes, "Server-Sent Events" are used. This is much
-  simpler than "WebEvents", mostly becaue it's uni-directional, i.e. from server
-  to client(s) only. It works by keeping a special socket open, on which small
+  simpler than "WebEvents", mostly because it's only uni-directional, i.e. from
+  server to client(s). It works by keeping a special socket open, on which small
   messages are sent in real time. Most modern browsers now support SSE.
 
 * For the reverse, i.e. clients notifying the server of changes, plain Ajax
   calls are used. This mechanism is considerably less important in this context,
   since the most common uses are for continuous monitoring and visualization
   with only *occasional* interaction to control and configure the system.
+
+* With JavaScript on the client side, and libraries such as jQuery, jQuery UI,
+  Knockout, DataTables, Raphael, and Flot, highly dynamic web pages have become
+  easier than ever. This also makes it practical to use very low-end servers.
 
 It looks like jQuery + SSE + Knockout will make it very easy to accomplish the
 main goal of supporting very dynamic and responsive web pages. All the hard work
