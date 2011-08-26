@@ -1,4 +1,4 @@
-Jm doc "Decoder for the roomNode sketch"
+Jm doc "Decoder for the roomNode sketch."
 
 # Driver values {
 #   *: {
