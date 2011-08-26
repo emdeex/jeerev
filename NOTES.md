@@ -229,7 +229,7 @@ the task at hand, without having to relaunch and get back to the same situation.
 For some tasks where this doesn't work well, I use test suites.
 
 Apart from source code reloading for development, there are several ways in
-which dynamic processing permeates various aspects of a JeeMon application:
+which dynamic processing permeates all aspects of a JeeMon application:
 
 * Incoming readings and outgoing commands are based on event objects, which are
   created and dispatched as needed.
