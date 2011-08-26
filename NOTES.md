@@ -114,7 +114,7 @@ can be added, changed, replaced, and removed without having to restart the
 application. Well, that's the plan - for now I'm just focusing on changing /
 replacing drivers on the fly, to help with quick development and debugging.
 
-**Events** - Drivers generate local events, one per incoming message. Messages
+**Events** - Devices generate local events, one per incoming message. Messages
 can be lines of text, network packets, binary data, message batches, anything.
 Events then get dispatched to one or more drivers to decode their content (for
 incoming readings), or to lead to some external action (for outgoing commands).
