@@ -8,8 +8,7 @@ How things fit together
 -----------------------
 
 JeeMon is the "runtime": the application-*independent* but platform-*dependent*
-part of the system. Several Windows, Mac OS X, and Linux versions are supported.
-Get it once and then keep it around. Don't use a version older than August 2011.
+part of the system. Windows, Mac OS X, and Linux builds are available.
 
 JeeRev has the main infra-structure supporting all the features one might need
 to connect and control external devices (the *Physical Computing* part), and to
@@ -75,6 +74,7 @@ So far, I have:
 * web server: Wibble (Tcl), coroutine-based, HTML 1.1, async I/O
 * on the client side: JavaScript, HTML5, CSS3
 * standard JavaScript libraries: jQuery, jQuery UI, Knockout, Flot, and more
+* local network: TCP/IP for web sessions and UDP for broadcasting
 * real-time communication with the browser: Server-Side Events
 
 Directory overview
@@ -208,7 +208,7 @@ to end up with a "live" system, where everything shown in the browser reflects
 the actual situation in real time. If a temperature is shown, then it's the
 *actual temperature*. If current values are shown in a graph, then that graph
 should adjust when these values change. If a new device is plugged in, then it
-should automatically appear when you're looking at the list of devices.
+should show up while you're looking at the list of devices.
 
 There is much more to it than that, however. If a new version of a driver is
 available, then it should be possible to switch to that new version without
@@ -258,6 +258,6 @@ which dynamic processing permeates all aspects of a JeeMon application:
   Knockout, DataTables, Raphael, and Flot, highly dynamic web pages have become
   easier than ever. This also makes it practical to use very low-end servers.
 
-It looks like jQuery + SSE + Knockout will make it very easy to accomplish the
-main goal of supporting very dynamic and responsive web pages. All the hard work
-has been done by now, and all the modern browsers will be able to handle them.
+It looks like jQuery + SSE + Knockout will make it easy to accomplish the main
+goal of supporting very dynamic and responsive web pages. All the hard work has
+been done by now, and all the modern browsers will be able to handle such pages.
