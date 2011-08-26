@@ -1,4 +1,4 @@
-Jm doc "Decoder for the radioBlip sketch"
+Jm doc "Decoder for the radioBlip sketch."
 
 # Driver values {
 #   *: {
@@ -7,7 +7,7 @@ Jm doc "Decoder for the radioBlip sketch"
 #   }
 # }
 
-proc decode {reading raw} {
+proc decode {event raw} {
   Driver bitSlicer $raw ping 32
-  $reading submit ping $ping age [/ $ping [/ 86400 64]]
+  $event submit ping $ping age [/ $ping [/ 86400 64]]
 }

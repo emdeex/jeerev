@@ -1,4 +1,4 @@
-Jm doc "Decoder for the radioBlip sketch"
+Jm doc "Decoder for the radioBlip sketch."
 
 # Driver values {
 #   EM*: {

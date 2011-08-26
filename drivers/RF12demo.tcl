@@ -1,4 +1,4 @@
-Jm doc "Driver for the RF12demo sketch"
+Jm doc "Driver for the RF12demo sketch."
 
 proc decode {event device message} {
   # Deal with an incoming RF12 message.

@@ -103,10 +103,10 @@ are nevertheless starting to emerge:
 
 **Rigs** - The core logic on the server side is written in the form of "rigs".
 These are Tcl scripts which are loaded in a specific way (similar to Python
-modules, in fact). The two main aspects are that these rigs are "auto-loaded" on
-first use (and can be re-loaded into a running system when the source file has
-been edited), and that each rig is loaded into its own namespace, which turns
-out to make them act quite a bit like singleton objects.
+modules, in fact). The two main features are that these rigs are "auto-loaded"
+on first use (and can be re-loaded into a running system when the source file
+has been edited), and that each rig is loaded into its own namespace, which
+turns out to make them act quite a bit like singleton objects.
 
 **Loadable drivers** - To support an endless (and ever-changing) range of
 devices, each device can be associated with a specific piece of code. Devices
@@ -117,7 +117,7 @@ replacing drivers on the fly, to help with quick development and debugging.
 **Events** - Drivers generate local events, one per incoming message. Messages
 can be lines of text, network packets, binary data, message batches, anything.
 Events then get dispatched to one or more drivers to decode their content (for
-incoming readings), or to lead to some external effect (for outgoing actions).
+incoming readings), or to lead to some external action (for outgoing commands).
 
 **State variables** - Once decoded, a driver can submit results in the form of
 readings, each of which gets stored as a state variable with a specific name.
@@ -137,3 +137,61 @@ of an application to respond to specific changes (e.g. code reloads, config
 changes, file changes, data changes), and to pass around information in very
 open-ended ways. Defining a hook is a matter of defining a proc with a certain
 naming convention (two or more uppercase identifiers separated by periods).
+
+Drivers
+-------
+
+Drivers deal with readings coming into JeeMon and with commands going out. The
+"radioBlip" driver is a very simple example, it decodes data from a JeeNode
+sending out wireless packets with a 4-byte sequence number once a minute:
+
+    Jm doc "Decoder for the radioBlip sketch."
+
+    proc decode {event raw} {
+      Driver bitSlicer $raw ping 32
+      $event submit ping $ping age [/ $ping [/ 86400 64]]
+    }
+
+The `Jm doc ...` line is recommended, it documents the purpose of this driver.
+By declaring a `decode` proc, the driver signals that it is able to decode
+incoming data. The actual association with one or more devices will be made
+elsewhere, using a call to `Driver register ...`.
+
+The first parameter is always an event object. The remaining args will be set to
+fields from the event when called, in this case the driver is only interested in
+a field called `raw`.
+
+`Driver bitSlicer ...` is a utility function to extract individual bits from a
+raw binary value. In this case a single local variable called `ping` will be
+set to the first 32 bits of data, interpreted as a little-endian integer.
+
+`$event submit ...` reports decoded information back to the driver subsystem -
+in this case as two variables, `ping` and `age`. Age is just the ping count
+converted to a number of days - drivers can sumbit any info they like.
+
+That's all there is to it, although most drivers will usually require more logic
+to be able to decode incoming data and turn it into submitted values.
+
+Submitted values end up in state variables, and each incoming packet will then
+adjust these state variables. Some results from two packets on my test setup:
+
+    readings:RF12-868.5.3:radioBlip:ping = 482284
+    readings:RF12-868.5.3:radioBlip:age = 357
+
+    readings:RF12-868.5.3:radioBlip:ping = 482285
+    readings:RF12-868.5.3:radioBlip:age = 357
+
+As you can see, the full name of each associated state variable also includes
+the type of information, where the data came from, and the driver name.
+
+There are many types of drivers. Most will be similar to *radioBlip* and decode
+one event into a small set of useful values. A few drivers will accept data from
+different sources (e.g. serial or wireless for the *roomNode* driver).
+
+A driver can also act as gateway and generate events as needed, as with the
+*RF12demo* driver which turns each received line starting with "OK" into a new
+event, and then dispatches each one to a *different* driver. Drivers can also
+choose to submit an entire data structure for each incoming event, such as the
+*ookRelay2* driver which can recognize many different types of messages, even multiple ones merged into a single packet.
+
+Everything described so far is for incoming data such as sensor readings. Outgoing commands have not yet been implemented.
