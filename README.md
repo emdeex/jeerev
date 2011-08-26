@@ -4,7 +4,8 @@ JeeRev
 JeeRev is the core library for use with [JeeMon][1], containing the generic code
 needed to create applications for Physical Computing and Home Automation.
 
-For more information about JeeRev, see the [JeeRev home page][2].
+For more information about JeeRev, see the (old'ish) [JeeRev home page][2] and
+the [development notes][3].
 
 Usage
 -----
@@ -24,3 +25,4 @@ To generate a `jeemon-rev` file release, type `make wrap`.
 
   [1]: http://jeelabs.net/projects/jeemon/wiki
   [2]: http://jeelabs.net/projects/jeerev/wiki
+  [3]: /jcw/jeerev/blob/master/NOTES.md
