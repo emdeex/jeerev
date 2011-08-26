@@ -228,23 +228,23 @@ cycle of software development pretty quick, because it lets me stay focused on
 the task at hand, without having to relaunch and get back to the same situation.
 For some tasks where this doesn't work well, I use test suites.
 
-Apart from source code reloading for development, there are a number of ways in
-which dynamic processing permeates many aspects of a JeeMon application:
+Apart from source code reloading for development, there are several ways in
+which dynamic processing permeates various aspects of a JeeMon application:
 
 * Incoming readings and outgoing commands are based on event objects, which are
   created and dispatched as needed.
 
-* A lot of the more interesting real-time activity ends up in *state variables*,
-  which support a publish / subscribe mechanism. That means any part of the code
-  can keep track of changes in a single state variable or a set of them.
+* Much of the more interesting real-time activity ends up in *state variables*,
+  which support a publish / subscribe mechanism. This means that any part of the
+  code can keep track of changes of one or more matched state variables.
 
-* For other cases, *hook procs* can also be defined. This too is a notification
+* For the other cases, *hook procs* can be defined. This too is a notification
   mechanism, but it's even easier to, eh, hook into: just define the proc inside
   a rig, and it'll get called whenever another part of the application triggers
-  that same name. Hooks can be used to *distribute* as well as *collect* info,
-  without the sender or receiver having to know much about each other.
+  using that same name. Hooks can be used to *distribute* as well as *collect*
+  data, without the sender or receiver having to know anything about each other.
 
-* To notify web browser of changes, "Server-Sent Events" are used. This is much
+* To notify web browsers of changes, "Server-Sent Events" are used. This is much
   simpler than "WebEvents", mostly becaue it's uni-directional, i.e. from server
   to client(s) only. It works by keeping a special socket open, on which small
   messages are sent in real time. Most modern browsers now support SSE.
