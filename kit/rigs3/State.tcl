@@ -3,7 +3,7 @@ Jm doc "Manage state variables."
 Ju cachedVar {state traces} - {
   variable state      ;# array: key = varname, val = info dict
   variable traces {}  ;# dict: key = pattern, val = subscribed commands
-  array set state [Storage map state]
+  array set state [Stored map state]
 }
 
 proc keys {{match *}} {
@@ -89,6 +89,6 @@ proc unsubscribe {match cmd} {
 proc STORAGE.PERIODIC {} {
   variable state
   foreach {k v} [array get state] {
-    Storage map state $k $v
+    Stored map state $k $v
   }
 }

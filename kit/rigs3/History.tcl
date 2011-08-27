@@ -13,7 +13,7 @@ Jm doc "Manage historical data storage"
 # All procs involved in this mechanism have names ending in "HistDB".
 
 proc APP.READY {} {
-  variable path [Storage path hist]
+  variable path [Stored path history]
   
   variable fd [open $path a+]
   fconfigure $fd -translation binary -buffering none
@@ -35,10 +35,10 @@ proc StateChanged {name} {
 proc AddOne {param value time} {
   variable path
   variable fd
-  set id [Storage map hist $param]
+  set id [Stored map history $param]
   if {$id eq ""} {
-    set id [dict size [Storage map hist]]
-    Storage map hist $param $id
+    set id [dict size [Stored map history]]
+    Stored map history $param $id
     
     #FIXME added for testing only
     query $param 60 15
