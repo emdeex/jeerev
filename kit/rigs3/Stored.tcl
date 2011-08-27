@@ -2,7 +2,8 @@ Jm doc "Various bits of code to handle data storage."
 
 variable datadir ./stored  ;# the location where all datafiles are stored
 
-proc APP.READY {} {
+Ju cachedVar mapInfo - {
+  variable mapInfo {}
   map info version 1
   PeriodicSave
 }
@@ -37,7 +38,7 @@ proc map {name args} {
   variable mapInfo  ;# dict: key = map name, value = 1 if needs to be saved
   upvar 0 maps($name) map
 
-  if {![dict exists [Ju get mapInfo] $name]} {
+  if {![dict exists $mapInfo $name]} {
     set map [Ju readFile [MapPath $name]]
     dict set mapInfo $name 0
   }
