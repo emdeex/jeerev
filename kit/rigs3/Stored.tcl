@@ -1,11 +1,6 @@
 Jm doc "Various bits of code to handle data storage."
 
-variable dir ./storage  ;# the directory where all files are stored
-variable maps           ;# array: key = map name, value = map (i.e. a dict)
-
-Ju cachedVar mapInfo . {
-  variable mapInfo {}   ;# dict: key = map name, value = 1 if needs to be saved
-}
+variable datadir ./stored  ;# the location where all datafiles are stored
 
 proc APP.READY {} {
   map info version 1
@@ -22,8 +17,8 @@ proc PeriodicSave {} {
 }
 
 proc path {name} {
-  variable dir
-  file join $dir $name
+  variable datadir
+  file join $datadir $name
 }
 
 proc MapPath {name} {
@@ -32,16 +27,17 @@ proc MapPath {name} {
 
 proc map {name args} {
   # Support for simple key/value maps (currently stored as text files).
-  #
+
   # Maps are created on demand, and removed once they become empty.
   # Keys are also added as needed, and removed when set to the empty string.
   # Call this proc with just the map name to get the entire map as dict, call
   # it with two args to look up a key, or three args to store a keyed value.
-  variable maps
-  variable mapInfo
+
+  variable maps     ;# array: key = map name, value = map (i.e. a dict)
+  variable mapInfo  ;# dict: key = map name, value = 1 if needs to be saved
   upvar 0 maps($name) map
 
-  if {![dict exists $mapInfo $name]} {
+  if {![dict exists [Ju get mapInfo] $name]} {
     set map [Ju readFile [MapPath $name]]
     dict set mapInfo $name 0
   }
