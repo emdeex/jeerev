@@ -12,7 +12,7 @@ proc PeriodicSave {} {
   set remain [- 60000 [% [clock millis] 60000]]
   after $remain [namespace which PeriodicSave]
   
-  app hook STORAGE.PERIODIC  
+  # app hook STORED.PERIODIC  
   SaveMaps
 }
 
