@@ -297,17 +297,17 @@ proc omit {list key} {
   lsearch -all -inline -exact -not $list $key
 }
 
-proc setOrUnset {avar list} {
-  upvar $avar avar
-  if {[llength $list] > 0} {
-    set avar $list
-  } else {
-    unset -nocomplain avar
-  }
-}
+# proc setOrUnset {avar list} {
+#   upvar $avar avar
+#   if {[llength $list] > 0} {
+#     set avar $list
+#   } else {
+#     unset -nocomplain avar
+#   }
+# }
 
 proc toJson {value {flag ""}} {
-  # Convert a value to JSON format.
+  # Convert a value to JSON format (-map converts dicts, -str forces string).
   if {$flag eq "-map"} {
     set out {}
     dict for {k v} $value {
@@ -332,9 +332,8 @@ proc fromJson {text} {
   json::json2dict $text
 }
 
-
 proc toNets {value {flag ""}} {
-  # Convert a value to netstring format.
+  # Convert a value to netstring format (add -map flag to convert dicts).
   if {$flag eq "-map"} {
     set out {}
     dict for {k v} $value {
