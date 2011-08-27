@@ -1,6 +1,7 @@
 Jm doc "Various bits of code to handle data storage."
 
-variable datadir ./stored  ;# the location where all datafiles are stored
+variable datadir ./stored   ;# the location where all datafiles are stored
+variable period 60000       ;# how often to save maps (milliseconds)
 
 Ju cachedVar mapInfo - {
   variable mapInfo {}
@@ -9,8 +10,9 @@ Ju cachedVar mapInfo - {
 }
 
 proc PeriodicSave {} {
+  variable period
   # trigger once a minute, ON the minute
-  set remain [- 60000 [% [clock millis] 60000]]
+  set remain [- $period [% [clock millis] $period]]
   after $remain [namespace which PeriodicSave]
   
   # app hook STORED.PERIODIC  
@@ -18,7 +20,9 @@ proc PeriodicSave {} {
 }
 
 proc path {name} {
+  # Return a path name to use for saving data on file.
   variable datadir
+  file mkdir $datadir
   file join $datadir $name
 }
 

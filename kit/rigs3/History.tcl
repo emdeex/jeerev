@@ -8,7 +8,7 @@ Jm doc "Manage historical data storage"
 # This could easily be improved and optimized, but for now it's good enough.
 #
 # The second (larger) part of this code stores aggregated data in a Metakit
-# datafile. It's a bit slow for practical use, because large chunks ar flushed
+# datafile. It's a bit slow for practical use, because large chunks are flushed
 # a bit too frequently. One solution is to do far more in-mem, and flush less.
 # All procs involved in this mechanism have names ending in "HistDB".
 
