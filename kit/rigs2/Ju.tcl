@@ -222,10 +222,10 @@ proc cachedVar {vnames tag script args} {
   foreach v $vnames {
     set name v[incr seq]
     upvar $v $name
-    trace remove variable $name {read write} $cmd
+    trace remove variable $name {array read write} $cmd
     if {![info exists $name]} {
       set cachedVars($context) $info
-      trace add variable $name {read write} $cmd
+      trace add variable $name {array read write} $cmd
     }
   }
 }
@@ -243,7 +243,7 @@ proc cacheClear {{match *.*}} {
         set name ${ns}::$v
         # don't use [info exists $k] here, since that would trigger the trace
         if {[namespace which -var $name] ne ""} {
-          trace remove variable $name {read write} $cmd
+          trace remove variable $name {array read write} $cmd
           # now that the trace is gone, check whether we need to clean up
           if {[info exists $name]} {
             namespace eval $ns [dict get? $opts -cleanup]
@@ -268,7 +268,7 @@ proc CacheTracer {context a e op} {
       namespace eval $ns $script
     }
     set cmd [list [namespace which CacheTracer] $context]
-    trace remove variable v {read write} $cmd
+    trace remove variable v {array read write} $cmd
   } m]} { Log cache {$context - $m} ;puts $::errorInfo }
 }
 

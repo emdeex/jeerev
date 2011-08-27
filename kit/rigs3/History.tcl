@@ -14,7 +14,6 @@ Jm doc "Manage historical data storage"
 
 proc APP.READY {} {
   variable path [Storage path hist]
-  variable keys [Ju readFile $path.keys]
   
   variable fd [open $path a+]
   fconfigure $fd -translation binary -buffering none
@@ -33,18 +32,16 @@ proc StateChanged {name} {
   }
 }
 
-proc AddOne {name value time} {
+proc AddOne {param value time} {
   variable path
-  variable keys
   variable fd
-  set id [lsearch $keys $name]
-  if {$id < 0} {
-    set id [llength $keys]
-    lappend keys $name
-    Ju writeFile $path.keys [join $keys \n] -newline -atomic
+  set id [Storage map hist $param]
+  if {$id eq ""} {
+    set id [dict size [Storage map hist]]
+    Storage map hist $param $id
     
     #FIXME added for testing only
-    query $name 60 15
+    query $param 60 15
   }
   puts -nonewline $fd [binary format tdn $id $value $time]
 }
@@ -74,11 +71,11 @@ proc LookupHistDB {key} {
   }
 }
 
-proc AddToHistDB {name value time} {
+proc AddToHistDB {param value time} {
   # Go through all known buckets for this parameter, and aggregate as needed.
   variable buckets
   set value [format %.10g $value] ;# keep float accuracy reasonably short
-  set bucketList [dict get? $buckets $name]
+  set bucketList [dict get? $buckets $param]
   Ju map [namespace which AccumulateHistDB] $time $value $bucketList
   return
 }

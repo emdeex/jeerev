@@ -1,26 +1,10 @@
 Jm doc "Manage state variables."
 
-variable state    ;# array: key = varname, val = info dict
-variable traces   ;# dict: key = pattern, val = subscribed commands
-
-if {![info exists traces]} {
-  array set state {}
-  set traces {}
-  # trace add variable state write [namespace which Tracer]
+Ju cachedVar {state traces} - {
+  variable state      ;# array: key = varname, val = info dict
+  variable traces {}  ;# dict: key = pattern, val = subscribed commands
+  array set state [Storage map state]
 }
-
-# proc Tracer {ar el op} {
-#   variable state
-#   variable traces
-#   dict for {pat cmds} $traces {
-#     if {[string match $pat $el]} {
-#       set d $state($el)
-#       foreach cmd $cmds {
-#         uplevel [list {*}$cmd $el $d]
-#       }
-#     }
-#   }
-# }
 
 proc keys {{match *}} {
   variable state
@@ -87,13 +71,6 @@ proc putDict {data {time 0} {prefix ""}} {
   }
 }
 
-proc remove {args} {
-  variable state
-  foreach x $args {
-    unset -nocomplain state($x)
-  } 
-}
-
 proc subscribe {match cmd} {
   variable traces
   dict lappend traces $match $cmd
@@ -110,17 +87,8 @@ proc unsubscribe {match cmd} {
 }
 
 proc STORAGE.PERIODIC {} {
-  # Periodically save state to file, and reload it when starting up.
   variable state
-  set fname [Storage path state.txt]
-  if {[array size state] == 0} {
-    array set state [Ju readFile $fname]
-    # puts "  $fname: [array size state] state variables"
-  } else {
-    set out {}
-    foreach {k v} [array get state] {
-      lappend out [list $k $v]
-    }
-    Ju writeFile $fname [join [lappend out ""] \n] -atomic
+  foreach {k v} [array get state] {
+    Storage map state $k $v
   }
 }
