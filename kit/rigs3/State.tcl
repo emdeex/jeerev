@@ -109,12 +109,10 @@ proc unsubscribe {match cmd} {
   }
 }
 
-proc periodicSave {fname} {
+proc STORAGE.PERIODIC {} {
   # Periodically save state to file, and reload it when starting up.
   variable state
-  set cmd [list [namespace which periodicSave] $fname]
-  after cancel $cmd
-  after 60000 $cmd
+  set fname [Storage path state.txt]
   if {[array size state] == 0} {
     array set state [Ju readFile $fname]
     # puts "  $fname: [array size state] state variables"

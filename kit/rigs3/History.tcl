@@ -13,7 +13,7 @@ Jm doc "Manage historical data storage"
 # All procs involved in this mechanism have names ending in "HistDB".
 
 proc APP.READY {} {
-  variable path [Config history:path ./x-hist]
+  variable path [Storage path hist]
   variable keys [Ju readFile $path.keys]
   
   variable fd [open $path a+]
@@ -44,13 +44,13 @@ proc AddOne {name value time} {
     Ju writeFile $path.keys [join $keys \n] -newline -atomic
     
     #FIXME added for testing only
-    query $name 60 1440
+    query $name 60 15
   }
   puts -nonewline $fd [binary format tdn $id $value $time]
 }
 
 proc OpenHistDB {dbpath} {  
-  mk file open hdb $dbpath
+  mk file open hdb ;# $dbpath
   mk layout hdb.histories {
     key       # list with 3 items: param type step
     start:I   # start time
@@ -63,13 +63,6 @@ proc OpenHistDB {dbpath} {
     set b [mk get $c key]
     dict lappend buckets [lindex $b 0] $b
   }
-  
-  PeriodicSaveHistDB
-}
-
-proc PeriodicSaveHistDB {} {
-  after 30000 [namespace which PeriodicSaveHistDB]
-  mk file commit hdb
 }
 
 proc LookupHistDB {key} {
