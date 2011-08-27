@@ -307,6 +307,7 @@ proc setOrUnset {avar list} {
 }
 
 proc toJson {value {flag ""}} {
+  # Convert a value to JSON format.
   if {$flag eq "-map"} {
     set out {}
     dict for {k v} $value {
@@ -326,6 +327,45 @@ proc toJson {value {flag ""}} {
 }
 
 proc fromJson {text} {
+  # Parse JSON to a Tcl value.
   package require json
   json::json2dict $text
+}
+
+
+proc toNets {value {flag ""}} {
+  # Convert a value to netstring format.
+  if {$flag eq "-map"} {
+    set out {}
+    dict for {k v} $value {
+      append out [toNets $k]
+      if {[string index $k end] eq ":"} {
+        append out [toNets [toNets $v -map]]
+      } else {
+        append out [toNets $v]
+      }
+    }
+    return $out
+  }
+  return "[string length $value]:$value,"
+}
+
+proc fromNets {text} {
+  # Parse a netstring to a Tcl value, automatically detects (nested) dicts.
+  set out ""
+  while {[regexp {^(\d+):(.*)} $text - len tail]} {
+    set value [string range $tail 0 $len-1]
+    if {[llength $out] % 2 && [string index [lindex $out end] end] eq ":"} {
+      set value [fromNets $value] ;# odd entries are nested netstrings
+    }
+    lappend out $value
+    if {[string index $tail $len] ne ","} {
+      error "malformed netstring text"
+    }
+    set text [string range $tail $len+1 end]
+  }
+  if {[llength $out] == 0} {
+    return [lindex $out 0]
+  }
+  return $out
 }
