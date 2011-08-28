@@ -13,9 +13,9 @@ test z02/simple {simple rig loading} {
   Jm autoLoader z02-rigs
 } blah1.txt
 
-test z02/no-rigs_extra {Jm::rigs_extra does not yet exist} {
-  info exists Jm::rigs_extra
-} 0
+test z02/no-rigs_extra {Jm::rigs_extra will already exist} {
+  array names Jm::rigs_extra
+} ::Replay
 
 makeDirectory z02-rigs/two
 makeFile { puts two!; proc do {} { return two } } two.tcl z02-rigs/two
@@ -27,8 +27,8 @@ test z02/nested {nested rig loading} {
 } blah1.txt
 
 test z02/rigs_extra {contents of Jm::rigs_extra} {
-  array get Jm::rigs_extra
-} {::two blah2.txt}
+  set Jm::rigs_extra(::two)
+} blah2.txt
 
 test z02/notexist {commands should not exist at this point} {
   foreach x {one two two::three} {
