@@ -3,7 +3,7 @@ Jm doc "Replay some stored data to simplify development."
 proc go {} {
   variable readings {}
   # get some additional interface configuration info for fake insertions
-  variable config [Ju unComment [Ju readFile [Ju mySourceDir]/config.txt]]
+  variable config [Ju unComment [Ju readFile [Ju mySourceDir]/rconfig.txt]]
   # collect all the stored readings into a sorted list
   source [Ju mySourceDir]/logall.txt
   Log replay {[llength $readings] readings}
