@@ -15,3 +15,4 @@ Examples
 * **update-demo** - Demonstrate real-time web updates using Server-Sent Events.
 * **collectd-demo** - Listen for 'collectd' info on the std UDP multicast port.
 * **driver-demo** - How to decode messages coming from a JeeLink with RF12demo.
+* **replay-demo** - The example replays messages which were recorded earlier.

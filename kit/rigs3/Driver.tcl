@@ -83,6 +83,9 @@ Ju classDef Event {
   method call {subcmd} {
     # locate the decoder in the appropriate driver
     set cmd [namespace which [dict get $data driver]::$subcmd]
+    if {$cmd eq ""} {
+      error "not found: [dict get $data driver]::$subcmd"
+    }
     # pre-extract values if there are extra named arguments
     set extra [lrange [info args $cmd] 1 end]
     # call the decoder
