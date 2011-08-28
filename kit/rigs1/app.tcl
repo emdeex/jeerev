@@ -13,29 +13,35 @@ proc start {args} {
   }
   # argv is now a dict and should not be changed any further beyond this point
 
-  # try to give a helpful error message if launching is going to fail
-  if {![file exists [app path]/main.tcl]} {
-    if {[llength $argv] == 2 && [lindex $argv 1] in {-? -h --help ? help}} {
-      puts stderr \
-  "JeeMon is a portable runtime for Physical Computing and Home Automation."
-      puts stderr \
-  "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
-      set exe [file root [file tail [info nameofexe]]]
-      app fail "Usage: $exe ?-app? <dir> ?-option <value> ...?"
-    } elseif {[catch { console show }]} {
-      app fail "No application startup code found."
-    } else {
-      puts stderr "No application startup code found."
-      set ::tcl_interactive 1
-      return ;# leave console open
+  # handle special case if the "main" rig is embedded in the startup file
+  if {[info exists ::startup::opts] && [dict exists $startup::opts -main]} {
+    Jm prepareRig ::main
+    namespace eval ::main [dict get $startup::opts -main]
+  } else {
+    # try to give a helpful error message if launching is going to fail
+    if {![file exists [app path]/main.tcl]} {
+      if {[llength $argv] == 2 && [lindex $argv 1] in {-? -h --help ? help}} {
+        puts stderr \
+    "JeeMon is a portable runtime for Physical Computing and Home Automation."
+        puts stderr \
+    "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
+        set exe [file root [file tail [info nameofexe]]]
+        app fail "Usage: $exe ?-app? <dir> ?-option <value> ...?"
+      } elseif {[catch { console show }]} {
+        app fail "No application startup code found."
+      } else {
+        puts stderr "No application startup code found."
+        set ::tcl_interactive 1
+        return ;# leave console open
+      }
     }
+
+    # ready to launch the main.tcl script, and optional feature rigs for it
+    Jm autoLoader [app path features]
+    Jm autoLoader [app path] main.tcl ;# only autoload one file
+    Jm loadNow main
   }
-
-  # we're ready to launch the main.tcl script, and optional feature rigs for it
-  Jm autoLoader [app path features]
-  Jm autoLoader [app path] main.tcl ;# only autoload one file
-  Jm loadNow main
-
+  
   # preliminary loading has been completed, go start the hook-based event loop
   app hook APP.BOOT {*}$argv
   app hook APP.INIT

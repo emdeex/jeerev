@@ -27,17 +27,7 @@ namespace eval Jm {
     set name [file root [file tail $path]]
     set newns ::${ns}$name
     #TODO change ::${ns}$name to ${ns}::$name - everywhere!
-    namespace eval $newns {
-      namespace export -clear {[a-z]*}
-      # namespace ensemble create
-      namespace ensemble create -unknown {apply {{ns t args} {
-        upvar #0 auto_index([string range $ns 2 end]::$t) cmd
-        if {[info exists cmd]} {
-          uplevel #0 $cmd
-        }
-        return
-      }}}
-    }
+    prepareRig $newns
     # set up the namespace path to chain to each of the parent namespaces
     set nspath {}
     for {set p $newns} {[set q [namespace parent $p]] ne "::"} {set p $q} {
@@ -48,6 +38,19 @@ namespace eval Jm {
     set rigs_loaded($newns) [list $path [file mtime $path]]
     namespace inscope $newns source $path
     return $name
+  }
+  
+  proc prepareRig {ns} {
+    namespace eval $ns {
+      namespace export -clear {[a-z]*}
+      namespace ensemble create -unknown {apply {{ns t args} {
+        upvar #0 auto_index([string range $ns 2 end]::$t) cmd
+        if {[info exists cmd]} {
+          uplevel #0 $cmd
+        }
+        return
+      }}}
+    }
   }
   
   proc autoLoader {path {match *} {ns ""}} {
