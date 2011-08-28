@@ -122,7 +122,7 @@ incoming readings), or to lead to some external action (for outgoing commands).
 **State variables** - Once decoded, a driver can submit results in the form of
 readings, each of which gets stored as a state variable with a specific name.
 The name is a "path" in that it consists of one or more nested identifiers,
-joined with colons (e.g. `readings:weathernode:temp`). Values can be anything -
+joined with colons (e.g. `reading:weathernode:temp`). Values can be anything -
 numbers, strings, binary data, images (Tcl values are conceptually untyped).
 
 **Publish / subscribe** - State variable changes are published locally within
@@ -175,11 +175,11 @@ to decode incoming data and turn it into submitted values.
 All values end up in *state variables*, and each incoming packet will adjust
 these state variables. Some results from two packets on my test setup:
 
-    readings:RF12-868.5.3:radioBlip:ping = 482284
-    readings:RF12-868.5.3:radioBlip:age = 357
+    reading:RF12-868.5.3:radioBlip:ping = 482284
+    reading:RF12-868.5.3:radioBlip:age = 357
 
-    readings:RF12-868.5.3:radioBlip:ping = 482285
-    readings:RF12-868.5.3:radioBlip:age = 357
+    reading:RF12-868.5.3:radioBlip:ping = 482285
+    reading:RF12-868.5.3:radioBlip:age = 357
 
 As you can see, the full name of each associated state variable also includes
 the type of information, where the data came from, and the driver name.

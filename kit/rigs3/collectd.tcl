@@ -30,14 +30,14 @@ if {![info exists types]} {
   }
 }
 
-proc listen {handler {group 239.192.74.66} {port 25826}} {
+proc listen {tag {group 239.192.74.66} {port 25826}} {
   set s [udp_open $port]
   fconfigure $s -buffering none -blocking 0 -mcastadd $group -translation binary
-  fileevent $s readable [list [namespace which ReadUDP] $s $handler]
+  fileevent $s readable [list [namespace which ReadUDP] $s $tag]
   return $s
 }
 
-proc ReadUDP {sock handler} {
+proc ReadUDP {sock tag} {
   # Called whenever a UDP comes in.
   variable types
   variable level
@@ -68,9 +68,12 @@ proc ReadUDP {sock handler} {
         # keep same data structure while host and time stay the same
         lassign $path host time module
         set h [dict get $out host]
-        if {$host ne $h || $time ne [dict get $out time]} {
+        set t [dict get $out time]
+        if {$host ne $h || $time ne $t} {
           if {$h ne "?"} {
-            $handler $out
+            dict unset out host
+            dict unset out time
+            State putDict $out $t $tag:$h:
           }
           set out [dict create host $host time $time]
         }
@@ -102,7 +105,11 @@ proc ReadUDP {sock handler} {
     }
     incr off $l    
   }
-  {*}$handler $out
+  set h [dict get $out host]
+  set t [dict get $out time]
+  dict unset out host
+  dict unset out time
+  State putDict $out $t $tag:$h:
 }
 
 proc Str {b} {

@@ -18,7 +18,7 @@ proc APP.READY {} {
   variable fd [open $path a+]
   fconfigure $fd -translation binary -buffering none
   
-  OpenHistDB $path.db
+  # OpenHistDB $path.db
 
   State subscribe * [namespace which StateChanged]
 }
@@ -28,7 +28,7 @@ proc StateChanged {name} {
   # that funny-looking "$v == $v" condition rules out things like "NaN"
   if {[string is double -strict $v] && $v == $v} {
     AddOne $name $v $t
-    AddToHistDB $name $v $t
+    # AddToHistDB $name $v $t
   }
 }
 
@@ -47,7 +47,7 @@ proc AddOne {param value time} {
 }
 
 proc OpenHistDB {dbpath} {  
-  mk file open hdb ;# $dbpath
+  mk file open hdb $dbpath
   mk layout hdb.histories {
     key       # list with 3 items: param type step
     start:I   # start time

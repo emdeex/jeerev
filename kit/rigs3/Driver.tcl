@@ -59,7 +59,7 @@ proc dispatch {device args} {
     set obj [Event new $driver $args]
     $obj identify $device
     # copy all decoded data to state variables
-    State putDict [$obj call decode] 0 readings:
+    State putDict [$obj call decode] 0 reading:
     # get rid of the event object
     $obj destroy
   } else {
