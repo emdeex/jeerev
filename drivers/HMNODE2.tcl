@@ -1,5 +1,14 @@
 Jm doc "Driver for the HMNODE2 power metering sketch."
 
+# Driver values {
+#   *: {
+#     erate:  { desc "power now"         unit W             low 0  high 4000   }
+#     etotal: { desc "power, cumulative" unit Wh   scale 1  low 0  high 999999 }
+#     grate:  { desc "gas now"           unit l/h           low 0  high 4000   }
+#     gtotal: { desc "gas, cumulative"   unit m3   scale 2  low 0  high 999999 }
+#   }
+# }
+
 proc decode {event message} {
   # Called on each incoming message.
   if {[string match "HM3 *" $message]} {
@@ -31,14 +40,12 @@ proc decode {event message} {
     if {$f1} {
       set pu [/ [* 3600 1000000] [* $r1 $x1]]
       set pc [/ [* 10000 $c1] $x1]
-      $event submit erate $pu ;# -desc "power use" -unit W
-      $event submit etotal $pc ;# -desc "power, cumulative" -unit Wh -scale 1
+      $event submit erate $pu etotal $pc
     }
     if {$f2} {
       set gr [/ [* 3600 1000000] [* $r2 $x2]]
       set gc [/ [* 100 $c2] $x2]
-      $event submit grate $gr ;# -desc "gas rate" -unit l/h
-      $event submit gtotal $gc ;# -desc "gas, cumulative" -unit m3 -scale 2
+      $event submit grate $gr gtotal $gc
     }
     # 3rd set of values ignored: always zero
   }

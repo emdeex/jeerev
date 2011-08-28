@@ -1,5 +1,24 @@
 Jm doc "Driver for the CUL (busware.de) USB stick."
 
+# Driver values {
+#   EM*: {
+#     avg:   { desc "power, average"    unit W            low 0    high 4000  }
+#     max:   { desc "power, maximum"    unit W            low 0    high 4000  }
+#     total: { desc "power, cumulative" unit Wh           low 0    high 65535 }
+#   }
+#   S300*: {
+#     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
+#     humi:  { desc "humidity"          unit %    scale 1 low 0    high 100   }
+#   }
+#   KS300: {
+#     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
+#     humi:  { desc "humidity"          unit %            low 0    high 100   }
+#     wind:  { desc "wind speed"        unit km/h scale 1 low 0    high 2000  }
+#     rain:  { desc "rain, collected"                     low 0    high 4095  }
+#     rnow:  { desc "raining now"                         low 0    high 1     }
+#   }
+# }
+
 # proc connect {interface} {
 #   # Called for each interface of this type.
 #   # interface: name of the interface
@@ -25,8 +44,7 @@ proc Decode-K {event raw} {
       # S300: 118614863f -> f368416811
       if {[scan $hex %2s%3d%3d%1d - rhum temp node] == 4} {
         $event identify S300-$node
-        $event submit temp $temp ;# -desc "temperature" -unit °C -scale 1
-        $event submit humi $rhum ;# -desc "humidity" -unit % -scale 1
+        $event submit temp $temp humi $rhum
       }
     }
     7 {
@@ -35,11 +53,7 @@ proc Decode-K {event raw} {
         if {$flag & 0x8} { set temp -$temp }
         set rnow [!= [& $flag 0x2] 0]
         $event identify KS300
-        $event submit temp $temp ;# -desc "temperature" -unit °C -scale 1
-        $event submit humi $rhum ;# -desc "humidity" -unit %
-        $event submit wind $wind ;# -desc "wind speed" -unit km/h -scale 1
-        $event submit rain $rain ;# -desc "rain (cumulative)" -unit (0-4095)
-        $event submit rnow $rnow ;# -desc "raining now" -unit (0-1)
+        $event submit temp $temp humi $rhum wind $wind rain $rain rnow $rnow
       }
     }
   }
@@ -47,11 +61,9 @@ proc Decode-K {event raw} {
 
 proc Decode-E {event raw} {
   # example 02080A3CFE09000C0029
-  lassign [Driver bitSlicer $raw 8 8 8 16 16 16] type unit seq tot avg max
+  Driver bitSlicer $raw type 8 unit 8 seq 8 tot 16 avg 16 max 16
   $event identify EM$type-$unit
-  $event submit avg [* $avg 12] ;# -desc "use, average" -unit W
-  $event submit max [* $max 12] ;# -desc "use, maximum" -unit W
-  $event submit total $tot ;# -desc "power, cumulative" -unit Wh
+  $event submit avg [* $avg 12] max [* $max 12] total $tot
 }
 
 proc Decode-F {event raw} {

@@ -1,8 +1,8 @@
-Each example in this directory should work out of the box, but you may have to
+Most examples in this directory should work out of the box, but you may have to
 adjust a configuration file (called `config.txt`) to match your setup:
 
 1. Copy `config-sample.txt` to `config.txt` (if it exists) and edit as needed.
-2. Run the code by typing `jeemon app examples/<dirname>` from the JeeRev dir.
+2. Run the code by typing `jeemon examples/<dirname>` from the JeeRev dir.
 3. There is no step 3.
 
 Examples
@@ -15,4 +15,4 @@ Examples
 * **update-demo** - Demonstrate real-time web updates using Server-Sent Events.
 * **collectd-demo** - Listen for 'collectd' info on the std UDP multicast port.
 * **driver-demo** - How to decode messages coming from a JeeLink with RF12demo.
-* **replay-demo** - The example replays messages which were recorded earlier.
+* **replay-demo** - This example replays messages which were recorded earlier.
