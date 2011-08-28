@@ -23,6 +23,6 @@ To run the test suites, type `make test`.
 
 To generate a `jeemon-rev` file release, type `make wrap`.
 
-  [1]: http://jeelabs.net/projects/jeemon/wiki
-  [2]: http://jeelabs.net/projects/jeerev/wiki
-  [3]: /jcw/jeerev/blob/master/NOTES.md
+  [1]: http://jeelabs.org/jeemon
+  [2]: http://jeelabs.org/jeerev
+  [3]: https://github.com/jcw/jeerev/blob/master/NOTES.md
