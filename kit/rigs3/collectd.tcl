@@ -32,8 +32,9 @@ if {![info exists types]} {
 
 proc listen {tag {group 239.192.74.66} {port 25826}} {
   set s [udp_open $port]
-  fconfigure $s -buffering none -blocking 0 -mcastadd $group -translation binary
-  fileevent $s readable [list [namespace which ReadUDP] $s $tag]
+  chan configure $s -mcastadd $group \
+                      -buffering none -blocking 0 -translation binary
+  chan event $s readable [list [namespace which ReadUDP] $s $tag]
   return $s
 }
 
@@ -44,9 +45,9 @@ proc ReadUDP {sock tag} {
   variable tuples
   variable path
 
-  set data [read $sock]
+  set data [chan read $sock]
   if {$data eq ""} return  
-  set peer [fconfigure $sock -peer]
+  set peer [chan configure $sock -peer]
 
   set out {host ? time ?}
   set off 0

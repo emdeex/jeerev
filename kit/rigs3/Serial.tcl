@@ -55,9 +55,9 @@ Ju classDef Connection {
   method send {line} {
     # Send data out (also appends a newline in text mode, i.e. if timeout is 0).
     if {$timer == 0} {
-      puts $fd $line
+      chan puts $fd $line
     } else {
-      puts -nonewline $fd $line
+      chan puts -nonewline $fd $line
     }
   }
   
@@ -80,6 +80,7 @@ Ju classDef Connection {
   method onException {type args} {
     # Called when eof or some error is detected.
     Log serial {event $type $args}
+    puts $args ;#TODO make the error trace optional
     my destroy
   }
 
@@ -98,7 +99,6 @@ Ju classDef Connection {
       }
     } on error {e o} {
       my onException warn $e $o
-      puts $o
     }
   }
 

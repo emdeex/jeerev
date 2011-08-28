@@ -46,9 +46,9 @@ proc readFile {name args} {
     set fd [open $name]
     try {
       chan configure $fd -encoding utf-8
-      return [read {*}$args $fd]
+      return [chan read {*}$args $fd]
     } finally {
-      close $fd
+      chan close $fd
     }
   }
 }
@@ -92,12 +92,12 @@ proc writeFile {name content args} {
       chan configure $fd -encoding utf-8
     }
     if {"-newline" in $args} {
-      puts $fd $content
+      chan puts $fd $content
     } else {
-      puts -nonewline $fd $content
+      chan puts -nonewline $fd $content
     }
   } finally {
-    close $fd
+    chan close $fd
   }
   if {"-atomic" in $args} {
     file rename -force $name [string range $name 0 end-4]

@@ -18,9 +18,9 @@ if {[string length $prefix] % 16 != 0} {
 
 # save the starkit prefix
 set fd [open $dest w]
-fconfigure $fd -translation binary
-puts -nonewline $fd $prefix
-close $fd
+chan configure $fd -translation binary
+chan puts -nonewline $fd $prefix
+chan close $fd
 
 # copy the kit directory as Metakit starkit
 set db [vfs::mk4::Mount $dest $dest]

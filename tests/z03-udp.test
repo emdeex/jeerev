@@ -6,26 +6,26 @@ test z03/load {load udp extension from the lib/ area} {
 
 test z03/listen {setup a UDP listener} -body {
   set sock1 [udp_open 12345]
-  fconfigure $sock1 -buffering none
-  fileevent $sock1 readable [list apply {{sock} {
-    set ::z03-done [string toupper [gets $sock]]
+  chan configure $sock1 -buffering none
+  chan event $sock1 readable [list apply {{sock} {
+    set ::z03-done [string toupper [chan gets $sock]]
   }} $sock1]
   set sock1
 } -match glob -result sock*
 
 test z03/client {send a UDP packet out} {
   set sock2 [udp_open]
-  fconfigure $sock2 -buffering none
+  chan configure $sock2 -buffering none
   udp_conf $sock2 127.0.0.1 12345
-  puts -nonewline $sock2 hello
+  chan puts -nonewline $sock2 hello
   after 1000 set ::z03-done ?
   vwait ::z03-done
   set ::z03-done
 } HELLO
 
 test z03/close {close both UDP sockets} {
-  close $sock1
-  close $sock2
+  chan close $sock1
+  chan close $sock2
 } {}
 
 #TODO test UDP multicast mechanism

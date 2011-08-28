@@ -58,7 +58,7 @@ proc reportLine {text} {
     set text [string range $text 0 78]>
   }
   regsub -all {[^ -~]} $text . text
-  puts $logfd $text
+  chan puts $logfd $text
 }
 
 proc timestamp {{millis ""} {gmt 0}} {

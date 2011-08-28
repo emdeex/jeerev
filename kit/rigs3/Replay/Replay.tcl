@@ -22,6 +22,7 @@ proc L {time dev args} {
     lassign [split $time .] secs msecs
     set scantime [clock scan $secs -gmt 1]
     set millis [+ [* [% $scantime 86400] 1000] [scan $msecs %d]]
+    # set millis [expr {($scantime % 86400) * 1000 + [scan $msecs %d]}]
     lappend readings [list $millis $dev $args]
   }
 }

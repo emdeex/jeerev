@@ -44,12 +44,12 @@ test z01/tcl {check the "tcl" command} {
 #   set pid [exec [info nameofexe] web >z01-tmp/out &]
 #   after 250 ;# wait for socket listener to be set up
 #   set fd [socket localhost 8080]
-#   puts $fd "GET / HTTP/1.0\n"
-#   flush $fd
-#   list [viewFile z01-tmp/out] [gets $fd]
+#   chan puts $fd "GET / HTTP/1.0\n"
+#   chan flush $fd
+#   list [viewFile z01-tmp/out] [chan gets $fd]
 # } -result {{Starting demo web server at http://127.0.0.1:8080/ ...}\
 #            {HTTP/1.1 200}} \
-#   -cleanup { close $fd; exec kill $pid }
+#   -cleanup { chan close $fd; exec kill $pid }
 
 test z01/symlink {symbolic link to jeemon} {
   #FIXME weird error: socket operation on non-socket

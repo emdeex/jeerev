@@ -16,7 +16,7 @@ proc APP.READY {} {
   variable path [Stored path history]
   
   variable fd [open $path a+]
-  fconfigure $fd -translation binary -buffering none
+  chan configure $fd -translation binary -buffering none
   
   # OpenHistDB $path.db
 
