@@ -1,7 +1,7 @@
 Jm doc "Support for jQuery, jQuery UI, etc"
 
 # public URLs for some common JavaScript and CSS files
-Ju cachedVar urls . {
+Ju cachedVar {urls snippets} . {
   variable urls {
     core.js
       JQ:jquery.min.js
@@ -30,10 +30,34 @@ Ju cachedVar urls . {
     modernizr.js
       CF:modernizr/2.0.6/modernizr.min.js
   }
+  variable snippets {
+    kodtb.js {
+      // http://www.joshbuckley.co.uk/2011/07/knockout-js-datatable-bindings/
+      // Copyright (c) 2011, Josh Buckley (joshbuckley.co.uk).
+      // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+      ko.bindingHandlers.dataTable = {
+        init: function(element, valueAccessor){
+          var binding = ko.utils.unwrapObservable(valueAccessor());
+          if(binding.options){
+            $(element).dataTable(binding.options);
+          }
+        },
+        update: function(element, valueAccessor){
+          var binding = ko.utils.unwrapObservable(valueAccessor());
+          if(!binding.data){
+            binding = { data: valueAccessor() }
+          }
+          $(element).dataTable().fnClearTable();
+          $(element).dataTable().fnAddData(binding.data());
+        }
+      };
+    }
+  }
 }
 
 proc includes {args} {
   # Generate the HTML needed to insert a number of CSS and JavaScript files.
+  variable snippets
   set css {}
   foreach x [concat core $args] {
     set u [GetUrl $x.css]
@@ -43,6 +67,8 @@ proc includes {args} {
     set u [GetUrl $x.js]
     if {$u ne ""} {
       lappend js "<script type='text/javascript' src='$u'></script>"
+    } elseif {[dict exists $snippets $x.js]} {
+      lappend js [wrap [dict get $snippets $x.js]]
     } else {
       error "unknown include: $x.js"
     }
@@ -61,7 +87,7 @@ proc GetUrl {name} {
   } [dict get? $urls $name]
 }
 
-proc script {code} {
+proc wrap {code} {
   # Generate wrapped HTML around JavaScript code (to be loaded on DOM-ready).
   return "<script type='text/javascript'>jQuery(function(){$code});</script>"
 }
