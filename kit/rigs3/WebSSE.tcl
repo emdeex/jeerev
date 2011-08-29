@@ -6,7 +6,7 @@ Ju cachedVar listeners - {
   variable listeners ""
 }
 
-proc /events/*: {type} {
+proc /events/**: {type} {
   wibble sendresponse [list sendcommand [list [namespace which MySend] $type]]
 }
 
@@ -18,13 +18,10 @@ proc MySend {type sock request response} {
   Log websse {$sock connected ($type)}
   if {![dict exists $listeners $type]} {
     app hook WEBSSE.OPEN $type
-    if {[regexp {^state\.(.*)} $type - pattern]} {
-      State subscribe $pattern [list [namespace which TrackState] $type]
-    }
   }
   dict lappend listeners $type $sock
   wibble cleanup websse [list [namespace which OnClose] $type $sock]
-  return 1 ;# keeps the socket open
+  return 1 ;# keep the socket open
 }
 
 proc OnClose {type sock} {
@@ -35,15 +32,8 @@ proc OnClose {type sock} {
     dict set listeners $type $sockets
   } else {
     dict unset listeners $type
-    if {[regexp {^state\.(.*)} $type - pattern]} {
-      State unsubscribe $pattern [list [namespace which TrackState] $type]
-    }
     app hook WEBSSE.CLOSE $type
   }
-}
-
-proc TrackState {type param} {
-  propagate $type $param [State get $param]
 }
 
 proc propagate {type args} {

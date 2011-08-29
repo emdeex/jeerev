@@ -1,4 +1,5 @@
 Jm doc "Replay some stored data to simplify development."
+Jm autoLoader ./drivers
 
 proc go {} {
   variable readings {}

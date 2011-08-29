@@ -1,13 +1,13 @@
 Jm doc "Driver for the HMNODE2 power metering sketch."
 
-# Driver values {
-#   *: {
-#     erate:  { desc "power now"         unit W             low 0  high 4000   }
-#     etotal: { desc "power, cumulative" unit Wh   scale 1  low 0  high 999999 }
-#     grate:  { desc "gas now"           unit l/h           low 0  high 4000   }
-#     gtotal: { desc "gas, cumulative"   unit m3   scale 2  low 0  high 999999 }
-#   }
-# }
+Driver values {
+  *: {
+    erate:  { desc "power now"         unit W             low 0  high 4000   }
+    etotal: { desc "power, cumulative" unit Wh   scale 1  low 0  high 999999 }
+    grate:  { desc "gas now"           unit l/h           low 0  high 4000   }
+    gtotal: { desc "gas, cumulative"   unit m3   scale 2  low 0  high 999999 }
+  }
+}
 
 proc decode {event message} {
   # Called on each incoming message.

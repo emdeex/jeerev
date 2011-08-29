@@ -1,23 +1,23 @@
 Jm doc "Driver for the CUL (busware.de) USB stick."
 
-# Driver values {
-#   EM*: {
-#     avg:   { desc "power, average"    unit W            low 0    high 4000  }
-#     max:   { desc "power, maximum"    unit W            low 0    high 4000  }
-#     total: { desc "power, cumulative" unit Wh           low 0    high 65535 }
-#   }
-#   S300*: {
-#     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
-#     humi:  { desc "humidity"          unit %    scale 1 low 0    high 100   }
-#   }
-#   KS300: {
-#     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
-#     humi:  { desc "humidity"          unit %            low 0    high 100   }
-#     wind:  { desc "wind speed"        unit km/h scale 1 low 0    high 2000  }
-#     rain:  { desc "rain, collected"                     low 0    high 4095  }
-#     rnow:  { desc "raining now"                         low 0    high 1     }
-#   }
-# }
+Driver values {
+  EM*: {
+    avg:   { desc "power, average"    unit W            low 0    high 4000  }
+    max:   { desc "power, maximum"    unit W            low 0    high 4000  }
+    total: { desc "power, cumulative" unit Wh           low 0    high 65535 }
+  }
+  S300*: {
+    temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
+    humi:  { desc "humidity"          unit %    scale 1 low 0    high 100   }
+  }
+  KS300: {
+    temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
+    humi:  { desc "humidity"          unit %            low 0    high 100   }
+    wind:  { desc "wind speed"        unit km/h scale 1 low 0    high 2000  }
+    rain:  { desc "rain, collected"                     low 0    high 4095  }
+    rnow:  { desc "raining now"                         low 0    high 1     }
+  }
+}
 
 # proc connect {interface} {
 #   # Called for each interface of this type.

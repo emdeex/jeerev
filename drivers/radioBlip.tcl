@@ -1,11 +1,11 @@
 Jm doc "Decoder for the radioBlip sketch."
 
-# Driver values {
-#   *: {
-#     ping: { unit counts low 0 high 999999999 }
-#     age:  { unit days   low 0 high 9999      }
-#   }
-# }
+Driver values {
+  *: {
+    ping: { desc "packets sent" unit counts low 0 high 999999999 }
+    age:  { desc "node age"     unit days   low 0 high 9999      }
+  }
+}
 
 proc decode {event raw} {
   Driver bitSlicer $raw ping 32

@@ -1,14 +1,14 @@
 Jm doc "Decoder for the roomNode sketch."
 
-# Driver values {
-#   *: {
-#     light:  { desc "light"                       low 0    high 100 }
-#     moved:  { desc "motion"                      low 0    high 1   }
-#     humi:   { desc "humidity"    unit %          low 0    high 100 }
-#     temp:   { desc "temperature" unit °C scale 1 low -250 high 500 }
-#     lowbat: { desc "low battery"                 low 0    high 1   }
-#   }
-# }
+Driver values {
+  *: {
+    light:  { desc "light"                       low 0    high 100 }
+    moved:  { desc "motion"                      low 0    high 1   }
+    humi:   { desc "humidity"    unit %          low 0    high 100 }
+    temp:   { desc "temperature" unit °C scale 1 low -250 high 500 }
+    lobat:  { desc "low battery"                 low 0    high 1   }
+  }
+}
 
 proc decode {event raw message} {
   if {[string length $raw] == 4} {

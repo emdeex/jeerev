@@ -1,5 +1,9 @@
 Jm doc "Framework for dispatching messages from devices to drivers and back."
 
+Ju cachedVar {locations values} - {
+  variable locations {} values {}
+}
+
 # proc listAll {} {
 #   # Returns a list of all known driver names.
 #   Ju map apply {{x} { regsub {.*::} $x {} }} [info class instances Info]
@@ -11,9 +15,39 @@ proc register {device driver} {
   dict set registered $device $driver
 }
 
-# proc values {data} {
-#   # ...
-# }
+proc locations {data} {
+  variable locations
+  set locations [dict merge $locations $data]
+}
+
+proc values {data} {
+  variable values
+  set driver [string trim [uplevel namespace current] :]
+  dict set values $driver $data
+}
+
+proc getInfo {driver where what} {
+  variable values
+  variable locations
+  dict for {pattern details} [dict get? $values $driver] {
+    if {[string match $pattern $where:]} {
+      set info [dict get? $details $what:]
+      dict set info where $where
+      if {[dict exists $locations $where]} {
+        dict set info where [dict get $locations $where]
+      }
+      return $info
+    }
+  }
+}
+
+proc scaledInt {value decimals} {
+  if {$decimals eq ""} { return $value }
+  if {$value eq ""} { set value 0 }
+  set factor [** 10.0 [- $decimals]]
+  if {$decimals < 0} { set decimals 0 }
+  format "%.${decimals}f" [* $value $factor]
+}
 
 proc bitRemover {raw keep lose {skip 0}} {
   # Remove bits from a raw data packet in a repetitive pattern (parity, etc).
