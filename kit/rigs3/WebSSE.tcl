@@ -13,7 +13,7 @@ proc /events/**: {type} {
 proc MySend {type sock request response} {
   # Custom send command which sets up a permanent socket for SSE's.
   variable listeners
-  chan configure $sock -buffering none
+  chan configure $sock -buffering none -encoding utf-8
   chan puts $sock "HTTP/1.1 200 OK\nContent-Type: text/event-stream\n"
   Log websse {$sock connected ($type)}
   if {![dict exists $listeners $type]} {
@@ -36,9 +36,9 @@ proc OnClose {type sock} {
   }
 }
 
-proc propagate {type args} {
+proc propagate {type msg} {
   variable listeners
-  set msg "data:[join [split [Ju toJson $args -map] \n] \ndata:]\n"
+  set msg "data:[join [split $msg \n] \ndata:]\n"
   foreach sock [dict get? $listeners $type] {
     puts $sock $msg
   }  

@@ -16,5 +16,6 @@ proc /: {} {
 proc Simulate {} {
   # Generate new change events once a second to all web clients.
   after 1000 [namespace which Simulate]
-  WebSSE propagate test counter [round [* 1000000 [rand]]]
+  set value [round [* 1000000 [rand]]]
+  WebSSE propagate test [Ju toJson "counter $value" -dict]
 }

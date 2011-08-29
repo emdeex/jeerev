@@ -34,7 +34,7 @@ proc getInfo {driver where what} {
       set info [dict get? $details $what:]
       dict set info where $where
       if {[dict exists $locations $where]} {
-        dict set info where [dict get $locations $where]
+        dict set info location [dict get $locations $where]
       }
       return $info
     }

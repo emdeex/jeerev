@@ -307,17 +307,24 @@ proc omit {list key} {
 # }
 
 proc toJson {value {flag ""}} {
-  # Convert a value to JSON format (-map converts dicts, -str forces string).
-  if {$flag eq "-map"} {
+  # Convert a value to JSON format (-dict converts dicts, -str forces string).
+  if {$flag eq "-dict"} {
     set out {}
     dict for {k v} $value {
       if {[string index $k end] eq ":"} {
-        lappend out "[toJson [string range $k 0 end-1] -str]:[toJson $v -map]"
+        lappend out "[toJson [string range $k 0 end-1] -str]:[toJson $v -dict]"
       } else {
         lappend out "[toJson $k -str]:[toJson $v]"
       }
     }
     return "{[join $out ,]}"
+  }
+  if {$flag eq "-list"} {
+    set out {}
+    foreach x $value {
+      lappend out [toJson $x]
+    }
+    return "\[[join $out ,]]"
   }
   if {$flag eq "" && [string is double -strict $value]} {
     return [expr $value]
@@ -333,13 +340,13 @@ proc fromJson {text} {
 }
 
 proc toNets {value {flag ""}} {
-  # Convert a value to netstring format (add -map flag to convert dicts).
-  if {$flag eq "-map"} {
+  # Convert a value to netstring format (add -dict flag to convert dicts).
+  if {$flag eq "-dict"} {
     set out {}
     dict for {k v} $value {
       append out [toNets $k]
       if {[string index $k end] eq ":"} {
-        append out [toNets [toNets $v -map]]
+        append out [toNets [toNets $v -dict]]
       } else {
         append out [toNets $v]
       }

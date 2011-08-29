@@ -17,3 +17,4 @@ Examples
 * **driver-demo** - How to decode messages coming from a JeeLink with RF12demo.
 * **replay-demo** - This example replays messages which were recorded earlier.
 * **webfeed-demo** - How to feed readings into state variables via web requests.
+* **table-demo** - Show readings as table in a browser with real-time updates.
