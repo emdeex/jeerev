@@ -19,10 +19,10 @@ proc getInfo {path {field ""}} {
   return $d
 }
 
-proc put {path value {time 0}} {
+proc put {path value {time ""}} {
   # Set the value of a state variable, creating it if needed.
   variable traces
-  if {$time == 0} {
+  if {![string is wide -strict $time]} {
     set time [clock seconds]
   }
   # keep track of some change info for each individual value
