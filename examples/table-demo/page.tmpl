@@ -4,25 +4,50 @@
     <meta http-equiv='content-type' content='text/html; charset=utf-8' />
     <title>DataTables demo</title>
     [JScript includes ui knockout eventsource datatables kodtb]
+    [JScript coffee {
+      viewModel =
+        tableData: ko.observable []
+        update: (data) ->
+          t = @tableData();
+          for row in data
+            t = (e for e in t when e[0] != row[0])
+          @tableData t.concat(data)
+      ko.applyBindings viewModel
+      $.eventsource
+        url: 'events/table'
+        message: (d) -> viewModel.update(d)
+    }]
     [JScript wrap {
-      var viewModel = {
+      var viewModel;
+      viewModel = {
         tableData: ko.observable([]),
         update: function(data) {
-          var t = viewModel.tableData();
-          for (var p in data) {
-            var row = data[p];
-            for (var n in t) {
-              if (t[n][0] == row[0]) {
-                t.splice(n, 1);
+          var e, row, t, _i, _len;
+          t = this.tableData();
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            row = data[_i];
+            t = (function() {
+              var _j, _len2, _results;
+              _results = [];
+              for (_j = 0, _len2 = t.length; _j < _len2; _j++) {
+                e = t[_j];
+                if (e[0] !== row[0]) {
+                  _results.push(e);
+                }
               }
-            }
-            t.push(row);
+              return _results;
+            })();
           }
-          viewModel.tableData(t);
-        },
+          return this.tableData(t.concat(data));
+        }
       };
       ko.applyBindings(viewModel);
-      $.eventsource({ url: 'events/table', message: viewModel.update });
+      $.eventsource({
+        url: 'events/table',
+        message: function(d) {
+          return viewModel.update(d);
+        }
+      });
     }]
     <style type='text/css'>
       body { font-family: Verdana; font-size: 100%; }

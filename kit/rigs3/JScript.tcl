@@ -87,6 +87,10 @@ proc GetUrl {name} {
   } [dict get? $urls $name]
 }
 
+proc coffee {code} {
+  # wishful thinking...
+}
+
 proc wrap {code} {
   # Generate wrapped HTML around JavaScript code (to be loaded on DOM-ready).
   return "<script type='text/javascript'>jQuery(function(){$code});</script>"
