@@ -8,7 +8,7 @@ Ju cachedVar {urls snippets} . {
     ui.js
       JQ:ui/1.8.15/jquery-ui.min.js
     ui.css
-      JQ:ui/1.8.15/themes/ui-lightness/jquery-ui.css
+      JQ:ui/1.8.15/themes/cupertino/jquery-ui.css
     mobile.js
       JQ:mobile/latest/jquery.mobile.js
     tmpl.js
@@ -22,7 +22,7 @@ Ju cachedVar {urls snippets} . {
     flot.js
       GH:flot/flot/master/jquery.flot.js
     datatables.js
-      GH:DataTables/DataTables/master/media/js/jquery.dataTables.js
+      http://www.datatables.net/download/build/jquery.dataTables.min.js
     raphael.js
       CF:raphael/1.5.2/raphael-min.js
     dateformat.js
