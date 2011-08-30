@@ -1,5 +1,5 @@
 Jm doc "Show readings as table in a browser with real-time updates."
-Jm needs WebSSE
+Jm needs WebSSE Replay
 Webserver hasUrlHandlers
 
 Driver locations {
@@ -21,12 +21,8 @@ Driver locations {
   KS300          roof
   S300-0         terrace
   S300-1         bathroom
+  S300-2         balcony
   EM2-8          lab-outlet
-}
-
-proc APP.READY {} {
-  # Called once during application startup.
-  Replay go
 }
 
 proc /: {} {
@@ -35,22 +31,31 @@ proc /: {} {
   dict set response content [wibble template $html]
 }
 
-proc WEBSSE.OPEN {type} {
-  if {$type eq "table"} {
-    State subscribe reading:* [namespace which TrackState]
-  }
+proc /data.json: {} {
+  # Returns a JSON-formatted array with all current values.
+  variable pending
+  # The trick is to simulate a change on each state variable and then
+  # collect those "pending changes" instead of sending them off as SSE's.
+  Propagate ;# flush pending events now, since we're going to clobber $pending
+  Ju map TrackState [State keys reading:*]
+  #FIXME whoops, reply socket isn't in UTF8 mode!
+  dict set response header content-type {"" application/json charset utf-8}
+  dict set response content [encoding convertto identity [Propagate -collect]]
 }
 
-proc WEBSSE.CLOSE {type} {
+proc WEBSSE.SESSION {mode type} {
+  # Respond to WebSSE hook events when a session is opened or closed.
   if {$type eq "table"} {
-    State unsubscribe reading:* [namespace which TrackState]
+    set cmd [string map {open subscribe close unsubscribe} $mode]
+    State $cmd reading:* [namespace which TrackState]
   }
 }
 
 proc TrackState {param} {
-  variable pending
-  set fields [split $param :]
+  # Add a result to the pending map for the specified state variable.
+  # Will also set up a timer if needed, to flush these results shortly.
   set value [State get $param]
+  set fields [split $param :]
   if {[llength $fields] == 4} {
     lassign $fields - where driver what
     dict extract [Driver getInfo $driver $where $what] desc scale location unit
@@ -61,19 +66,24 @@ proc TrackState {param} {
       set desc "$what ($driver)"
     }
     dict extract [State getInfo $param] p m
-    # collect multiple changes into one before propagating them as SSE's
+    # batch multiple changes into one before propagating them as SSE's
+    variable pending
+    set item [list [Driver scaledInt $value $scale] $unit]
+    lappend item [clock format $m -format {%H:%M:%S}]
+    lappend item [clock format $p -format {%H:%M:%S}]
     if {![info exists pending]} {
       after 100 [namespace which Propagate]
     }
-    set data [list "$location $desc" [Driver scaledInt $value $scale] $unit]
-    lappend data [clock format $m -format {%H:%M:%S}]
-    lappend data [clock format $p -format {%H:%M:%S}]
-    dict set pending $param [Ju toJson $data -list]
+    dict set pending "$location $desc" [Ju toJson $item -list]
   }
 }
 
-proc Propagate {} {
+proc Propagate {{flag ""}} {
+  # Send pending changes off as a JSON object and clear the list.
   variable pending
-  WebSSE propagate table "\[[join [dict values $pending] ,]]"
-  unset pending
+  set json [Ju toJson [Ju grab pending] -dict -flat]
+  if {$flag eq "-collect"} {
+    return $json
+  }
+  WebSSE propagate table $json
 }

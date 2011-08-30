@@ -1,7 +1,7 @@
 Jm doc "Replay some stored data to simplify development."
 Jm autoLoader ./drivers
 
-proc go {} {
+proc APP.READY {} {
   variable readings {}
   # get some additional interface configuration info for fake insertions
   variable config [Ju unComment [Ju readFile [Ju mySourceDir]/rconfig.txt]]
@@ -28,7 +28,7 @@ proc L {time dev args} {
   }
 }
 
-Ju cachedVar interfaces . {
+Ju cachedVar interfaces - {
   variable interfaces {}
   # set up the device information, this should match what's in the log file
   variable config

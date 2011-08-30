@@ -17,7 +17,7 @@ proc MySend {type sock request response} {
   chan puts $sock "HTTP/1.1 200 OK\nContent-Type: text/event-stream\n"
   Log websse {$sock connected ($type)}
   if {![dict exists $listeners $type]} {
-    app hook WEBSSE.OPEN $type
+    app hook WEBSSE.SESSION open $type
   }
   dict lappend listeners $type $sock
   wibble cleanup websse [list [namespace which OnClose] $type $sock]
@@ -32,7 +32,7 @@ proc OnClose {type sock} {
     dict set listeners $type $sockets
   } else {
     dict unset listeners $type
-    app hook WEBSSE.CLOSE $type
+    app hook WEBSSE.SESSION close $type
   }
 }
 

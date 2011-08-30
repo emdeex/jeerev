@@ -8,46 +8,48 @@
       viewModel =
         tableData: ko.observable []
         update: (data) ->
-          t = @tableData();
-          for row in data
-            t = (e for e in t when e[0] != row[0])
-          @tableData t.concat(data)
+          t = viewModel.tableData();
+          for key, row of data
+            t = (e for e in t when e[0] != key)
+            row.unshift key
+            t.push row
+          viewModel.tableData t
       ko.applyBindings viewModel
-      $.eventsource
-        url: 'events/table'
-        message: (d) -> viewModel.update(d)
+      $.eventsource url: 'events/table', message: viewModel.update
+      $.getJSON 'data.json', viewModel.update
     }]
     [JScript wrap {
       var viewModel;
       viewModel = {
         tableData: ko.observable([]),
         update: function(data) {
-          var e, row, t, _i, _len;
-          t = this.tableData();
-          for (_i = 0, _len = data.length; _i < _len; _i++) {
-            row = data[_i];
+          var e, key, row, t;
+          t = viewModel.tableData();
+          for (key in data) {
+            row = data[key];
             t = (function() {
-              var _j, _len2, _results;
+              var _i, _len, _results;
               _results = [];
-              for (_j = 0, _len2 = t.length; _j < _len2; _j++) {
-                e = t[_j];
-                if (e[0] !== row[0]) {
+              for (_i = 0, _len = t.length; _i < _len; _i++) {
+                e = t[_i];
+                if (e[0] !== key) {
                   _results.push(e);
                 }
               }
               return _results;
             })();
+            row.unshift(key);
+            t.push(row);
           }
-          return this.tableData(t.concat(data));
+          return viewModel.tableData(t);
         }
       };
       ko.applyBindings(viewModel);
       $.eventsource({
         url: 'events/table',
-        message: function(d) {
-          return viewModel.update(d);
-        }
+        message: viewModel.update
       });
+      $.getJSON('data.json', viewModel.update);
     }]
     <style type='text/css'>
       body { font-family: Verdana; font-size: 100%; }

@@ -11,6 +11,16 @@ proc get {vname {default ""}} {
   return $default
 }
 
+proc grab {vname} {
+  # Unset a variable or array element, but return the value it had before.
+  upvar $vname v
+  if {[info exists v]} {
+    set result $v
+    unset v
+    return $result
+  }
+}
+
 proc map {args} {
   # Maps a function to each element of a list, and returns list of the results.
   set result {}
@@ -306,27 +316,31 @@ proc omit {list key} {
 #   }
 # }
 
-proc toJson {value {flag ""}} {
+proc toJson {value args} {
   # Convert a value to JSON format (-dict converts dicts, -str forces string).
-  if {$flag eq "-dict"} {
+  set nested [expr {"-flat" ni $args}]
+  if {"-dict" in $args} {
     set out {}
     dict for {k v} $value {
       if {[string index $k end] eq ":"} {
-        lappend out "[toJson [string range $k 0 end-1] -str]:[toJson $v -dict]"
+        if {$nested} { set v [toJson $v -dict] }
+        lappend out "[toJson [string range $k 0 end-1] -str]:$v"
       } else {
-        lappend out "[toJson $k -str]:[toJson $v]"
+        if {$nested} { set v [toJson $v] }
+        lappend out "[toJson $k -str]:$v"
       }
     }
     return "{[join $out ,]}"
   }
-  if {$flag eq "-list"} {
+  if {"-list" in $args} {
     set out {}
-    foreach x $value {
-      lappend out [toJson $x]
+    foreach v $value {
+      if {$nested} { set v [toJson $v] }
+      lappend out $v
     }
     return "\[[join $out ,]]"
   }
-  if {$flag eq "" && [string is double -strict $value]} {
+  if {"-str" ni $args && [string is double -strict $value]} {
     return [expr $value]
   }
   variable quotes
