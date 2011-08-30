@@ -58,24 +58,35 @@ proc TrackState {param} {
   set fields [split $param :]
   if {[llength $fields] == 4} {
     lassign $fields - where driver what
-    dict extract [Driver getInfo $driver $where $what] desc scale location unit
+    dict extract [Driver getInfo $driver $where $what] \
+      desc scale location unit low high
     if {$location eq ""} {
       set location $where
     }
     if {$desc eq ""} {
       set desc "$what ($driver)"
     }
-    dict extract [State getInfo $param] p m
+    if {$unit eq "" && $low ne "" && $high ne ""} {
+      set unit "$low..$high"
+    }
+    set scaled [Driver scaledInt $value $scale]
+    dict extract [State getInfo $param] m t
+    set item [list $scaled $unit [ShortTime $m] [ShortTime $t]]
     # batch multiple changes into one before propagating them as SSE's
     variable pending
-    set item [list [Driver scaledInt $value $scale] $unit]
-    lappend item [clock format $m -format {%H:%M:%S}]
-    lappend item [clock format $p -format {%H:%M:%S}]
     if {![info exists pending]} {
       after 100 [namespace which Propagate]
     }
     dict set pending "$location $desc" [Ju toJson $item -list]
   }
+}
+
+proc ShortTime {secs} {
+  set fmt {%H:%M:%S}
+  if {$secs < [clock scan 0:00]} {
+    set fmt {%b %e}
+  }
+  clock format $secs -format $fmt
 }
 
 proc Propagate {{flag ""}} {

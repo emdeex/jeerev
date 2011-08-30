@@ -52,20 +52,42 @@
       $.getJSON('data.json', viewModel.update);
     }]
     <style type='text/css'>
-      body { font-family: Verdana; font-size: 100%; }
+      body { font-family: Verdana; }
       .main { width: 600px; }
       table { border: 1px solid #ccc; border-collapse: collapse; width: 100%; }
       td { padding: 0 3px; }
       tbody tr:nth-child(even) { background-color: #eee; }
+      /* clean up and re-arrange things a bit */
+      .center { text-align: center; }
+      .dataTables_length {
+      	width: 40%; float: left; margin-left: 6px;
+      }
+      .dataTables_filter {
+      	width: 50%; float: right; text-align: right; margin-right: 6px;
+      }
+      .dataTables_info {
+      	width: 80%; float: left; margin: 2px 0 0 6px;
+      }
+      .dataTables_paginate {
+      	width: 44px; float: right; text-align: right; margin: 2px 6px 0 0;
+      }
+      .dataTables_length, .dataTables_filter, .dataTables_info {
+        font-weight: normal;
+      }
     </style>
   </head>
   <body>
     <div class='main'>
-      <table data-bind='dataTable: { data: tableData,
-                                     options: { bJQueryUI: true } }'>
+      <table data-bind='dataTable: {
+          data: tableData,
+          options: { bJQueryUI: true,
+                     aoColumnDefs: \[
+                        { sType: "numeric", aTargets: \[1] },
+                        { sClass: "center", aTargets: \[1,2,3,4] },
+                     ]}}'>
         <thead><tr>
           <th>Description</th>
-          <th width='12%'>Value</th>
+          <th width='18%'>Value</th>
           <th width='12%'>Unit</th>
           <th width='16%'>Changed</th>
           <th width='16%'>Updated</th>
