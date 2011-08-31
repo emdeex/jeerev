@@ -2,6 +2,17 @@ Jm doc "Start up as a modular app, using hooks to connect features together."
 
 proc start {args} {
   global argv exit
+  
+  set needVsn v1.5
+  if {[catch { set vsn $startup::version }]} {
+    if {[namespace which ::startup::readFile] eq ""} {
+      fail "JeeRev requires JeeMon $needVsn to run."
+    }
+    set vsn v1.3
+  }
+  if {$vsn < $needVsn} {
+    fail "JeeRev requires JeeMon $needVsn, the current $vsn build is too old."
+  }
 
   # no matter what the cmdline args are, make sure the "-app" key is defined
   if {[llength $argv] & 1} {

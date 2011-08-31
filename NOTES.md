@@ -34,7 +34,7 @@ now refers to older stuff, and its wikis + issue trackers are no longer updated.
 The JeeMon core has only changed in minor ways since 2008. The current builds
 are stable - no further changes are expected except for bug fixes and very minor
 tweaks. Get it once from <http://jeelabs.org/pub/jeemon/> and then just keep it
-around. Don't use a version older than August 2011.
+around. Don't use a version older than v1.5 (September 2011).
 
 JeeRev on the other hand is going to keep changing all the time. The only way to
 keep track of it is via <https://github.com/jcw/jeerev>, and the easiest way to
@@ -70,7 +70,7 @@ Technologies
 So far, I have:
 
 * on the server side: JeeMon implements the Tcl/Tk programming environment
-* storage: plain text, Metakit database, custom binary data, and SQL bindings
+* storage: plain text, custom binary data, and optional SQL bindings
 * web server: Wibble (Tcl), coroutine-based, HTML 1.1, async I/O
 * on the client side: JavaScript, HTML5, CSS3
 * standard JavaScript libraries: jQuery, jQuery UI, Knockout, Flot, and more
