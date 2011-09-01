@@ -1,5 +1,7 @@
 Jm doc "Start up as a modular app, using hooks to connect features together."
 
+variable period 60000   ;# rate at which the heartbeath hook is called (ms)
+
 proc start {args} {
   global argv exit
   
@@ -58,6 +60,7 @@ proc start {args} {
   app hook APP.INIT
   if {![info exists exit]} {
     app hook APP.READY
+    Heartbeat ;# start "ticking" on every minute
     vwait exit
   }
   if {$exit} {
@@ -123,4 +126,16 @@ proc PathsOfLoadedRigs {} {
     }
   }
   return $paths
+}
+
+proc Heartbeat {} {
+  # Trigger a general-purpose hook once a minute, ON the minute.
+  variable period
+  set ms [clock millis]
+  set remain [- $period [% $ms $period]]
+  after $remain [namespace which Heartbeat]
+  # don't beat on startup (or if we've missed over a second!)
+  if {$remain > $period - 1000} {
+    app hook APP.HEARTBEAT [/ $ms 1000]
+  }
 }

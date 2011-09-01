@@ -22,7 +22,7 @@ proc getInfo {path {field ""}} {
 proc put {path value {time ""}} {
   # Set the value of a state variable, creating it if needed.
   variable traces
-  if {![string is wide -strict $time]} {
+  if {![string is wide -strict $time] || $time <= 0} {
     set time [clock seconds]
   }
   # keep track of some change info for each individual value

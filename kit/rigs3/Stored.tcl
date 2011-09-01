@@ -1,21 +1,17 @@
 Jm doc "Various bits of code to handle data storage."
 
+#TODO Map saving could be optimized: append new pairs to same file, until
+# it grows to a certain size or has a certain age, then rewrite the file
+# with all older entries removed (simply using "dict create" to clean up).
+
 variable datadir ./stored   ;# the location where all datafiles are stored
-variable period 60000       ;# how often to save maps (milliseconds)
 
 Ju cachedVar mapInfo - {
   variable mapInfo {}
   map info version 1
-  PeriodicSave
 }
 
-proc PeriodicSave {} {
-  variable period
-  # trigger once a minute, ON the minute
-  set remain [- $period [% [clock millis] $period]]
-  after $remain [namespace which PeriodicSave]
-  
-  # app hook STORED.PERIODIC  
+proc APP.HEARTBEAT {secs} {
   SaveMaps
 }
 

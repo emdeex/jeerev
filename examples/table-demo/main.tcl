@@ -103,11 +103,13 @@ proc TrackState {param} {
 }
 
 proc ShortTime {secs} {
-  set fmt {%H:%M:%S}
-  if {$secs < [clock scan 0:00]} {
-    set fmt {%b %e}
+  if {$secs > 0} {
+    set fmt {%H:%M:%S}
+    if {$secs < [clock scan 0:00]} {
+      set fmt {%b %e}
+    }
+    clock format $secs -format $fmt
   }
-  clock format $secs -format $fmt
 }
 
 proc Propagate {{flag ""}} {
