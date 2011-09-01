@@ -12,49 +12,51 @@ uplevel #0 namespace import tcl::mathop::*
 uplevel #0 namespace import tcl::mathfunc::*
 
 # TclOO commands are considered part of the core, so let's make them global
-uplevel #0 namespace import oo::*
+if {[namespace exists oo]} {
+  uplevel #0 namespace import oo::*
 
-namespace eval ::oo {
-  Jm doc "Extensions for use inside TclOO classes."
+  namespace eval ::oo {
+    Jm doc "Extensions for use inside TclOO classes."
   
-  proc Helpers::callBack {meth args} {
-    # see "Easier Callbacks" at http://wiki.tcl.tk/21595
-    list [uplevel 1 {namespace which my}] $meth {*}$args
-  }
-
-  proc Helpers::classVar {args} {
-    # see "Class Variables" at http://wiki.tcl.tk/21595
-    if {[package vsatisfies [package require Tcl] 8.6b1.1]} {
-      # get reference to class’s namespace
-      set ns [info object namespace [uplevel 1 {self class}]]
-    } else {
-      #FIXME workaround is to invent a unique namespace for class vars
-      set ns [uplevel 1 {self class}]_classVars
+    proc Helpers::callBack {meth args} {
+      # see "Easier Callbacks" at http://wiki.tcl.tk/21595
+      list [uplevel 1 {namespace which my}] $meth {*}$args
     }
-    namespace eval $ns {}
-    # Double up the list of varnames
-    set vs {}
-    foreach v $args {lappend vs $v $v}
-    # Link the caller’s locals to the class’s variables
-    tailcall namespace upvar $ns {*}$vs
-  }
 
-  proc define::classMethod {name {args ""} {body ""}} {
-    # Create the method on the class if the caller gave arguments and body.
-    # see "Class (Static) Methods" at http://wiki.tcl.tk/21595
-    set argc [llength [info level 0]]
-    if {$argc == 4} {
-      uplevel 1 [list self method $name $args $body]
-    } elseif {$argc == 3} {
-      return -code error "wrong # args:\
-            should be \"[lindex [info level 0] 0] name ?args body?\""
+    proc Helpers::classVar {args} {
+      # see "Class Variables" at http://wiki.tcl.tk/21595
+      if {[package vsatisfies [package require Tcl] 8.6b1.1]} {
+        # get reference to class’s namespace
+        set ns [info object namespace [uplevel 1 {self class}]]
+      } else {
+        #FIXME workaround is to invent a unique namespace for class vars
+        set ns [uplevel 1 {self class}]_classVars
+      }
+      namespace eval $ns {}
+      # Double up the list of varnames
+      set vs {}
+      foreach v $args {lappend vs $v $v}
+      # Link the caller’s locals to the class’s variables
+      tailcall namespace upvar $ns {*}$vs
     }
-    # Get the name of the current class
-    set cls [lindex [info level -1] 1]
-    # Get its private “my” command
-    set my [info object namespace $cls]::my
-    # Make the connection by forwarding
-    tailcall forward $name $my $name
+
+    proc define::classMethod {name {args ""} {body ""}} {
+      # Create the method on the class if the caller gave arguments and body.
+      # see "Class (Static) Methods" at http://wiki.tcl.tk/21595
+      set argc [llength [info level 0]]
+      if {$argc == 4} {
+        uplevel 1 [list self method $name $args $body]
+      } elseif {$argc == 3} {
+        return -code error "wrong # args:\
+              should be \"[lindex [info level 0] 0] name ?args body?\""
+      }
+      # Get the name of the current class
+      set cls [lindex [info level -1] 1]
+      # Get its private “my” command
+      set my [info object namespace $cls]::my
+      # Make the connection by forwarding
+      tailcall forward $name $my $name
+    }
   }
 }
 

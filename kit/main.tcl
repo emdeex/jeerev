@@ -1,6 +1,6 @@
 # Main JeeMon startup logic. Each new launch starts here.
 
-package require Tcl 8.6
+package require Tcl 8.5 ;# we'll need 8.6, but don't fail on 8.5 before app.tcl
 
 namespace eval Jm {
   variable root_dir [file dir [dict get [info frame 0] file]]

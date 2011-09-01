@@ -4,10 +4,10 @@ proc start {args} {
   global argv exit
   
   set needVsn v1.5
-  if {[catch { set vsn $startup::version }]} {
-    if {[namespace which ::startup::readFile] eq ""} {
-      fail "JeeRev requires JeeMon $needVsn to run."
-    }
+  if {![namespace exists ::startup]} {
+    fail "JeeRev requires JeeMon $needVsn to run."
+  }
+  if {[catch { set vsn $::startup::version }]} {
     set vsn v1.3
   }
   if {$vsn < $needVsn} {

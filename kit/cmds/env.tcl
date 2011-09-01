@@ -1,12 +1,13 @@
 Jm doc "Print out some system and environment info."
 
+# Most of the code in here also runs with Tcl 8.5 (useful for diagnostics).
+
 proc start {args} {
   set cmds [string tolower $args]
   switch -- $cmds {
     all { set cmds {g a c d e l m p r t} }
     "" - "?" - "-h" - "--help" { set cmds {g u}}
   }
-  
   foreach x $cmds {
     puts ""
     if {[catch { SubCommand $x }]} {
@@ -14,7 +15,6 @@ proc start {args} {
       exit 1
     }
   }
-
   puts ""
 }
 
@@ -44,17 +44,17 @@ namespace eval SubCommand {
         puts "  not available - try using a tool such as 'Dependency Walker'"
       }
       Darwin {
-        try {
+        if {[catch {
           set out [exec otool -L $exe]
           puts [string map {"\t" "  " " (compat" "\n    (compat"} $out]
-        } on error {} {
+        }]} {
           puts "  'otool' not available (requires Xcode)"
         }
       }
       *x {
-        try {
+        if {[catch {
           puts [exec ldd [info nameofexe]]
-        } on error {} {
+        }]} {
           puts "  'ldd' not available"
         }
       }
@@ -77,6 +77,14 @@ namespace eval SubCommand {
   
   proc general {} {
     puts "GENERAL:"
+
+    if {![namespace exists ::startup]} {
+      set vsn "NOT RUNNING"
+    } elseif {[catch { set vsn $::startup::version }]} {
+      set vsn "TOO OLD"
+    }
+
+    puts "       JeeMon = $vsn"
     puts "      Library = $::starkit::topdir"
     puts "     Encoding = [encoding system]"
     puts "    Directory = [pwd]"
@@ -84,12 +92,13 @@ namespace eval SubCommand {
     puts "  Tcl version = [info patchlevel]"
   }
   
-  proc loaded {} {
-    puts "LOADED:"
+  proc loadable {} {
+    puts "LOADABLE:"
     foreach x [lsort -dict [info loaded]] {
       lassign $x path name
-      if {[catch { package require $name } vsn]} { set vsn ? }
-      puts "  $name $vsn $path"
+      if {![catch { package require $name } vsn]} { 
+        puts "  $name $vsn $path"
+      }
     }
   }
 
