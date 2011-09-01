@@ -12,7 +12,7 @@ uplevel #0 namespace import tcl::mathop::*
 uplevel #0 namespace import tcl::mathfunc::*
 
 # TclOO commands are considered part of the core, so let's make them global
-if {[namespace exists oo]} {
+if {[namespace exists ::oo]} {
   uplevel #0 namespace import oo::*
 
   namespace eval ::oo {
