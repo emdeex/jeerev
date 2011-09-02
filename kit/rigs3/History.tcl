@@ -88,7 +88,7 @@ proc SetupCollector {param low high} {
         }
         # each larger step must be an exact multiple of the previous one
         Ju assert {$prevStep eq "" || $prevStep % $s == 0 && $prevStep > $s}
-        set obj [Bucket new $param $s $r $low $high $prevObj]
+        set obj [Bucket new $param $s $r $low $high $prevObj $prevStep]
         set prevStep $s
         set prevObj $obj
       }
@@ -116,10 +116,10 @@ proc FlushSlot {param} {
 Ju classDef Bucket {
   Jm doc "Each Bucket object manages one aggregating bucket for one parameter."
   
-  variable param step range count child type filler width \
+  variable param step range count child chstep type filler width \
             prevSecs fname currSlot
   
-  constructor {bparam bstep brange blow bhigh bchild} {
+  constructor {bparam bstep brange blow bhigh bchild bchstep} {
     # Set up instance variables and create a fresh datafile if necessary.
     set param $bparam
     set id [Stored mapId hist-data $param]
@@ -127,6 +127,7 @@ Ju classDef Bucket {
     set range $brange
     set count [/ $brange $bstep]
     set child $bchild
+    set chstep $bchstep
     my SetType $blow $bhigh
     set prevSecs 0
     file mkdir [Stored path hist-data]
@@ -177,17 +178,21 @@ Ju classDef Bucket {
     expr {$t1 / $step == $t2 / $step}
   }
     
-  method ToBinary {slot values} {
+  method ToBinary {slot values pass} {
     # Convert a set of values to the binary format stored on file.
-    set num [llength $values]
-    set min [min {*}$values]
-    set max [max {*}$values]
-    set sum [+ {*}$values]
+    if {$pass} {
+      lassign $values num min max sum
+    } else {
+      set num [llength $values]
+      set min [min {*}$values]
+      set max [max {*}$values]
+      set sum [+ {*}$values]
+    }
     puts " : $num $min $max $sum ($param)"
     binary format ${type}cI $num $min $max $sum -1 $slot
   }
   
-  method aggregate {secs values} {
+  method aggregate {secs values {pass 0}} {
     # Aggregate and store new values into the proper slot.
     set slot [/ $secs $step]
     Ju assert {$slot >= $currSlot}
@@ -196,7 +201,7 @@ Ju classDef Bucket {
     while {$slot != $currSlot} {
       my Store $fd [incr currSlot] $filler
     }
-    my Store $fd $slot [my ToBinary $slot $values]
+    my Store $fd $slot [my ToBinary $slot $values $pass]
     chan close $fd
   }
   
@@ -263,10 +268,6 @@ Ju classDef Bucket {
   method MergeSlots {fd slot nslots} {
     # Combine num/min/max/sum data from multiple slots
     Ju assert {$slot <= $currSlot}
-    set nums 0
-    set mins {}
-    set maxs {}
-    set sums {}
     while {[incr nslots -1] >= 0} {
       if {$slot >= $currSlot - $count + 1} {
         chan seek $fd [* [% $slot $count] $width]
@@ -281,7 +282,7 @@ Ju classDef Bucket {
       }
       incr slot
     }
-    if {$num == 0} {
+    if {![info exists num]} {
       return {0 0 0 0}
     }
     list $nums [min {*}$mins] [max {*}$maxs] [+ {*}$sums]
@@ -289,6 +290,11 @@ Ju classDef Bucket {
   
   method SendToChild {secs} {
     # Pass collected data down the bucket chain.
-    puts "AGGREGATE [clock format $secs -format %H:%M:%S]"
+    # puts "AGGREGATE [clock format $secs -format %H:%M:%S] ${chstep}s"
+    set chcount [/ $chstep $step]
+    set chslot [* [/ $secs $chstep] $chcount]
+    set fd [my Open r]
+    $child aggregate $secs [my MergeSlots $fd $chslot $chcount] 1
+    chan close $fd
   }
 }
