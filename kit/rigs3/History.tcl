@@ -12,6 +12,31 @@ proc APP.READY {} {
   State subscribe * [namespace which StateChanged]
 }
 
+proc group {pattern args} {
+  # Define a bucket group for a specific set of state variables.
+  variable buckets
+  puts "  $pattern"
+  foreach x $args {
+    lassign [split $x /] range step
+    set step [Ju asSeconds $step]
+    set range [Ju asSeconds $range]
+    dict lappend buckets($pattern) $step $range
+    puts "    step $step range $range count [/ $range $step]"
+  }
+}
+
+proc query {param args} {
+  # Return the requested historical data as list of num/min/max/sum values.
+  upvar [namespace current]::collector($param) myData
+  if {![info exists myData]} {
+    SetupCollector $param 0 [<< 1 100] ;# -999999999 999999999
+  }
+  set chain [dict get $myData chain]
+  if {$chain ne ""} {
+    $chain select {*}$args
+  }
+}
+
 proc StateChanged {param} {
   # Called on each state variable change to collect historical data.
   dict extract [State getInfo $param] v t
@@ -28,21 +53,8 @@ proc LogValue {param value time} {
   variable lastTime
   set id [Stored mapId history $param]
   # store time differences (or the full time, when starting up)
-  puts $fd [list $id $value [- $time $lastTime]]
+  chan puts $fd [list $id $value [- $time $lastTime]]
   set lastTime $time
-}
-
-proc group {pattern args} {
-  # Define a bucket group for a specific set of state variables.
-  variable buckets
-  puts "  $pattern"
-  foreach x $args {
-    lassign [split $x /] range step
-    set step [Ju asSeconds $step]
-    set range [Ju asSeconds $range]
-    dict lappend buckets($pattern) $step $range
-    puts "    step $step range $range count [/ $range $step]"
-  }
 }
 
 proc CollectValue {param value time} {
@@ -209,7 +221,6 @@ Ju classDef Bucket {
   method RecoverSlot {} {
     # Scan through an existing datafile to determine the last slot written.
     set fd [my Open r]
-    chan seek $fd 0
     while true {
       set bytes [read $fd $width]
       Ju assert {[string length $bytes] >= 5}
@@ -221,6 +232,59 @@ Ju classDef Bucket {
       }
     }
     chan close $fd
+  }
+  
+  method select {selFrom selStep selCount} {
+    # Return selected data, delegating as much as possible to child bucket(s).
+    Ju assert {$selFrom % $selStep == 0}
+    set results {}
+    # if larger step than ours, then first try to delegate to the child bucket
+    if {$selStep > $step && $child ne ""} {
+      set results [$child select $selFrom $selStep $selCount]
+      incr selFrom [* [llength $results] $selStep]
+      incr selCount [- [llength $results]]
+    }
+    # can only respond to requests which use a multiple of our step size
+    if {$selStep % $step == 0} {
+      set fd [my Open r]
+      set multiple [/ $selStep $step]
+      set limit [* [+ $currSlot 1] $step]
+      # collect values for each request step until we run past what's stored
+      while {$selCount > 0 && $selFrom < $limit} {
+        lappend results {*}[my MergeSlots $fd [/ $selFrom $step] $multiple]
+        incr selCount -1
+        incr selFrom $selStep
+      }
+      chan close $fd
+    }
+    return $results
+  }
+  
+  method MergeSlots {fd slot nslots} {
+    # Combine num/min/max/sum data from multiple slots
+    Ju assert {$slot <= $currSlot}
+    set nums 0
+    set mins {}
+    set maxs {}
+    set sums {}
+    while {[incr nslots -1] >= 0} {
+      if {$slot >= $currSlot - $count + 1} {
+        chan seek $fd [* [% $slot $count] $width]
+        binary scan [read $fd $width] $type num min max sum
+        Ju assert {$num >= 0}
+        if {$num > 0} {
+          incr nums $num
+          lappend mins $min
+          lappend maxs $max
+          lappend sums $sum
+        }
+      }
+      incr slot
+    }
+    if {$num == 0} {
+      return {0 0 0 0}
+    }
+    list $nums [min {*}$mins] [max {*}$maxs] [+ {*}$sums]
   }
   
   method SendToChild {secs} {
