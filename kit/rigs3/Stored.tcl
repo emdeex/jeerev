@@ -59,26 +59,41 @@ proc map {name args} {
   }
 }
 
-proc SaveMaps {} {
-  variable maps
-  variable mapInfo
+proc mapId {name key} {
+  # Use a map to generate id's 0 and up
+  set id [map $name $key]
+  if {$id eq ""} {
+    set id [dict size [map $name]]
+    map $name $key $id
+    #TODO flush the map right away, or keep file open and append
+  }
+  return $id
+}
 
+proc SaveMaps {} {
+  variable mapInfo
   dict for {name flag} $mapInfo {
     if {$flag} {
-      # Ju writeFile [MapPath $name] $map -atomic
-      # more readable: sort keys and put all key/value pairs on separate lines
-      set out {}
-      foreach x [lsort -dict [dict keys $maps($name)]] {
-        lappend out [list $x [dict get $maps($name) $x]]
-      }
-      if {[llength $out] > 0} {
-        Ju writeFile [MapPath $name] [join $out \n] -newline -atomic
-        dict set mapInfo $name 0
-      } else {
-        file delete [MapPath $name]
-        dict unset mapInfo $name
-        array unset maps $name
-      }
+      SaveOneMap $name
     }
+  }
+}
+
+proc SaveOneMap {name} {
+  variable maps
+  variable mapInfo
+  # Ju writeFile [MapPath $name] $map -atomic
+  # more readable: sort keys and put all key/value pairs on separate lines
+  set out {}
+  foreach x [lsort -dict [dict keys $maps($name)]] {
+    lappend out [list $x [dict get $maps($name) $x]]
+  }
+  if {[llength $out] > 0} {
+    Ju writeFile [MapPath $name] [join $out \n] -newline -atomic
+    dict set mapInfo $name 0
+  } else {
+    file delete [MapPath $name]
+    dict unset mapInfo $name
+    array unset maps $name
   }
 }
