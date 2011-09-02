@@ -8,16 +8,12 @@ Ju cachedVar lastTime - {
 
 proc APP.READY {} {
   variable fd [open [Stored path history.log] a+]
-  chan configure $fd -buffering none
-  
-  DefineBuckets test:* 10m/15s 1h/1m 12h/5m
-  DefineBuckets reading:* 2d/1m 1w/5m 3y/1h
-  DefineBuckets sysinfo:* 1w/5m
-
+  chan configure $fd -buffering none  
   State subscribe * [namespace which StateChanged]
 }
 
 proc StateChanged {param} {
+  # Called on each state variable change to collect historical data.
   dict extract [State getInfo $param] v t
   # only keep track of numeric data
   if {[string is double -strict $v]} {
@@ -27,7 +23,7 @@ proc StateChanged {param} {
 }
 
 proc LogValue {param value time} {
-  # Save a new parameter value to the history log file
+  # Save a new parameter value to the history log file.
   variable fd
   variable lastTime
   set id [Stored mapId history $param]
@@ -36,7 +32,8 @@ proc LogValue {param value time} {
   set lastTime $time
 }
 
-proc DefineBuckets {pattern args} {
+proc group {pattern args} {
+  # Define a bucket group for a specific set of state variables.
   variable buckets
   puts "  $pattern"
   foreach x $args {
@@ -63,6 +60,7 @@ proc CollectValue {param value time} {
 }
 
 proc SetupCollector {param low high} {
+  # Create a bucket chain and set up the in-memory info needed to collect data.
   variable buckets
   upvar [namespace current]::collector($param) myData
   set myData {minStep 9999 chain {} slot -1 values {}}
@@ -89,6 +87,7 @@ proc SetupCollector {param low high} {
 }
 
 proc FlushSlot {param} {
+  # Called on each change of time slot to send of all aggregated data so far.
   upvar [namespace current]::collector($param) myData
   set slot [dict get $myData slot]
   set values [dict get $myData values]
@@ -103,20 +102,23 @@ proc FlushSlot {param} {
 }
 
 Ju classDef Bucket {
+  Jm doc "Each Bucket object manages one aggregating bucket for one parameter."
+  
   variable param step range count child type filler width \
             prevSecs fname currSlot
   
   constructor {bparam bstep brange blow bhigh bchild} {
+    # Set up instance variables and create a fresh datafile if necessary.
     set param $bparam
-    set id [Stored mapId hist-bin $param]
+    set id [Stored mapId hist-data $param]
     set step $bstep
     set range $brange
     set count [/ $brange $bstep]
     set child $bchild
     my SetType $blow $bhigh
     set prevSecs 0
-    file mkdir [Stored path hist-bin]
-    set fname [Stored path hist-bin/$id-$step-$count-$type]
+    file mkdir [Stored path hist-data]
+    set fname [Stored path hist-data/$id-$step-$count-$type]
     if {![file exists $fname]} {
       my CreateFile
     }
@@ -124,6 +126,7 @@ Ju classDef Bucket {
   }
   
   method CreateFile {} {
+    # Fill a new file with empty slots. This file won't grow further during use.
     set fd [my Open a+]
     # don't go back in time more than the total range we're storing
     set firstSlot [/ [- [clock seconds] $range] $step]
@@ -135,6 +138,7 @@ Ju classDef Bucket {
   }
   
   method SetType {low high} {
+    # Determine the datatypes and sizes/widths to use for each slot.
     if {[string first . $low$high] >= 0} {
       set type crrr
     } else {
@@ -157,10 +161,12 @@ Ju classDef Bucket {
   }
   
   method sameSlot {t1 t2} {
+    # Are both times in the same slot, i.e. bucket?
     expr {$t1 / $step == $t2 / $step}
   }
     
   method ToBinary {slot values} {
+    # Convert a set of values to the binary format stored on file.
     set num [llength $values]
     set min [min {*}$values]
     set max [max {*}$values]
@@ -183,12 +189,14 @@ Ju classDef Bucket {
   }
   
   method Open {{mode r+}} {
+    # Open the associated datafile.
     set fd [open $fname $mode]
     chan configure $fd -translation binary -buffering none
     return $fd
   }
   
   method Store {fd slot bytes} {
+    # Store some binary data in the specified slot.
     chan seek $fd [* [% $slot $count] $width]
     chan puts -nonewline $fd $bytes
     set secs [* $slot $step]
@@ -199,6 +207,7 @@ Ju classDef Bucket {
   }
   
   method RecoverSlot {} {
+    # Scan through an existing datafile to determine the last slot written.
     set fd [my Open r]
     chan seek $fd 0
     while true {
@@ -206,7 +215,7 @@ Ju classDef Bucket {
       Ju assert {[string length $bytes] >= 5}
       binary scan $bytes cI tag slot
       if {$tag == -1} {
-        puts "recovered: [clock format [* $slot $step]] ($fname)"
+        # puts "recovered: [clock format [* $slot $step]] ($fname)"
         set currSlot $slot
         break
       }
@@ -215,6 +224,7 @@ Ju classDef Bucket {
   }
   
   method SendToChild {secs} {
+    # Pass collected data down the bucket chain.
     puts "AGGREGATE [clock format $secs -format %H:%M:%S]"
   }
 }

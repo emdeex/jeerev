@@ -18,3 +18,4 @@ Examples
 * **replay-demo** - This example replays messages which were recorded earlier.
 * **webfeed-demo** - How to feed readings into state variables via web requests.
 * **table-demo** - Show readings as table in a browser with real-time updates.
+* **history-test** - Collect some data to test the round-robin storage logic.
