@@ -282,7 +282,7 @@ Ju classDef Bucket {
       }
       incr slot
     }
-    if {![info exists num]} {
+    if {![info exists nums]} {
       return {0 0 0 0}
     }
     list $nums [min {*}$mins] [max {*}$maxs] [+ {*}$sums]
