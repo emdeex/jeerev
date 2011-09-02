@@ -1,4 +1,4 @@
-Jm doc "Support for jQuery, jQuery UI, etc"
+Jm doc "Support for jQuery, jQuery UI, etc."
 
 # public URLs for some common JavaScript and CSS files
 Ju cachedVar {urls snippets} . {

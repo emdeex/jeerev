@@ -201,10 +201,12 @@ proc scanFiles {path {notifier app} {period 3}} {
 proc asSeconds {duration} {
   # Convert embedded s/m/h/d/w tags or hh:mm:ss notation into seconds.
   # duration: the input spec, possibly including duration units or colons
-  # Returns the result in seconds.
+  # Returns the result in seconds (note that a year is treated as 53 weeks).
   regsub : $duration h duration
   regsub : $duration m duration
-  set abbrevs {s + m *60+ h *60*60+ d *60*60*24+ w *60*60*24*7+}
+  set abbrevs {
+    s + m *60+ h *60*60+ d *60*60*24+ w *60*60*24*7+ y *60*60*24*7*53+
+  }
   expr [string map $abbrevs $duration] + 0
 }
 
@@ -388,4 +390,11 @@ proc fromNets {text} {
     return [lindex $out 0]
   }
   return $out
+}
+
+proc assert {cond} {
+  # Basic assertion logic - fails with an error when condition evals to false.
+  if {![uplevel [list expr $cond]]} {
+    return -code error "assertion failed: $cond"
+  }
 }

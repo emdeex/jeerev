@@ -61,7 +61,7 @@ if {[namespace exists ::oo]} {
 }
 
 namespace eval dict-extensions {
-  Jm doc "Some additional sub-commands for dict"
+  Jm doc "Some additional sub-commands for dict."
   
   proc get? {dict args} {
     # Modeled after "dict get?" courtesy patthoyts and CMcC.
