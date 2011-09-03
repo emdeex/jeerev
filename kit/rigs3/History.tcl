@@ -1,4 +1,5 @@
 Jm doc "Manage historical data storage."
+Webserver hasUrlHandlers
 
 variable collector  ;# key = param, value = list of values to aggregate
 
@@ -35,6 +36,12 @@ proc query {param args} {
   if {$chain ne ""} {
     $chain select {*}$args
   }
+}
+
+proc /query/**: {args} {
+  # Web interface to perform arbitrary queries on historical data.
+  dict set response header content-type {"" text/plain charset utf-8}
+  dict set response content [query {*}[split $args /]]
 }
 
 proc StateChanged {param} {
@@ -275,6 +282,13 @@ Ju classDef Bucket {
         if {$num < 0} break
         if {$num > 0} {
           incr nums $num
+          #FIXME a very ugly way to remove trailing ".0" for integer values
+          # this happens when the storage format on file is float or double
+          foreach v {min max sum} {
+            if {[string match {*.0} [set $v]]} {
+              set $v [string range [set $v] 0 end-2]
+            }
+          }
           lappend mins $min
           lappend maxs $max
           lappend sums $sum

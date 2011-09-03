@@ -3,7 +3,6 @@ Jm doc "Support for auto-loading of plugins when sketches are activated."
 proc decode {event device message} {
   # Called on each incoming message.
   variable drivermap
-  puts <$device>
   if {[regexp {^\[(\w+)(\.\d*)?]} $message - name] &&
       [info exists ::auto_index($name)]} {
     Log autosk {driver $device $message}
