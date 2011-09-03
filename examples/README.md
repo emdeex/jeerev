@@ -19,3 +19,4 @@ Examples
 * **webfeed-demo** - How to feed readings into state variables via web requests.
 * **table-demo** - Show readings as table in a browser with real-time updates.
 * **history-test** - Collect some data to test the round-robin storage logic.
+* **graph-demo** - Show recent temperatures as graph in a browser.

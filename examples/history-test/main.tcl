@@ -1,5 +1,4 @@
 Jm doc "Collect some data to test the round-robin storage logic."
-Jm needs History
 
 # This code may allocate dozens of MB's of disk storage, depending on the setup.
 # There is no user interface, it just starts collecting data. Created as first

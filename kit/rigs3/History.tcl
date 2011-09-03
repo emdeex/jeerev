@@ -15,13 +15,13 @@ proc APP.READY {} {
 proc group {pattern args} {
   # Define a bucket group for a specific set of state variables.
   variable buckets
-  puts "  $pattern"
+  # puts "  $pattern"
   foreach x $args {
     lassign [split $x /] range step
     set step [Ju asSeconds $step]
     set range [Ju asSeconds $range]
     dict lappend buckets($pattern) $step $range
-    puts "    step $step range $range count [/ $range $step]"
+    # puts "    step $step range $range count [/ $range $step]"
   }
 }
 
@@ -272,7 +272,7 @@ Ju classDef Bucket {
       if {$slot >= $currSlot - $count + 1} {
         chan seek $fd [* [% $slot $count] $width]
         binary scan [read $fd $width] $type num min max sum
-        Ju assert {$num >= 0}
+        if {$num < 0} break
         if {$num > 0} {
           incr nums $num
           lappend mins $min
