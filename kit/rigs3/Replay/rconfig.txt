@@ -9,7 +9,7 @@ startup: {
 devices: {       
   usb-ACM0        CUL
   usb-USB0        HMNODE2
-  usb-A600dVPp    RF12demo
+  usb-A600dVPp    autoSketch
                    
   RF12-868.5.2    roomNode
   RF12-868.5.3    radioBlip

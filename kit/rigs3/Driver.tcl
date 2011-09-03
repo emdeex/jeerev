@@ -4,11 +4,6 @@ Ju cachedVar {locations values} - {
   variable locations {} values {}
 }
 
-# proc listAll {} {
-#   # Returns a list of all known driver names.
-#   Ju map apply {{x} { regsub {.*::} $x {} }} [info class instances Info]
-# }
-
 proc register {device driver} {
   variable registered
   Jm needs $driver

@@ -6,7 +6,7 @@ Jm autoLoader ./drivers
 
 # connected directly via USB
 set device [Config connect:device usb-A700fdxv] ;# or COMn, or /dev/ttyUSBn
-Driver register $device RF12demo
+Driver register $device autoSketch
 
 # these nodes are picked up from wireless packets
 Driver register RF12-868.5.3 radioBlip
