@@ -88,7 +88,7 @@ proc dispatch {device args} {
     set obj [Event new $driver $args]
     $obj identify $device
     # copy all decoded data to state variables
-    State putDict [$obj call decode] 0 reading:
+    State putDict [$obj call decode] [$obj get when 0] reading:
     # get rid of the event object
     $obj destroy
   } else {
@@ -103,6 +103,13 @@ Ju classDef Event {
     # Construct a new structure with the specified contents
     set data $values
     dict set data driver $driver
+  }
+  
+  method get {field {default ""}} {
+    if {![dict exists $data $field]} {
+      return $default
+    }
+    dict get $data $field
   }
   
   method identify {device} {

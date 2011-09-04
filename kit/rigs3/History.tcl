@@ -37,6 +37,29 @@ proc query {param args} {
   }
 }
 
+proc dump {fname} {
+  # Dump contents of a binary history file - can be used from the command line.
+  if {[regexp {.-(\w\w\w\w)$} $fname - type]} {
+    set width [string length [binary format $type 0 0 0 0]]
+    set fd [open $fname]
+    chan configure $fd -translation binary
+    for {set i 0} {![chan eof $fd]} {incr i} {
+      set bytes [chan read $fd $width]
+      binary scan $bytes c num
+      if {$num < 0} {
+        binary scan $bytes cI num slot
+        puts "$i: SLOT $slot" ;# [binary encode hex $bytes]
+      } else {
+        binary scan $bytes $type num min max sum
+        if {$num > 0} {
+          puts [format {%d: %d %g %g %g} $i $num $min $max $sum]
+        }
+      }
+    }
+    chan close $fd
+  }
+}
+
 proc StateChanged {param} {
   # Called on each state variable change to collect historical data.
   dict extract [State getInfo $param] v t
@@ -101,12 +124,14 @@ proc SetupCollector {param low high} {
 proc FlushSlot {param} {
   # Called on each change of time slot to send of all aggregated data so far.
   upvar [namespace current]::collector($param) myData
-  set slot [dict get $myData slot]
   set values [dict get $myData values]
-  if {[llength $values] > 0} {
+  set num [llength $values]
+  if {$num > 0} {
     set chain [dict get $myData chain]
     if {$chain ne ""} {
-      $chain aggregate [* $slot [dict get $myData minStep]] $values
+      dict extract $myData slot minStep
+      set tuple [list $num [min {*}$values] [max {*}$values] [+ {*}$values]]
+      $chain aggregate [* $slot $minStep] $tuple
       #TODO propagate down (needs bucket select code)
     }
   }
@@ -141,11 +166,9 @@ Ju classDef Bucket {
   method CreateFile {} {
     # Fill a new file with empty slots. This file won't grow further during use.
     set fd [my Open a+]
-    # don't go back in time more than the total range we're storing
-    set firstSlot [/ [- [clock seconds] $range] $step]
     set filler [binary format $type 0 0 0 0]
     set emptySlots [string repeat $filler $count]
-    append emptySlots [binary format cI -1 $firstSlot]
+    append emptySlots [binary format cI -1 0]
     chan puts -nonewline $fd $emptySlots
     chan close $fd
   }
@@ -153,10 +176,10 @@ Ju classDef Bucket {
   method SetType {low high} {
     # Determine the datatypes and sizes/widths to use for each slot.
     if {[string first . $low$high] >= 0} {
-      set type crrr
+      set type Srrr
     } else {
-      set type cqqq
-      foreach {b t} { 7 cccs 15 cssi 31 ciiw 63 cwwq } {
+      set type Sqqq
+      foreach {b t} { 7 Sccs 15 Sssi 31 Siiw 63 Swwq } {
         set limit [<< 1 $b]
         if {-$limit < $low && $high < $limit} {
           set type $t
@@ -178,30 +201,32 @@ Ju classDef Bucket {
     expr {$t1 / $step == $t2 / $step}
   }
     
-  method ToBinary {slot values pass} {
+  method ToBinary {slot values} {
     # Convert a set of values to the binary format stored on file.
-    if {$pass} {
-      lassign $values num min max sum
-    } else {
-      set num [llength $values]
-      set min [min {*}$values]
-      set max [max {*}$values]
-      set sum [+ {*}$values]
+    Ju assert {$currSlot - $count < $slot && $slot <= $currSlot}
+    Ju assert {[lindex $values 0] > 0}
+    set fmt $type
+    if {$slot == $currSlot} {
+      append fmt cI
+      lappend values -1 $slot
     }
-    puts " : $num $min $max $sum ($param)"
-    binary format ${type}cI $num $min $max $sum -1 $slot
+    binary format $fmt {*}$values      
   }
   
-  method aggregate {secs values {pass 0}} {
+  method aggregate {secs values} {
     # Aggregate and store new values into the proper slot.
     set slot [/ $secs $step]
-    Ju assert {$slot >= $currSlot}
+    if {$slot > $currSlot + $count} {
+      set currSlot [- $slot $count] ;# large gap, avoid clearing far too often
+    }
+    # Ju assert {$slot >= $currSlot}
     set fd [my Open]
     # don't leave gaps, fill empty slots between last one and new one
-    while {$slot != $currSlot} {
-      my Store $fd [incr currSlot] $filler
+    while {$slot > $currSlot} {
+      if {$slot == [incr currSlot]} break
+      my Store $fd $currSlot $filler
     }
-    my Store $fd $slot [my ToBinary $slot $values $pass]
+    my Store $fd $slot [my ToBinary $slot $values]
     chan close $fd
   }
   
@@ -227,7 +252,7 @@ Ju classDef Bucket {
     # Scan through an existing datafile to determine the last slot written.
     set fd [my Open r]
     while true {
-      set bytes [read $fd $width]
+      set bytes [chan read $fd $width]
       Ju assert {[string length $bytes] >= 5}
       binary scan $bytes cI tag slot
       if {$tag == -1} {
@@ -271,7 +296,7 @@ Ju classDef Bucket {
     while {[incr nslots -1] >= 0} {
       if {$slot >= $currSlot - $count + 1} {
         chan seek $fd [* [% $slot $count] $width]
-        binary scan [read $fd $width] $type num min max sum
+        binary scan [chan read $fd $width] $type num min max sum
         if {$num < 0} break
         if {$num > 0} {
           incr nums $num
@@ -294,7 +319,10 @@ Ju classDef Bucket {
     set chcount [/ $chstep $step]
     set chslot [* [/ $secs $chstep] $chcount]
     set fd [my Open r]
-    $child aggregate $secs [my MergeSlots $fd $chslot $chcount] 1
+    set data [my MergeSlots $fd $chslot $chcount]
+    if {[lindex $data 0] > 0} {
+      $child aggregate $secs $data
+    }
     chan close $fd
   }
 }

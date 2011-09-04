@@ -32,7 +32,7 @@ proc /data.json: {} {
   }
   # create an index, with the historical data we have so far
   foreach x [lsort -dict [array names map]] {
-    set data [GetHistory $map($x) 2d 5m]
+    set data [GetHistory $map($x) 1d 10m]
     set entry [list label [Ju toJson $x -str] data $data]
     lappend index [Ju toJson $entry -dict -flat]
   }
