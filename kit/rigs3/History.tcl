@@ -2,13 +2,7 @@ Jm doc "Manage historical data storage."
 
 variable collector  ;# key = param, value = list of values to aggregate
 
-Ju cachedVar lastTime - {
-  variable lastTime 0
-}
-
 proc APP.READY {} {
-  variable fd [open [Stored path history.log] a+]
-  chan configure $fd -buffering none  
   State subscribe * [namespace which StateChanged]
 }
 
@@ -74,10 +68,53 @@ proc LogValue {param value time} {
   # Save a new parameter value to the history log file.
   variable fd
   variable lastTime
-  set id [Stored mapId history $param]
+  variable logMap
+  LogRollover $time
+  if {![info exists fd]} {
+    LogInit
+  }
+  if {![info exists logMap($param)]} {
+    set logMap($param) [array size logMap]
+    chan puts $fd [list $logMap($param) $param *] ;# save as new ID marker
+  }
   # store time differences (or the full time, when starting up)
-  chan puts $fd [list $id $value [- $time $lastTime]]
+  chan puts $fd [list $logMap($param) $value [- $time $lastTime]]
   set lastTime $time
+}
+
+proc LogRollover {time} {
+  # Switch to a new log file every once in a while.
+  variable fd
+  variable logSlot
+  set logSize 3600
+  if {![info exists logSlot]} {
+    set logSlot [/ $time $logSize]
+  }
+  if {$time / $logSize > $logSlot} {
+    set logSlot [/ $time $logSize]
+    chan close $fd
+    unset fd
+    # puts "history log rollover [clock format [* $logSlot $logSize]]"
+    file rename -force [Stored path history.log] [Stored path history.prev]
+  }
+}
+
+proc LogInit {} {
+  # Start logging, re-init parameter id map from file if it's present.
+  variable fd
+  variable lastTime
+  variable logMap
+  # reconstruct the parameter id map from what's on file so far
+  array unset logMap
+  foreach {i v t} [Ju readFile [Stored path history.log]] {
+    if {$t eq "*"} {
+      set logMap($v) $i
+    }
+  }
+  # now we can start appending new entries to this file
+  set fd [open [Stored path history.log] a]
+  chan configure $fd -buffering none  
+  set lastTime 0
 }
 
 proc CollectValue {param value time} {
