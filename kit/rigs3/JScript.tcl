@@ -29,6 +29,8 @@ Ju cachedVar {urls snippets} . {
       GH:phstc/jquery-dateFormat/master/jquery.dateFormat-1.0.js
     modernizr.js
       CF:modernizr/2.0.6/modernizr.min.js
+    jstree.js
+      http://static.jstree.com/v.1.0pre/jquery.jstree.js
   }
   variable snippets {
     kodtb.js {
