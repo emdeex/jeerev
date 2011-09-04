@@ -53,7 +53,8 @@ proc dump {fname} {
       } else {
         binary scan $bytes $type num min max sum
         if {$num > 0} {
-          puts [format {%d: %d %g %g %g} $i $num $min $max $sum]
+          # the formatting removes trailing ".0" suffixes, see also MergeSlots
+          puts [format {%d: %d %.10g %.10g %.10g} $i $num $min $max $sum]
         }
       }
     }
@@ -354,6 +355,10 @@ Ju classDef Bucket {
           lappend mins $min
           lappend maxs $max
           lappend sums $sum
+          # alternative, not sure which is better
+          # lappend mins [format %.10g $min]
+          # lappend maxs [format %.10g $max]
+          # lappend sums [format %.10g $sum]          
         }
       }
       incr slot
