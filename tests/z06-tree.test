@@ -1,9 +1,5 @@
 Jm doc "Tests for the Tree module."
 
-# Trees are nestable dicts with certain conventions:
-#  - nested items have keys ending in ":"
-#  - setting an item to the empty string removes it
-
 test z06/empty {start empty} {
   set t {}
 } {}

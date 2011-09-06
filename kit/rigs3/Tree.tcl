@@ -1,5 +1,9 @@
 Jm doc "Tree manipulation utilities."
 
+# Trees are nestable dicts with certain conventions:
+#  - nested items have keys ending in ":"
+#  - setting an item to the empty string removes it
+
 proc at {vtree args} {
   upvar $vtree tree
   set prefix {}
