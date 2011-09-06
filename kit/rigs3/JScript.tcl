@@ -15,6 +15,8 @@ Ju cachedVar {urls snippets} . {
       MS:jquery.templates/beta1/jquery.tmpl.min.js
     validate.js
       MS:jquery.validate/1.8.1/jquery.validate.min.js
+    tools.js
+      http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js
     knockout.js
       CF:knockout/1.2.1/knockout-min.js
     eventsource.js
@@ -31,6 +33,10 @@ Ju cachedVar {urls snippets} . {
       CF:modernizr/2.0.6/modernizr.min.js
     jstree.js
       http://static.jstree.com/v.1.0pre/jquery.jstree.js
+    bootstrap.css
+      http://twitter.github.com/bootstrap/assets/css/bootstrap-1.2.0.min.css
+    coffee.js
+      http://jashkenas.github.com/coffee-script/extras/coffee-script.js
   }
   variable snippets {
     kodtb.js {
@@ -62,17 +68,19 @@ proc includes {args} {
   variable snippets
   set css {}
   foreach x [concat core $args] {
+    set found 0
     set u [GetUrl $x.css]
     if {$u ne ""} {
       lappend css "<link type='text/css' href='$u' rel='stylesheet' />"
+      incr found
     }
     set u [GetUrl $x.js]
     if {$u ne ""} {
       lappend js "<script type='text/javascript' src='$u'></script>"
     } elseif {[dict exists $snippets $x.js]} {
       lappend js [wrap [dict get $snippets $x.js]]
-    } else {
-      error "unknown include: $x.js"
+    } elseif {!$found} {
+      error "unknown include: $x.js or $x.css"
     }
   }
   join [concat $css $js] "\n    "

@@ -2,6 +2,6 @@
 /JeeMon.app
 /JeeMon-MacGUI.zip
 /stored
-/x-*
+/x*
 .DS_Store
 config.txt

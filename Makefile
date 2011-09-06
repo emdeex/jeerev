@@ -10,9 +10,9 @@ test:
 fulltest:
 	$(JMEXE) tests -constraints slow
 
-# fail if there are text files with tabs in them
+# fail if there are text files with tabs in them (except if name starts with x)
 tabcheck:
-	grep -rlI --exclude=Makefile "	" *; test $$? = 1
+	grep -rlI --exclude=Makefile "	" [^x]*; test $$? = 1
 
 # generate a wrapped file from the "kit" directory
 wrap:

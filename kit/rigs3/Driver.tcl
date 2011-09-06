@@ -125,7 +125,13 @@ Ju classDef Event {
     # pre-extract values if there are extra named arguments
     set extra [lrange [info args $cmd] 1 end]
     # call the decoder
-    $cmd [self] {*}[Ju map dict get? $data $extra]
+    try {
+      $cmd [self] {*}[Ju map dict get? $data $extra]
+    } on error {e o} {
+      Log call? {$subcmd - [Ju map dict get? $data $extra]}
+      puts $e
+      puts $o
+    }
     # return the submitted results
     dict filter $data key *:
   }

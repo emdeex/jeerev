@@ -1,0 +1,80 @@
+Jm doc "Tests for the Tree module."
+
+# Trees are nestable dicts with certain conventions:
+#  - nested items have keys ending in ":"
+#  - setting an item to the empty string removes it
+
+test z06/empty {start empty} {
+  set t {}
+} {}
+
+test z06/basic {set one key} {
+  Tree at t a b
+} {a b}
+
+test z06/nested {set nested key} {
+  Tree at t c: d e
+} {d e}
+
+test z06/multiple {set nested multiple} {
+  Tree at t c: f g h i
+} {d e f g h i}
+
+
+test z06/nested-get {get nested} {
+  Tree at t c: f
+} g
+
+test z06/single-key {get with one key} {
+  Tree at t c:f
+} g
+
+test z06/nested-2nd {set another nested key} {
+  Tree at t c: j k
+} {d e f g h i j k}
+
+test z06/nested-get {just get nested} {
+  Tree at t c:
+} {d e f g h i j k}
+
+test z06/verify-one {check single key} {
+  Tree at t a
+} b
+
+test z06/get-missing {non-existent key} {
+  Tree at t x
+} {}
+
+test z06/nested-missing-single {non-existent nested single key} {
+  Tree at t ?:?:?
+} {}
+
+test z06/nested-missing {non-existent nested key} {
+  Tree at t ?:?: ?
+} {}
+
+test z06/doubly-nested {multiple nested keys} {
+  Tree at t m: n: {o p} q r
+} {n: {o p} q r}
+
+test z06/doubly-nested-replace {multiple nested key, replace existing} {
+  Tree at t m: n: {s t} q r
+} {n: {s t} q r}
+
+test z06/verify-full {check complete contents} {
+  Tree at t
+} {a b c: {d e f g h i j k} m: {n: {s t} q r}}
+
+test z06/unset-missing {unset missing key} {
+  Tree at t ? ""
+} {a b c: {d e f g h i j k} m: {n: {s t} q r}}
+
+test z06/nested-unset {unset nested key} {
+  Tree at t c: d ""
+} {f g h i j k}
+
+test z06/verify-unset {check complete contents after unset} {
+  Tree at t
+} {a b c: {f g h i j k} m: {n: {s t} q r}}
+
+cleanupTests
