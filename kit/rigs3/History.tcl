@@ -203,14 +203,16 @@ Ju classDef Bucket {
     set fname [Stored path hist-data/$id-$step-$count-$type]
     if {![file exists $fname]} {
       my CreateFile
+    } else {
+      my RecoverSlot
     }
-    my RecoverSlot
   }
   
   method CreateFile {} {
     # Fill a new file with empty slots. This file won't grow further during use.
     set fd [my Open a+]
     set filler [binary format $type 0 0 0 0]
+    set currSlot 0
     set emptySlots [string repeat $filler $count]
     append emptySlots [binary format cI -1 0]
     chan puts -nonewline $fd $emptySlots
@@ -234,7 +236,7 @@ Ju classDef Bucket {
     set filler [binary format $type  0 0 0 0]
     # set width 0
     # foreach x [split $type ""] {
-    #   incr width [string map {c 1 s 2 i 4 w 8 r 8} $x]
+    #   incr width [string map {c 1 s 2 i 4 r 4 w 8 q 8} $x]
     # }
     set width [string length $filler]
     Ju assert {$width >= 5}
@@ -294,18 +296,18 @@ Ju classDef Bucket {
   
   method RecoverSlot {} {
     # Scan through an existing datafile to determine the last slot written.
-    set fd [my Open r]
-    while true {
-      set bytes [chan read $fd $width]
-      Ju assert {[string length $bytes] >= 5}
-      binary scan $bytes cI tag slot
+    set data [Ju readFile $fname -binary]
+    # loading all at once uses more memory but is 3x as fast
+    for {set offset 0} {true} {incr offset $width} {
+      if {[binary scan $data @${offset}cI tag slot] != 2} {
+        error "datafile error @ $offset: $fname"
+      }
       if {$tag == -1} {
         # puts "recovered: [clock format [* $slot $step]] ($fname)"
         set currSlot $slot
         break
       }
     }
-    chan close $fd
   }
   
   method select {selFrom selStep selCount} {

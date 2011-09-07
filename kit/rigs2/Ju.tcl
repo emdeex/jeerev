@@ -51,10 +51,16 @@ proc unComment {text} {
 proc readFile {name args} {
   # Return file contents as a text string or empty if the file doesn't exist.
   # name: file name
-  # args: arguments to pass to the "read" command
+  # args: optional -binary and -nonewline options
   if {[file exists $name]} {
     set fd [open $name]
     try {
+      if {"-binary" in $args} {
+        chan configure $fd -translation binary
+        set args [omit $args -binary]
+      } else {
+        chan configure $fd -encoding utf-8
+      }
       chan configure $fd -encoding utf-8
       return [chan read {*}$args $fd]
     } finally {
