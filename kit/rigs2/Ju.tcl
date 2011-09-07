@@ -48,21 +48,20 @@ proc unComment {text} {
   return [regsub -line -all {^\s*#.*$} $text {}]
 }
 
-proc readFile {name args} {
+proc readFile {name {opt ""}} {
   # Return file contents as a text string or empty if the file doesn't exist.
   # name: file name
-  # args: optional -binary and -nonewline options
+  # opt: optional -binary or -nonewline option
   if {[file exists $name]} {
     set fd [open $name]
     try {
-      if {"-binary" in $args} {
+      if {$opt eq "-binary"} {
+        set opt ""
         chan configure $fd -translation binary
-        set args [omit $args -binary]
       } else {
         chan configure $fd -encoding utf-8
       }
-      chan configure $fd -encoding utf-8
-      return [chan read {*}$args $fd]
+      return [chan read {*}$opt $fd]
     } finally {
       chan close $fd
     }

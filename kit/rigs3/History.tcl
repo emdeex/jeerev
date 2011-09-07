@@ -266,7 +266,7 @@ Ju classDef Bucket {
       set currSlot [- $slot $count] ;# large gap, avoid clearing far too often
     }
     # Ju assert {$slot >= $currSlot}
-    set fd [my Open]
+    set fd [my Open r+]
     # don't leave gaps, fill empty slots between last one and new one
     while {$slot > $currSlot} {
       if {$slot == [incr currSlot]} break
@@ -276,7 +276,7 @@ Ju classDef Bucket {
     chan close $fd
   }
   
-  method Open {{mode r+}} {
+  method Open {mode} {
     # Open the associated datafile.
     set fd [open $fname $mode]
     chan configure $fd -translation binary -buffering none
@@ -296,18 +296,14 @@ Ju classDef Bucket {
   
   method RecoverSlot {} {
     # Scan through an existing datafile to determine the last slot written.
-    set data [Ju readFile $fname -binary]
-    # loading all at once uses more memory but is 3x as fast
-    for {set offset 0} {true} {incr offset $width} {
-      if {[binary scan $data @${offset}cI tag slot] != 2} {
-        error "datafile error @ $offset: $fname"
-      }
+    set d [Ju readFile $fname -binary]
+    # loading all data at once uses more memory but is 3x as fast
+    for {set o 0} {[binary scan $d @${o}cI tag currSlot] == 2} {incr o $width} {
       if {$tag == -1} {
-        # puts "recovered: [clock format [* $slot $step]] ($fname)"
-        set currSlot $slot
-        break
+        return
       }
     }
+    error "datafile error @ $o of [string length $d]: $fname"
   }
   
   method select {selFrom selStep selCount} {

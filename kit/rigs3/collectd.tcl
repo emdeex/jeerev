@@ -135,11 +135,10 @@ proc Val {b} {
     if {$x == 1} {
       binary scan $b @${off}q v
       regsub {\.0$} $v {} v
-    } else {
+    } elseif {$x == 2} {
       binary scan $b @${off}W v
-      if {$x != 2 && $v < 0} {
-        set v [& $v 0xFFFFFFFFFFFFFFFF]
-      }
+    } else {
+      binary scan $b @${off}Wu v
     }
     lappend out $v
     incr off 8
