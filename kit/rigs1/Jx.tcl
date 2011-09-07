@@ -65,8 +65,8 @@ namespace eval dict-extensions {
   
   proc get? {dict args} {
     # Modeled after "dict get?" courtesy patthoyts and CMcC.
-    if {[dict exists $dict {*}$args]} {
-      return [dict get $dict {*}$args]
+    if {[llength $args] == 0 || [dict exists $dict {*}$args]} {
+      dict get $dict {*}$args
     }
   }
 

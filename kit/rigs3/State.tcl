@@ -87,3 +87,18 @@ proc unsubscribe {match cmd} {
     dict unset traces $match
   }
 }
+
+proc tree {{pattern *} {type v}} {
+  # Generate a nested dict with all the state variable names unfolded.
+  set nodes {}
+  foreach x [lsearch -all -inline [State keys] $pattern] {
+    set v [State getInfo $x]
+    if {$type eq "-all"} {
+      append x :
+    } else {
+      set v [dict get $v $type]
+    }
+    dict set nodes {*}[string map {: ": "} $x] $v
+  }
+  return $nodes
+}

@@ -10,7 +10,7 @@ proc /: {} {
 proc /data.json: {} {
   # Returns a JSON-formatted list / tree with all state variable names.
   dict set response header content-type {"" application/json charset utf-8}
-  dict set response content [ConvertTree [StateTree]]
+  dict set response content [ConvertTree [State tree]]
 }
 
 proc ConvertTree {tree} {
@@ -27,13 +27,4 @@ proc ConvertTree {tree} {
     }
   }
   Ju toJson $nodes -list -flat
-}
-
-proc StateTree {} {
-  # Generate a nested dict with all the state variable names unfolded.
-  set nodes {}
-  foreach x [State keys] {
-    dict set nodes {*}[string map {: ": "} $x] ""
-  }
-  return $nodes
 }
