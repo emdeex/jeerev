@@ -34,8 +34,7 @@ proc query {param args} {
 
 proc /query/**: {args} {
   # Web interface to perform arbitrary queries on historical data.
-  dict set response header content-type {"" text/plain charset utf-8}
-  dict set response content [query {*}[split $args /]]
+  wibble pageResponse text [query {*}[split $args /]]
 }
 
 proc dump {fname} {

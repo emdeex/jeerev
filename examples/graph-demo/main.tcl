@@ -19,7 +19,7 @@ proc APP.READY {} {
 proc /: {} {
   # Respond to "/" url requests.
   set html [Ju readFile [Ju mySourceDir]/page.tmpl]
-  dict set response content [wibble template $html]
+  wibble pageResponse html [wibble template $html]
 }
 
 proc /data.json: {} {
@@ -36,8 +36,7 @@ proc /data.json: {} {
     set entry [list label [Ju toJson $x -str] data $data]
     lappend index [Ju toJson $entry -dict -flat]
   }
-  dict set response header content-type {"" application/json charset utf-8}
-  dict set response content [Ju toJson $index -list -flat]
+  wibble pageResponse json [Ju toJson $index -list -flat]
 }
 
 proc GetHistory {param range step} {

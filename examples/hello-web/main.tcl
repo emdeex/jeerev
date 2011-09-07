@@ -3,5 +3,5 @@ Webserver hasUrlHandlers
 
 proc /: {} {
   # Respond to "/" url requests.
-  dict set response content "Hello, it's <b>[clock format [clock seconds]]</b>."
+  wibble pageResponse html "Hello, it's <b>[clock format [clock seconds]]</b>."
 }

@@ -4,5 +4,5 @@ Webserver hasUrlHandlers
 
 proc /: {} {
   # Respond to "/" url requests.
-  dict set response content {Try this: <a href="/peek">Peek!</a>}
+  wibble pageResponse html {Try this: <a href="/peek">Peek!</a>}
 }

@@ -37,7 +37,7 @@ if {[app get -collectd 0]} {
 proc /: {} {
   # Respond to "/" url requests.
   set html [Ju readFile [Ju mySourceDir]/page.tmpl]
-  dict set response content [wibble template $html]
+  wibble pageResponse html [wibble template $html]
 }
 
 proc /data.json: {} {
@@ -48,9 +48,7 @@ proc /data.json: {} {
   # collect those "pending changes" instead of sending them off as SSE's.
   Propagate ;# flush pending events now, since we're going to clobber $pending
   Ju map TrackState [State keys $pattern]
-  #FIXME whoops, reply socket isn't in UTF8 mode!
-  dict set response header content-type {"" application/json charset utf-8}
-  dict set response content [encoding convertto identity [Propagate -collect]]
+  wibble pageResponse json [Propagate -collect]
 }
 
 proc WEBSSE.SESSION {mode type} {

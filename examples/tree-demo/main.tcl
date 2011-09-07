@@ -4,13 +4,12 @@ Webserver hasUrlHandlers
 proc /: {} {
   # Respond to "/" url requests.
   set html [Ju readFile [Ju mySourceDir]/page.tmpl]
-  dict set response content [wibble template $html]
+  wibble pageResponse html [wibble template $html]
 }
 
 proc /data.json: {} {
   # Returns a JSON-formatted list / tree with all state variable names.
-  dict set response header content-type {"" application/json charset utf-8}
-  dict set response content [ConvertTree [State tree]]
+  wibble pageResponse json [ConvertTree [State tree]]
 }
 
 proc ConvertTree {tree} {

@@ -29,9 +29,7 @@ proc page {ns args} {
     set url "<a href='/peek/info/'>$url</a>"
   }
   set breadcrumbs [join [linsert $trail 0 $url] " :: "]
-  #FIXME UTF8 not ok, see: http://127.0.0.1:8181/peek/proc/driver/CUL/Decode-K
-  dict set response header content-type {"" text/html charset utf-8}
-  dict set response content [wibble template {
+  wibble pageResponse html [wibble template {
     <html>
       <head>
         <style type="text/css">

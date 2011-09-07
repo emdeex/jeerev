@@ -12,7 +12,7 @@ proc APP.READY {} {
 proc /: {} {
   # Respond to "/" url requests.
   set html [Ju readFile [Ju mySourceDir]/page.tmpl]
-  dict set response content [wibble template $html]
+  wibble pageResponse html [wibble template $html]
 }
 
 proc /do/*/*/*: {device group house} {

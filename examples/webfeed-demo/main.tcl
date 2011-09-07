@@ -7,7 +7,6 @@ State subscribe * {apply {x { puts "$x = [State get $x]" }}}
 
 proc /: {} {
   # Respond to "/" url requests.
-  dict set response header content-type {"" text/plain charset utf-8}
-  dict set response content {Use http://127.0.0.1:8181/webfeed/<param>/<value>}
+  wibble pageResponse text {Use http://127.0.0.1:8181/webfeed/<param>/<value>}
   return $response
 }

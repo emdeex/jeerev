@@ -98,7 +98,7 @@ proc GetUrl {name} {
 }
 
 proc coffee {code} {
-  # wishful thinking...
+  #return "<script type='text/coffescript'>$code</script>"
 }
 
 proc wrap {code} {
