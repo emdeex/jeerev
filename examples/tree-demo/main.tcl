@@ -1,36 +1,32 @@
 Jm doc "Display all state variables as a tree in the browser."
 Webserver hasUrlHandlers
 
-variable html {
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset='utf-8'>
-      <title>State variable tree</title>
-      [JScript includes jstree]
-      [JScript wrap {
-        var options = {
-          core: { animation: 0 },
-          plugins: [ 'themes', 'json_data' ],
-          json_data: {}
-        };
-        $.getJSON('data.json', function(data) {
-          options.json_data.data = data;
-          $('#placeholder').jstree(options);
-        });
-      }]
-      [JScript style {
-        #aaa { width: 600px; height: 300px; }
-      }]
-    </head>
-    <body>
-      <div id='placeholder'></div>
-    </body>
-  </html>
+variable js {
+  var options = {
+    core: { animation: 0 },
+    plugins: [ 'themes', 'json_data' ],
+    json_data: {}
+  };
+  $.getJSON('data.json', function(data) {
+    options.json_data.data = data;
+    $('#placeholder').jstree(options);
+  });
 }
+
+variable html [Sif html {
+  !html
+    head
+      meta/charset=utf-8
+      title: State variable tree
+      [JScript includes jstree]
+      [JScript wrap $js]
+      [JScript style { #aaa { width: 600px; height: 300px; } }]
+    body>#placeholder
+}]
 
 proc /: {} {
   # Respond to "/" url requests.
+  variable js
   variable html
   wibble pageResponse html [Webserver expand $html]
 }

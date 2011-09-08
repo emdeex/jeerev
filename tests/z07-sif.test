@@ -1,0 +1,103 @@
+Jm doc "Tests for the Tree module."
+
+set html1 {
+  !html
+    head
+      meta/charset=utf-8
+      title: Layout demo
+      [JScript includes bootstrap flot]
+      [JScript wrap $js]
+      [JScript style $css]
+    body>#container
+      .row
+        .span3.columns>h5: Variables
+        .span13.columns>h2#maintag
+      .row
+        .span3.columns.tree: $tree
+        .span10.columns.lg
+          #gmain: Pick a variable on the left...
+          #gsub
+        % foreach x {1d 1w 8w 1y}
+          #g$x.span3.columns.sg
+}
+
+
+test z07/print1 {print test 1} -body {
+  Sif print [Sif parse $html1]
+} -output {>\
+  !html
+>  head
+>   meta/charset=utf-8
+>   title: Layout demo
+>   [JScript includes bootstrap flot]
+>   [JScript wrap $js]
+>   [JScript style $css]
+>  body>#container
+>   .row
+>    .span3.columns>h5: Variables
+>    .span13.columns>h2#maintag
+>   .row
+>    .span3.columns.tree: $tree
+>    .span10.columns.lg
+>     #gmain: Pick a variable on the left...
+>     #gsub
+>    % foreach x {1d 1w 8w 1y}
+>     #g$x.span3.columns.sg
+}
+
+test z07/html1 {html test 1} {
+  Sif html $html1
+} {<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Layout demo</title>
+    [JScript includes bootstrap flot]
+    [JScript wrap $js]
+    [JScript style $css]
+  </head>
+  <body><div id='container'>
+    <div class='row'>
+      <div class='span3 columns'><h5>Variables</h5></div>
+      <div class='span13 columns'><h2 id='maintag'></h2></div>
+    </div>
+    <div class='row'>
+      <div class='span3 columns tree'>$tree</div>
+      <div class='span10 columns lg'>
+        <div id='gmain'>Pick a variable on the left...</div>
+        <div id='gsub' />
+      </div>
+%      foreach x {1d 1w 8w 1y} {
+        <div id='g$x' class='span3 columns sg' />
+%      }
+    </div>
+  </div></body>
+</html>}
+
+test z07/html2 {html test 2} {
+  Sif html {
+    !html
+      head
+        meta/charset=utf-8
+        title: Flot graph demo
+        [JScript includes flot]
+        [JScript wrap $js]
+        [JScript style { #placeholder { width: 600px; height: 300px; } }]
+      body
+        #placeholder
+  }
+} {<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Flot graph demo</title>
+    [JScript includes flot]
+    [JScript wrap $js]
+    [JScript style { #placeholder { width: 600px; height: 300px; } }]
+  </head>
+  <body>
+    <div id='placeholder' />
+  </body>
+</html>}
+
+cleanupTests

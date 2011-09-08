@@ -16,42 +16,38 @@ proc APP.READY {} {
   History group $pattern 2d/1m 1w/5m 3y/1h
 }
 
-variable html {
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset='utf-8'>
-      <title>Flot graph demo</title>
-      [JScript includes flot]
-      [JScript wrap {
-        var options = {
-          lines: { show: true },
-          points: { show: true },
-          xaxis: { mode: "time" },
-          legend: { position: "nw", margin: 3 },
-          shadowSize: 0,
-          grid: { borderWidth: 1, borderColor: "#bbbbbb" },
-          series: {
-            lines: { lineWidth: 1 },
-            points: { radius: 0.5 },
-          }
-        };
-        $.getJSON('data.json', function(data) {
-          $.plot($("#placeholder"), data, options);
-        });
-      }]
-      [JScript style {
-        #placeholder { width: 600px; height: 300px; }
-      }]
-    </head>
-    <body>
-      <div id="placeholder"></div>
-    </body>
-  </html>
+variable js {
+  var options = {
+    lines: { show: true },
+    points: { show: true },
+    xaxis: { mode: "time" },
+    legend: { position: "nw", margin: 3 },
+    shadowSize: 0,
+    grid: { borderWidth: 1, borderColor: "#bbbbbb" },
+    series: {
+      lines: { lineWidth: 1 },
+      points: { radius: 0.5 },
+    }
+  };
+  $.getJSON('data.json', function(data) {
+    $.plot($("#placeholder"), data, options);
+  });
 }
+
+variable html [Sif html {
+  !html
+    head
+      meta/charset=utf-8
+      title: Flot graph demo
+      [JScript includes flot]
+      [JScript wrap $js]
+      [JScript style { #placeholder { width: 600px; height: 300px; } }]
+    body>#placeholder
+}]
 
 proc /: {} {
   # Respond to "/" url requests.
+  variable js
   variable html
   wibble pageResponse html [Webserver expand $html]
 }

@@ -7,33 +7,32 @@ proc APP.READY {} {
   Simulate
 }
 
-variable html {
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset='utf-8'>
-      <title>Server-Sent Events demo</title>
-      [JScript includes knockout eventsource]
-      [JScript wrap {
-        var viewModel = { counter : ko.observable("?") };
-        ko.applyBindings(viewModel);
+variable js {
+  var viewModel = { counter : ko.observable("?") };
+  ko.applyBindings(viewModel);
 
-        $.eventsource({
-          url: 'events/test',
-          message: function (data) { viewModel.counter(data.counter); }
-        });
-      }]
-    </head>
-    <body>
-      Random value:
-      <blockquote data-bind="text: counter"></blockquote>
-      (should update once a second)
-    </body>
-  </html>
+  $.eventsource({
+    url: 'events/test',
+    message: function (data) { viewModel.counter(data.counter); }
+  });
 }
+
+variable html [Sif html {
+  !html
+    head
+      meta/charset=utf-8
+      title: Server-Sent Events demo
+      [JScript includes knockout eventsource]
+      [JScript wrap $js]
+    body
+      p: Random value:
+      blockquote/data-bind=text:counter: .
+      p: (should update once a second)
+}]
 
 proc /: {} {
   # Respond to "/" url requests.
+  variable js
   variable html
   wibble pageResponse html [Webserver expand $html]
 }

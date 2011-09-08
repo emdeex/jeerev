@@ -9,52 +9,44 @@ proc APP.READY {} {
   variable conn [Serial connect $device 57600]
 }
 
-variable html {
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset='utf-8'>
-      <title>KAKU send</title>
-      [JScript includes ui]
-      [JScript wrap {
-        $(".toggles, #group").buttonset();
-        $("#gI").click();
-        // use an ajax request to respond to each button
-        $("button").click(function () {
-          var hc = $("select").val();
-          var gr = $(":checked").val();
-          $.get("do/" + this.id + "/" + gr + "/" + hc);
-        });
-      }]
-    </head>
-    <body>
-  %   foreach x {1 2 3 4} {
-        <p class="toggles">
-          <button id="on$x">On $x</button>
-          <button id="off$x">Off $x</button>
-        </p>
-  %   }
-      <p id="group">
-        <label>Group:</label>
-  %     foreach x {I II III IV} {
-          <input type="radio" id="g$x" name="g" value="$x" />
-            <label for="g$x">$x</label>
-  %     }
-      </p>
-      <p>
-        <label>House Code:</label>
-        <select>
-  %       foreach x {A B C D E F G H I J K L M N O P} {
-            <option value="$x">$x</option>
-  %       }
-        </select>
-      </p>
-    </body>
-  </html>
+variable js {
+  $(".toggles, #group").buttonset();
+  $("#gI").click();
+  // use an ajax request to respond to each button
+  $("button").click(function () {
+    var hc = $("select").val();
+    var gr = $(":checked").val();
+    $.get("do/" + this.id + "/" + gr + "/" + hc);
+  });
 }
+
+variable html [Sif html {
+  !html
+    head
+      meta/charset=utf-8
+      title: KAKU send
+      [JScript includes ui]
+      [JScript wrap $js]
+    body
+      % foreach x {1 2 3 4}
+        p.toggles
+          button#on$x: On $x
+          button#off$x: Off $x
+      p#group
+        label: Group:
+        % foreach x {I II III IV}
+          input#g$x/type=radio/name=g/value=$x
+          label/for=g$x $x
+      p
+        label: House Code:
+        select
+        % foreach x {A B C D E F G H I J K L M N O P}
+          option/value=$x: $x
+}]
 
 proc /: {} {
   # Respond to "/" url requests.
+  variable js
   variable html
   wibble pageResponse html [Webserver expand $html]
 }
