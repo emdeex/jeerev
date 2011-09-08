@@ -1,9 +1,37 @@
 Jm doc "Display all state variables as a tree in the browser."
 Webserver hasUrlHandlers
 
+variable html [Ju dedent {
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset='utf-8'>
+      <title>State variable tree</title>
+      [JScript includes jstree]
+      [JScript wrap {
+        var options = {
+          core: { animation: 0 },
+          plugins: [ 'themes', 'json_data' ],
+          json_data: {}
+        };
+        $.getJSON('data.json', function(data) {
+          options.json_data.data = data;
+          $('#placeholder').jstree(options);
+        });
+      }]
+      <style type='text/css'>
+        #aaa { width: 600px; height: 300px; }
+      </style>
+    </head>
+    <body>
+      <div id='placeholder'></div>
+    </body>
+  </html>
+}]
+
 proc /: {} {
   # Respond to "/" url requests.
-  set html [Ju readFile [Ju mySourceDir]/page.tmpl]
+  variable html
   wibble pageResponse html [wibble template $html]
 }
 

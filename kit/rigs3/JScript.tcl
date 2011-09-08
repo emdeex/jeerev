@@ -18,7 +18,7 @@ Ju cachedVar {urls snippets} . {
     tools.js
       http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js
     knockout.js
-      CF:knockout/1.2.1/knockout-min.js
+      CG:SteveSanderson/knockout/knockout-1.3.0beta.js
     eventsource.js
       GH:rwldrn/jquery.eventsource/master/jquery.eventsource.js
     flot.js
@@ -94,6 +94,7 @@ proc GetUrl {name} {
     GH: https://raw.github.com/
     CF: http://cdnjs.cloudflare.com/ajax/libs/
     MS: http://ajax.aspnetcdn.com/ajax/
+    CG: http://cloud.github.com/downloads/
   } [dict get? $urls $name]
 }
 

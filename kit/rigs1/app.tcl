@@ -33,7 +33,8 @@ proc start {args} {
   } else {
     # try to give a helpful error message if launching is going to fail
     if {![file exists [app path]/main.tcl]} {
-      if {[llength $argv] == 2 && [lindex $argv 1] in {-? -h --help ? help}} {
+      set help {? help -? -h --help --usage}
+      if {[llength $argv] == 2 && [lindex $argv 1] in $help} {
         puts stderr \
     "JeeMon is a portable runtime for Physical Computing and Home Automation."
         puts stderr \

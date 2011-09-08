@@ -6,7 +6,7 @@ proc start {args} {
   set cmds [string tolower $args]
   switch -- $cmds {
     all { set cmds {g a c d e l m p r t} }
-    "" - "?" - "-h" - "--help" { set cmds {g u}}
+    "" - "?" - "help" - "-?" - "-h" - "--help" - "--usage" { set cmds {g u}}
   }
   foreach x $cmds {
     puts ""

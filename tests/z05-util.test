@@ -96,4 +96,37 @@ test z01/ns-parse-nested {parse nested netstring map} {
   Ju fromNets 1:a,1:A,2:b:,31:1:c,1:C,2:d:,0:,1:e,1:5,1:f,0:,,1:g,1:G,
 } {a A b: {c C d: {} e 5 f {}} g G}
 
+test z01/untab {untab some text} {
+  Ju untab {
+    abc
+      def
+        ghi
+      jkl
+    there a space at the end: 
+    mno
+  }
+} {abc
+  def
+    ghi
+  jkl
+there a space at the end:
+mno}
+
+test z01/untab {untab some text} {
+  Ju untab {
+    abc
+      def
+        ghi
+      jkl
+    there a space at the end: 
+    mno
+  } -endspaces
+} {abc
+  def
+    ghi
+  jkl
+there a space at the end: 
+mno
+  }
+
 cleanupTests

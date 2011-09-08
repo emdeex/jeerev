@@ -403,3 +403,17 @@ proc assert {cond} {
     return -code error "assertion failed: $cond"
   }
 }
+
+proc dedent {text {opt ""}} {
+  # Remove leading indentation from all lines of the text.
+  # text: the string to clean up
+  # opt: can be "-endspaces" to leave whitespace at the end of each line
+  if {[regexp {^(\n\s*)} $text - prefix]} {
+    if {$opt ne "-endspaces"} {
+      set prefix "\\s*$prefix"
+      set text [string trimright $text]
+    }
+    regsub -all $prefix $text \n text
+  }
+  string trimleft $text
+}

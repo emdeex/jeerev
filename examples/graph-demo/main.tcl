@@ -16,9 +16,43 @@ proc APP.READY {} {
   History group $pattern 2d/1m 1w/5m 3y/1h
 }
 
+variable html [Ju dedent {
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset='utf-8'>
+      <title>Flot graph demo</title>
+      [JScript includes flot]
+      [JScript wrap {
+        var options = {
+          lines: { show: true },
+          points: { show: true },
+          xaxis: { mode: "time" },
+          legend: { position: "nw", margin: 3 },
+          shadowSize: 0,
+          grid: { borderWidth: 1, borderColor: "#bbbbbb" },
+          series: {
+            lines: { lineWidth: 1 },
+            points: { radius: 0.5 },
+          }
+        };
+        $.getJSON('data.json', function(data) {
+          $.plot($("#placeholder"), data, options);
+        });
+      }]
+      <style type='text/css'>
+        #placeholder { width: 600px; height: 300px; }
+      </style>
+    </head>
+    <body>
+      <div id="placeholder"></div>
+    </body>
+  </html>
+}]
+
 proc /: {} {
   # Respond to "/" url requests.
-  set html [Ju readFile [Ju mySourceDir]/page.tmpl]
+  variable html
   wibble pageResponse html [wibble template $html]
 }
 
