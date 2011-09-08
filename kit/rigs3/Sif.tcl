@@ -62,7 +62,14 @@ proc HtmlElements {abbrev {content ""}} {
     set tag ""
     set id ""
     set classes {}
-    set attrs [lassign [split $x /] x]
+    set attrs {}
+    foreach a [lreverse [regexp -all -inline -indices {/\w+=} $x]] {
+      lassign $a from to
+      set k [string range $x $from+1 $to-1]
+      set v [string range $x $to+1 end]
+      set attrs [linsert $attrs 0 $k $v]
+      set x [string range $x 0 $from-1]
+    }
     foreach {- y} [regexp -all -inline {([#\.]?[\w\$]+)} $x] {
       switch [string index $y 0] {
         \#      { set id [string range $y 1 end] }
@@ -77,10 +84,8 @@ proc HtmlElements {abbrev {content ""}} {
     if {[llength $classes]} {
       append tag " class='" $classes "'"
     }
-    if {[llength $attrs]} {
-      foreach a $attrs {
-        append tag " " [regsub {=(.*)} $a {='\1'}]
-      }
+    foreach {k v} $attrs {
+      append tag " " $k "='" $v "'"
     }
     lappend openTags $tag
   }

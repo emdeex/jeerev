@@ -218,4 +218,14 @@ test x07/html3 {html test 3 with expansion} {
   </body>
 </html>}
 
+test z07/avoid-slashes {avoiding attributes with slashes in them} {
+  regexp -all -inline -indices {/\w+=} "style/a=b/c=d/e/f=g"
+} {{5 7} {9 11} {15 17}}
+
+test z07/attrs-with-slashes {dealing with attributes with slashes in them} {
+  Sif html {
+    style/type=text/css: p { font: Arial; }
+  }
+} {<style type='text/css'>p { font: Arial; }</style>}
+
 cleanupTests
