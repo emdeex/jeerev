@@ -1,103 +1,103 @@
 Jm doc "Tests for the Ju utility module."
 
-test z01/num {number to JSON} {
+test z05/num {number to JSON} {
   Ju toJson 123
 } 123
 
-test z01/numstr {number to JSON, force string} {
+test z05/numstr {number to JSON, force string} {
   Ju toJson 123 -str
 } {"123"}
 
-test z01/str {string to JSON} {
+test z05/str {string to JSON} {
   Ju toJson abc
 } {"abc"}
 
-test z01/str {empty string to JSON} {
+test z05/str {empty string to JSON} {
   Ju toJson {}
 } {""}
 
-test z01/escape {string with escapes to JSON} {
+test z05/escape {string with escapes to JSON} {
   Ju toJson "< \\ \b \f \n \r \t \" \\t >"
 } {"< \\ \b \f \n \r \t \" \\t >"}
 
-test z01/map {map to JSON} {
+test z05/map {map to JSON} {
   Ju toJson {a A b B c 3 4 {} e E} -dict
 } {{"a":"A","b":"B","c":3,"4":"","e":"E"}}
 
-test z01/nested {nested map to JSON} {
+test z05/nested {nested map to JSON} {
   Ju toJson {a A b: {c C d: {} e 5 f ""} g G} -dict
 } {{"a":"A","b":{"c":"C","d":{},"e":5,"f":""},"g":"G"}}
 
-test z01/float {float to JSON} {
+test z05/float {float to JSON} {
   Ju toJson 1.2345000
 } 1.2345
 
-test z01/float {float to JSON, force string} {
+test z05/float {float to JSON, force string} {
   Ju toJson 1.2345000 -str
 } {"1.2345000"}
 
-test z01/octal {octal to JSON} {
+test z05/octal {octal to JSON} {
   Ju toJson 010
 } 8
 
-test z01/octal {octal to JSON, force string} {
+test z05/octal {octal to JSON, force string} {
   Ju toJson 010 -str
 } {"010"}
 
-test z01/hex {hex to JSON} {
+test z05/hex {hex to JSON} {
   Ju toJson 0x10
 } 16
 
-test z01/hex {hex to JSON, force string} {
+test z05/hex {hex to JSON, force string} {
   Ju toJson 0x10 -str
 } {"0x10"}
 
-test z01/spaces {spaces to JSON} {
+test z05/spaces {spaces to JSON} {
   Ju toJson {  }
 } {"  "}
 
-test z01/parse {parse JSON} {
+test z05/parse {parse JSON} {
   Ju fromJson {[1,"b",[3,""],"e",{"f":7,"g":"h h"},"i"]}
 } {1 b {3 {}} e {f 7 g {h h}} i}
 
-test z01/ns-num {number to netstring} {
+test z05/ns-num {number to netstring} {
   Ju toNets 123
 } 3:123,
 
-test z01/ns-str {string to netstring} {
+test z05/ns-str {string to netstring} {
   Ju toNets abc
 } 3:abc,
 
-test z01/ns-str {empty string to netstring} {
+test z05/ns-str {empty string to netstring} {
   Ju toNets {}
 } 0:,
 
-test z01/ns-dict {map to netstring} {
+test z05/ns-dict {map to netstring} {
   Ju toNets {a A b B c 3 4 {} e E} -dict
 } 1:a,1:A,1:b,1:B,1:c,1:3,1:4,0:,1:e,1:E,
 
-test z01/ns-nested {nested map to netstring} {
+test z05/ns-nested {nested map to netstring} {
   Ju toNets {a A b: {c C d: {} e 5 f ""} g G} -dict
 } 1:a,1:A,2:b:,31:1:c,1:C,2:d:,0:,1:e,1:5,1:f,0:,,1:g,1:G,
 
-test z01/ns-spaces {spaces to netstring} {
+test z05/ns-spaces {spaces to netstring} {
   Ju toNets {  }
 } {2:  ,}
 
-test z01/ns-parse-one {parse netstring} {
+test z05/ns-parse-one {parse netstring} {
   Ju fromNets 3:123,
 } 123
 
-test z01/ns-parse-dict {parse netstring map} {
+test z05/ns-parse-dict {parse netstring map} {
   Ju fromNets 1:a,1:A,1:b,1:B,1:c,1:3,1:4,0:,1:e,1:E,
 } {a A b B c 3 4 {} e E}
 
-test z01/ns-parse-nested {parse nested netstring map} {
+test z05/ns-parse-nested {parse nested netstring map} {
   Ju fromNets 1:a,1:A,2:b:,31:1:c,1:C,2:d:,0:,1:e,1:5,1:f,0:,,1:g,1:G,
 } {a A b: {c C d: {} e 5 f {}} g G}
 
-test z01/untab {untab some text} {
-  Ju untab {
+test z05/dedent {dedent some text} {
+  Ju dedent {
     abc
       def
         ghi
@@ -112,8 +112,8 @@ test z01/untab {untab some text} {
 there a space at the end:
 mno}
 
-test z01/untab {untab some text} {
-  Ju untab {
+test z05/dedent {dedent some text} {
+  Ju dedent {
     abc
       def
         ghi
