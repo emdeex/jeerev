@@ -1,6 +1,6 @@
 Jm doc "Framework for dispatching messages from devices to drivers and back."
 
-Ju cachedVar {locations values} - {
+Ju cachedVar {locations values} -once {
   variable locations {} values {}
 }
 

@@ -6,7 +6,7 @@ Jm doc "Various bits of code to handle data storage."
 
 variable datadir ./stored   ;# the location where all datafiles are stored
 
-Ju cachedVar mapInfo - {
+Ju cachedVar mapInfo -once {
   variable mapInfo {}
   map info version 1
 }

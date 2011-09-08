@@ -2,7 +2,7 @@ Jm doc "Support for web Server-Sent Events."
 # see also http://dev.w3.org/html5/eventsource/
 Webserver hasUrlHandlers
 
-Ju cachedVar listeners - {
+Ju cachedVar listeners -once {
   variable listeners ""
 }
 

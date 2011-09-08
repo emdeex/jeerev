@@ -28,7 +28,7 @@ proc L {time dev args} {
   }
 }
 
-Ju cachedVar interfaces - {
+Ju cachedVar interfaces -once {
   variable interfaces {}
   # set up the device information, this should match what's in the log file
   variable config
