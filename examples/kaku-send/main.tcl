@@ -9,7 +9,7 @@ proc APP.READY {} {
   variable conn [Serial connect $device 57600]
 }
 
-variable html [Ju dedent {
+variable html {
   <!DOCTYPE html>
   <html>
     <head>
@@ -51,12 +51,12 @@ variable html [Ju dedent {
       </p>
     </body>
   </html>
-}]
+}
 
 proc /: {} {
   # Respond to "/" url requests.
   variable html
-  wibble pageResponse html [wibble template $html]
+  wibble pageResponse html [Webserver expand $html]
 }
 
 proc /do/*/*/*: {device group house} {

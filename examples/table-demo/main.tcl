@@ -34,7 +34,7 @@ if {[app get -collectd 0]} {
   }
 }
 
-variable html [Ju dedent {
+variable html {
   <!DOCTYPE html>
   <html>
     <head>
@@ -88,7 +88,7 @@ variable html [Ju dedent {
         });
         $.getJSON('data.json', viewModel.update);
       }]
-      <style type='text/css'>
+      [JScript style {
         body { font-family: Verdana; }
         .main { width: 600px; }
         table { border: 1px solid #ddd; border-collapse: collapse; width: 100%; }
@@ -111,7 +111,7 @@ variable html [Ju dedent {
         .dataTables_length, .dataTables_filter, .dataTables_info {
           font-weight: normal;
         }
-      </style>
+      }]
     </head>
     <body>
       <div class='main'>
@@ -134,12 +134,12 @@ variable html [Ju dedent {
       </div>
     </body>
   </html>
-}]
+}
 
 proc /: {} {
   # Respond to "/" url requests.
   variable html
-  wibble pageResponse html [wibble template $html]
+  wibble pageResponse html [Webserver expand $html]
 }
 
 proc /data.json: {} {

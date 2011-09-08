@@ -160,3 +160,8 @@ Ju cachedVar routes . {
     lappend routes "^[string trimright $re :]\$" $path
   }
 }
+
+proc expand {text} {
+  # Utility to remove leading indentation and apply template expansion.
+  uplevel [list wibble template [Ju dedent $text]]
+}

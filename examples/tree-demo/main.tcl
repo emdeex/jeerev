@@ -1,7 +1,7 @@
 Jm doc "Display all state variables as a tree in the browser."
 Webserver hasUrlHandlers
 
-variable html [Ju dedent {
+variable html {
   <!DOCTYPE html>
   <html>
     <head>
@@ -19,20 +19,20 @@ variable html [Ju dedent {
           $('#placeholder').jstree(options);
         });
       }]
-      <style type='text/css'>
+      [JScript style {
         #aaa { width: 600px; height: 300px; }
-      </style>
+      }]
     </head>
     <body>
       <div id='placeholder'></div>
     </body>
   </html>
-}]
+}
 
 proc /: {} {
   # Respond to "/" url requests.
   variable html
-  wibble pageResponse html [wibble template $html]
+  wibble pageResponse html [Webserver expand $html]
 }
 
 proc /data.json: {} {

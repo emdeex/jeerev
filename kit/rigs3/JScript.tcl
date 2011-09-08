@@ -106,3 +106,7 @@ proc wrap {code} {
   # Generate wrapped HTML around JavaScript code (to be loaded on DOM-ready).
   return "<script type='text/javascript'>jQuery(function(){$code});</script>"
 }
+
+proc style {css} {
+  return "<style type='text/css'>$css</style>"
+}

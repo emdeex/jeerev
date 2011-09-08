@@ -16,7 +16,7 @@ proc APP.READY {} {
   History group $pattern 2d/1m 1w/5m 3y/1h
 }
 
-variable html [Ju dedent {
+variable html {
   <!DOCTYPE html>
   <html>
     <head>
@@ -40,20 +40,20 @@ variable html [Ju dedent {
           $.plot($("#placeholder"), data, options);
         });
       }]
-      <style type='text/css'>
+      [JScript style {
         #placeholder { width: 600px; height: 300px; }
-      </style>
+      }]
     </head>
     <body>
       <div id="placeholder"></div>
     </body>
   </html>
-}]
+}
 
 proc /: {} {
   # Respond to "/" url requests.
   variable html
-  wibble pageResponse html [wibble template $html]
+  wibble pageResponse html [Webserver expand $html]
 }
 
 proc /data.json: {} {

@@ -7,7 +7,7 @@ proc APP.READY {} {
   Simulate
 }
 
-variable html [Ju dedent {
+variable html {
   <!DOCTYPE html>
   <html>
     <head>
@@ -30,12 +30,12 @@ variable html [Ju dedent {
       (should update once a second)
     </body>
   </html>
-}]
+}
 
 proc /: {} {
   # Respond to "/" url requests.
   variable html
-  wibble pageResponse html [wibble template $html]
+  wibble pageResponse html [Webserver expand $html]
 }
 
 proc Simulate {} {

@@ -29,10 +29,10 @@ proc page {ns args} {
     set url "<a href='/peek/info/'>$url</a>"
   }
   set breadcrumbs [join [linsert $trail 0 $url] " :: "]
-  wibble pageResponse html [wibble template {
+  wibble pageResponse html [Webserver expand {
     <html>
       <head>
-        <style type="text/css">
+        [JScript style {
           body {font-family: monospace}
           table {border-collapse: collapse; outline: 1px solid #ccc}
           th {white-space: nowrap; text-align: left; vertical-align: top}
@@ -40,7 +40,7 @@ proc page {ns args} {
           tr:nth-child(odd) {background-color: #E8F8E8}
           tr:nth-child(even) {background-color: #F8F8F8}
           th.title {background-color: #8d958d; text-align: center}
-        </style>
+        }]
       </head>
       <body>
         <h2>$breadcrumbs</h2>
@@ -104,159 +104,159 @@ proc ooinfo {ns type info result} {
   } else {
     set title $info
   }
-  wibble template {
+  Webserver expand {
     <b>[string totitle $title]</b>
     <blockquote>
-%     foreach x [lsort -dict [info $type $info $ns]] {
-%       set key [namespace tail $x]
-%       set url /peek/$result[namespaceAsPath $ns]
-%       if {[string range $x 0 1] ne "::"} { append url / $key }
+    % foreach x [lsort -dict [info $type $info $ns]] {
+    %   set key [namespace tail $x]
+    %   set url /peek/$result[namespaceAsPath $ns]
+    %   if {[string range $x 0 1] ne "::"} { append url / $key }
         <a href='$url'>$key</a>
-%     }
+    % }
     </blockquote>
   }
 }
 
 proc arrayItems {ns} {
-  wibble template {
+  Webserver expand {
     <table>
-%   foreach key [lsort -dict [array names $ns]] {
-%     set val [wibble enhtml [set ${ns}($key)]]
-      <tr><th>[wibble enhtml $key]</th><td>$val</td></tr>
-%   }
+    % foreach key [lsort -dict [array names $ns]] {
+    %   set val [wibble enhtml [set ${ns}($key)]]
+        <tr><th>[wibble enhtml $key]</th><td>$val</td></tr>
+    % }
     </table>
   }
 }
 
 proc dictItems {ns} {
-  wibble template {
+  Webserver expand {
     <table>
-%   foreach v [lsort -dict [dict keys [set $ns]]] {
-%     set key [wibble enhtml [namespace tail $v]]
-%     set val [wibble enhtml [dict get [set $ns] $key]]
-      <tr><th>$key</th><td>$val</td></tr>
-%   }
+    % foreach v [lsort -dict [dict keys [set $ns]]] {
+    %   set key [wibble enhtml [namespace tail $v]]
+    %   set val [wibble enhtml [dict get [set $ns] $key]]
+        <tr><th>$key</th><td>$val</td></tr>
+    % }
     </table>
   }
 }
 
 proc ensembles {ns} {
-  wibble template {
+  Webserver expand {
     <b>Ensembles</b>
     <blockquote>
-%     foreach x [lsort -dict [info commands ${ns}::*]] {
-%       if {[namespace ensemble exists $x]} {
+    % foreach x [lsort -dict [info commands ${ns}::*]] {
+    %   if {[namespace ensemble exists $x]} {
           [namespace tail $x]
-%       }
-%     }
+    %   }
+    % }
     </blockquote>
   }
 }
 
 proc namespaces {ns} {
-  wibble template {
+  Webserver expand {
     <b>Namespaces</b>
     <blockquote>
-%     foreach x [lsort -dict [namespace children ::$ns]] {
-%       set key [namespace tail $x]
-%       set url /peek/info[namespaceAsPath $x]
-%       set val "<a href='$url'>[wibble enhtml $key]</a>"
+    % foreach x [lsort -dict [namespace children ::$ns]] {
+    %   set key [namespace tail $x]
+    %   set url /peek/info[namespaceAsPath $x]
+    %   set val "<a href='$url'>[wibble enhtml $key]</a>"
         <tr><th>$val</td></tr>
-%     }
+    % }
     </blockquote>
   }
 }
 
 proc classes {ns} {
-  wibble template {
+  Webserver expand {
     <b>Classes</b>
     <blockquote>
-%     foreach x [lsort -dict [info commands ${ns}::*]] {
-%       if {[info object isa object $x] && [info object isa class $x]} {
-%         set key [namespace tail $x]
-%         set url /peek/class[namespaceAsPath $x]
+    % foreach x [lsort -dict [info commands ${ns}::*]] {
+    %   if {[info object isa object $x] && [info object isa class $x]} {
+    %     set key [namespace tail $x]
+    %     set url /peek/class[namespaceAsPath $x]
           <a href='$url'>$key</a>
-%       }
-%     }
+    %   }
+    % }
     </blockquote>
   }
 }
 
 proc objects {ns} {
-  wibble template {
+  Webserver expand {
     <b>Objects</b>
     <blockquote>
-%     foreach x [lsort -dict [info commands ${ns}::*]] {
-%       if {[info object isa object $x] && ![info object isa class $x]} {
-%         set key [namespace tail $x]
-%         set url /peek/object[namespaceAsPath $x]
+    % foreach x [lsort -dict [info commands ${ns}::*]] {
+    %   if {[info object isa object $x] && ![info object isa class $x]} {
+    %     set key [namespace tail $x]
+    %     set url /peek/object[namespaceAsPath $x]
           <a href='$url'>$key</a>
-%       }
-%     }
+    %   }
+    % }
     </blockquote>
   }
 }
 
 proc procs {ns} {
-  wibble template {
+  Webserver expand {
     <b>Procs</b>
     <blockquote>
-%     foreach x [lsort -dict [info procs ${ns}::*]] {
-%       set key [namespace tail $x]
-%       set url /peek/proc[namespaceAsPath $x]
+    % foreach x [lsort -dict [info procs ${ns}::*]] {
+    %   set key [namespace tail $x]
+    %   set url /peek/proc[namespaceAsPath $x]
         <a href='$url'>$key</a>
-%     }
+    % }
     </blockquote>
   }
 }
 
 proc commands {ns} {
-  wibble template {
+  Webserver expand {
     <b>Commands</b>
     <blockquote>
-%     foreach x [lsort -dict [info commands ${ns}::*]] {
-%       if {[llength [info procs $x]] == 0 &&
-%           ![namespace ensemble exists $x] &&
-%           ![info object isa object $x]} {
+    % foreach x [lsort -dict [info commands ${ns}::*]] {
+    %   if {[llength [info procs $x]] == 0 &&
+    %       ![namespace ensemble exists $x] &&
+    %       ![info object isa object $x]} {
           [namespace tail $x]
-%       }
-%     }
+    %   }
+    % }
     </blockquote>
   }
 }
 
 proc arrays {ns} {
-  wibble template {
+  Webserver expand {
     <b>Arrays</b>
     <blockquote>
       <table>
-%       foreach x [lsort -dict [info vars ${ns}::*]] {
-%         set key [namespace tail $x]
-%         if {[array exists $x]} {
-%           set url /peek/array[namespaceAsPath $x]
-%           set val "<a href='$url'>[array size $x] items</a>"
+    %   foreach x [lsort -dict [info vars ${ns}::*]] {
+    %     set key [namespace tail $x]
+    %     if {[array exists $x]} {
+    %       set url /peek/array[namespaceAsPath $x]
+    %       set val "<a href='$url'>[array size $x] items</a>"
             <tr><th>[wibble enhtml $key]</th><td>$val</td></tr>
-%         }
-%       }
+    %     }
+    %   }
       </table>
     </blockquote>
   }
 }
 
 proc vars {ns} {
-  wibble template {
+  Webserver expand {
     <b>Variables</b>
     <blockquote>
       <table>
-%       foreach x [lsort -dict [info vars ${ns}::*]] {
-%         set key [namespace tail $x]
-%         if {![array exists $x]} {
-%           if {[info exists $x]} {
-%             set val [wibble enhtml [set $x]]
+    %   foreach x [lsort -dict [info vars ${ns}::*]] {
+    %     set key [namespace tail $x]
+    %     if {![array exists $x]} {
+    %       if {[info exists $x]} {
+    %         set val [wibble enhtml [set $x]]
               <tr><th>[wibble enhtml $key]</th><td>$val</td></tr>
-%           }
-%         }
-%       }
+    %       }
+    %     }
+    %   }
       </table>
     </blockquote>
   }
@@ -268,11 +268,11 @@ proc procShow {ns} {
   # suitable for indenting the first line - this seems to work out nicely
   set prefix [regsub {.*\S} $body {}]
   set arglist [wibble enhtml [info args $ns]]
-  wibble template {
+  Webserver expand {
     <blockquote>
       <pre>${prefix}proc [namespace tail $ns] {$arglist} {[enpre $body]}</pre>
     </blockquote>
-  }  
+  }
 }
 
 proc methodShow {ns} {
@@ -301,11 +301,11 @@ proc methodShow {ns} {
   }  
 
   set prefix [regsub {.*\S} $body {}]
-  wibble template {
+  Webserver expand {
     <blockquote>
       <pre>${prefix}method $methname {$argnames} {[enpre $body]}</pre>
     </blockquote>
-  }  
+  }
 }
 
 # <% DEF aliases %>
