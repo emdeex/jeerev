@@ -44,7 +44,7 @@ proc parse {text} {
 }
 
 proc print {tree {prefix "> "}} {
-  # Display a nested tree in indented form.
+  # Recursively display a nested tree in indented form.
   foreach x $tree {
     puts "$prefix[lindex $x 0]"
     print [lrange $x 1 end] "$prefix "
@@ -130,7 +130,7 @@ proc HtmlExpand {line hasChildren} {
 }
 
 proc TreeToHtml {tree {prefix ""}} {
-  # Convert a parsed SIF tree into HTML.
+  # Recursively convert a parsed SIF tree into HTML.
   set out {}
   foreach x $tree {
     set tail [lassign $x head]

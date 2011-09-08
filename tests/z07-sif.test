@@ -21,7 +21,6 @@ set html1 {
           #g$x.span3.columns.sg
 }
 
-
 test z07/print1 {print test 1} -body {
   Sif print [Sif parse $html1]
 } -output {>\
@@ -83,8 +82,7 @@ test z07/html2 {html test 2} {
         [JScript includes flot]
         [JScript wrap $js]
         [JScript style { #placeholder { width: 600px; height: 300px; } }]
-      body
-        #placeholder
+      body>#placeholder
   }
 } {<!DOCTYPE html>
 <html>
@@ -95,8 +93,128 @@ test z07/html2 {html test 2} {
     [JScript wrap $js]
     [JScript style { #placeholder { width: 600px; height: 300px; } }]
   </head>
+  <body><div id='placeholder'></div></body>
+</html>}
+
+set html3 {
+  !html
+    head
+      meta/charset=utf-8
+      title: KAKU send
+      [JScript includes ui]
+      [JScript wrap $js]
+    body
+      % foreach x {1 2 3 4}
+        p.toggles
+          button#on$x: On $x
+          button#off$x: Off $x
+      p#group
+        label: Group:
+        % foreach x {I II III IV}
+          input#g$x/type=radio/name=g/value=$x
+          label/for=g$x: $x
+      p
+        label: House Code:
+        select
+        % foreach x {A B C D E F G H I J K L M N O P}
+          option/value=$x: $x
+}
+
+test x07/html3 {html test 3} {
+  Sif html $html3
+} {<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>KAKU send</title>
+    [JScript includes ui]
+    [JScript wrap $js]
+  </head>
   <body>
-    <div id='placeholder' />
+%    foreach x {1 2 3 4} {
+      <p class='toggles'>
+        <button id='on$x'>On $x</button>
+        <button id='off$x'>Off $x</button>
+      </p>
+%    }
+    <p id='group'>
+      <label>Group:</label>
+%      foreach x {I II III IV} {
+        <input id='g$x' type='radio' name='g' value='$x' />
+        <label for='g$x'>$x</label>
+%      }
+    </p>
+    <p>
+      <label>House Code:</label>
+      <select />
+%      foreach x {A B C D E F G H I J K L M N O P} {
+        <option value='$x'>$x</option>
+%      }
+    </p>
+  </body>
+</html>}
+
+test x07/html3 {html test 3 with expansion} {
+  set js *JS*
+  Webserver expand [Sif html $html3]
+} {<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>KAKU send</title>
+    <link type='text/css' href='http://code.jquery.com/ui/1.8.15/themes/cupertino/jquery-ui.css' rel='stylesheet' />
+    <script type='text/javascript' src='http://code.jquery.com/jquery.min.js'></script>
+    <script type='text/javascript' src='http://code.jquery.com/ui/1.8.15/jquery-ui.min.js'></script>
+    <script type='text/javascript'>jQuery(function(){*JS*});</script>
+  </head>
+  <body>
+      <p class='toggles'>
+        <button id='on1'>On 1</button>
+        <button id='off1'>Off 1</button>
+      </p>
+      <p class='toggles'>
+        <button id='on2'>On 2</button>
+        <button id='off2'>Off 2</button>
+      </p>
+      <p class='toggles'>
+        <button id='on3'>On 3</button>
+        <button id='off3'>Off 3</button>
+      </p>
+      <p class='toggles'>
+        <button id='on4'>On 4</button>
+        <button id='off4'>Off 4</button>
+      </p>
+    <p id='group'>
+      <label>Group:</label>
+        <input id='gI' type='radio' name='g' value='I' />
+        <label for='gI'>I</label>
+        <input id='gII' type='radio' name='g' value='II' />
+        <label for='gII'>II</label>
+        <input id='gIII' type='radio' name='g' value='III' />
+        <label for='gIII'>III</label>
+        <input id='gIV' type='radio' name='g' value='IV' />
+        <label for='gIV'>IV</label>
+    </p>
+    <p>
+      <label>House Code:</label>
+      <select />
+        <option value='A'>A</option>
+        <option value='B'>B</option>
+        <option value='C'>C</option>
+        <option value='D'>D</option>
+        <option value='E'>E</option>
+        <option value='F'>F</option>
+        <option value='G'>G</option>
+        <option value='H'>H</option>
+        <option value='I'>I</option>
+        <option value='J'>J</option>
+        <option value='K'>K</option>
+        <option value='L'>L</option>
+        <option value='M'>M</option>
+        <option value='N'>N</option>
+        <option value='O'>O</option>
+        <option value='P'>P</option>
+    </p>
   </body>
 </html>}
 

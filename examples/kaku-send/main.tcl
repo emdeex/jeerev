@@ -36,7 +36,7 @@ variable html [Sif html {
         label: Group:
         % foreach x {I II III IV}
           input#g$x/type=radio/name=g/value=$x
-          label/for=g$x $x
+          label/for=g$x: $x
       p
         label: House Code:
         select
