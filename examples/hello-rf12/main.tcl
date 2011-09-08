@@ -30,8 +30,5 @@ proc APP.READY {} {
 proc /: {} {
   # Respond to "/" url requests.
   variable history
-  dict set response header content-type {"" text/plain charset utf-8}
-  dict set response header refresh 10 
-  dict set response content [join $history \n]
-  # wibble pageResponse text [join $history \n]
+  wibble pageResponse text [join $history \n] {header refresh} 10
 }
