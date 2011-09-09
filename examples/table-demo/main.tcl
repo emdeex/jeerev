@@ -43,7 +43,7 @@ variable css {
   /* clean up and re-arrange things a bit */
   .center { text-align: center; }
   .dataTables_length {
-    width: 40%; float: left; margin: 2px 0 0 6px;
+    width: 40%; float: left; margin: 3px 0 0 6px;
   }
   .dataTables_filter {
     width: 50%; float: right; text-align: right; margin-right: 6px;
@@ -133,11 +133,11 @@ variable html [Sif html {
       .main
         table/data-bind=$datatable
           thead>tr
-            th: Description
-            th/width=18%: Value
+            th/width=38%: Description
+            th/width=20%: Value
             th/width='12%: Unit
-            th/width='16%: Changed
-            th/width='16%: Updated
+            th/width='15%: Changed
+            th/width='15%: Updated
           tbody:
 }]
 
