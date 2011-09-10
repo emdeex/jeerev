@@ -1,88 +1,5 @@
 Webserver hasUrlHandlers
 
-variable <NOTES> {
-  viewport avoid scaling: http://stackoverflow.com/questions/273671/...
-   hiding-safari-user-interface-components-on-iphone
-  also works: meta/name=apple-touch-fullscreen/content=yes
-
-  viewport solves scroll-under-footer problem & fails with orientation change:
-   meta/name=viewport/content=width=device-width,initial-scale=1.0,
-    maximum-scale=1.0,user-scalable=no
-  doesn't seem to do anything:
-    meta/name=apple-touch-fullscreen/content=yes
-    meta/name=apple-mobile-web-app-status-bar-style/content=black-translucent
-
-  KEEP ORIGINAL TEST:
-        .row
-          .span16.columns#header
-            h1: Status Overview
-            .nest
-              .span8
-                h2: haha
-                p: Lorem ipsum dolor sit amet, consectetur \
-                    adipisicing elit, sed do eiusmod tempor \
-                     incididunt ut labore et dolore magna aliqua.
-                h2: haha
-                p: Lorem ipsum dolor sit amet, consectetur \
-                    adipisicing elit, sed do eiusmod tempor \
-                     incididunt ut labore et dolore magna aliqua.
-                h3: haha
-                  p: Lorem ipsum dolor sit amet, consectetur \
-                      adipisicing elit, sed do eiusmod tempor \
-                       incididunt ut labore et dolore magna aliqua.
-                h4: haha
-                  p: Lorem ipsum dolor sit amet, consectetur \
-                      adipisicing elit, sed do eiusmod tempor \
-                       incididunt ut labore et dolore magna aliqua.
-                  p: Lorem ipsum dolor sit amet, consectetur \
-                      adipisicing elit, sed do eiusmod tempor \
-                       incididunt ut labore et dolore magna aliqua.
-                h5: haha
-                  p: Lorem ipsum dolor sit amet, consectetur \
-                      adipisicing elit, sed do eiusmod tempor \
-                       incididunt ut labore et dolore magna aliqua.
-              .span8
-                p: Lorem ipsum dolor sit amet, consectetur \
-                    adipisicing elit, sed do eiusmod tempor \
-                     incididunt ut labore et dolore magna aliqua. \
-                      Ut enim ad minim veniam, quis nostrud exercitation.
-                pre: one\ntwo\nthree\n1234567890123456789012345678901234567890
-                p: Lorem ipsum dolor sit amet, consectetur adipisicing elit, \
-                   sed do eiusmod tempor incididunt ut labore et dolore magna \
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation \
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat. \
-                   Duis aute irure dolor in reprehenderit in voluptate velit \
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur sint \
-                   occaecat cupidatat non proident, sunt in culpa qui officia \
-                   deserunt mollit anim id est laborum.
-                p: Lorem ipsum dolor sit amet, consectetur adipisicing elit, \
-                   sed do eiusmod tempor incididunt ut labore et dolore magna \
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation \
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat. \
-                   Duis aute irure dolor in reprehenderit in voluptate velit \
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur sint \
-                   occaecat cupidatat non proident, sunt in culpa qui officia \
-                   deserunt mollit anim id est laborum.
-        .row
-          .span16.columns
-            .alert-message.error
-              a.close/href=#: &times
-              p
-                strong: Heads up!
-                span: This is aan error message.
-          .span15.offset1.columns#data
-            h4: haha!
-            blockquote: $long
-
-  original #container
-        .row
-          .span16.columns#header
-            h1: [pageTitle $pageId]
-            p: This is page [string map {1 ONE 2 TWO 3 THREE \
-                                         4 FOUR 5 FIVE 6 SIX \
-                                         7 SEVEN 8 EIGHT 9 NINE} $pageId].
-}
-
 variable info
 
 proc setup {def} {
@@ -166,7 +83,8 @@ set info(css) {
   }
   .tabs .tabOn {
     background-color: white;
-    margin-top: -1px;
+    margin: -1px;
+    border: 1px solid #fcc;
     border-top: 1px solid white;
   }
   .tabOff {
@@ -225,7 +143,7 @@ variable html [Sif html {
         ul.tabs.vtabs
           % foreach {target name class} [VerTabLinks $pageId]
             //FIXME can't use ".$class", it adds spurious curly braces
-            li>a/class=$class/href=$target>h4: $name
+            li>a/class=$class/href=$target>h5: $name
       #footer
         .row
           .span8.columns
@@ -242,7 +160,7 @@ variable html [Sif html {
             ul.tabs
               % foreach {target name class} [HorTabLinks $pageId]
                 //FIXME can't use ".$class", it adds spurious curly braces
-                li>a/class=$class/href=$target>h4: $name
+                li>a/class=$class/href=$target>h5: $name
         #corner>i: OK&nbsp;<br/>OK&nbsp;
 }]
 
