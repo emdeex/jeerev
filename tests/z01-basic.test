@@ -105,7 +105,7 @@ test z01/mathfunc {math functions should be in ::} {
 
 test z01/msgcat {msgcat::mc command should be aliased in ::} {
   interp alias {} :
-} msgcat::mc
+} {msgcat mc}
 
 unset ::env(JEEREV_RIG_DIRS)
 
