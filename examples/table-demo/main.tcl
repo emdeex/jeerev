@@ -135,10 +135,10 @@ variable html [Sif html {
           thead>tr
             th/width=38%: Description
             th/width=20%: Value
-            th/width='12%: Unit
-            th/width='15%: Changed
-            th/width='15%: Updated
-          tbody:
+            th/width=12%: Unit
+            th/width=15%: Changed
+            th/width=15%: Updated
+          tbody
 }]
 
 proc /: {} {

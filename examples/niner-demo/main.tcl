@@ -1,9 +1,9 @@
 Jm doc "Demo of the Niner theme with 3x3 page navigation."
+# See http://jeelabs.org/2011/09/10/a-site-for-the-home/ for the basic idea.
 
-Niner setup {
+Niner layout {
   config: {
     title "Niner demo"
-    handler "pageHandler $id"
   }
   pages: {
     Status: {
@@ -12,7 +12,7 @@ Niner setup {
       Full: { title "Full Status" }
     }
     Control: {
-      Triggers: {}
+      Events: {}
       Rules: {}
       Manual: { title "Manual Control" }
     }
@@ -24,29 +24,31 @@ Niner setup {
   }
 }
 
-proc pageHandler {pageId} {
-  set pageNames {1 ONE 2 TWO 3 THREE 4 FOUR 5 FIVE 6 SIX 7 SEVEN 8 EIGHT 9 NINE}
-  Webserver expand [Sif html {
-    .row
-       .span16.columns#header
-          h1: [Niner pageTitle $pageId]
-          .nest
-            .span8
-              p: This is page [string map $pageNames $pageId].
-              h2: haha
-              p: Lorem ipsum dolor sit amet, consectetur \
-                  adipisicing elit, sed do eiusmod tempor \
-                   incididunt ut labore et dolore magna aliqua.
-              h3: haha
-                p: Lorem ipsum dolor sit amet, consectetur.
-              h4: haha
-                p: Lorem ipsum dolor sit amet, consectetur.
-              h5: haha
-                p: Lorem ipsum dolor sit amet, consectetur.
-                p: Lorem ipsum dolor sit amet, consectetur.
-            .span8
-              p: Lorem ipsum dolor sit amet.
-              pre: one\ntwo\nthree\n1234567890123456789012345678901234567890
-              p: Lorem ipsum dolor sit amet.
-  }]
+proc NINER.INFOS {} {
+  return {
+    html-sif {
+      % set map {1 ONE 2 TWO 3 THREE 4 FOUR 5 FIVE 6 SIX 7 SEVEN 8 EIGHT 9 NINE}
+      .row
+         .span16.columns#header
+            h1: [Niner pageTitle $pageId]
+            .nest
+              .span8
+                p: This is page [dict get $map $pageId].
+                h2: haha
+                p: Lorem ipsum dolor sit amet, consectetur \
+                    adipisicing elit, sed do eiusmod tempor \
+                     incididunt ut labore et dolore magna aliqua.
+                h3: haha
+                  p: Lorem ipsum dolor sit amet, consectetur.
+                h4: haha
+                  p: Lorem ipsum dolor sit amet, consectetur.
+                h5: haha
+                  p: Lorem ipsum dolor sit amet, consectetur.
+                  p: Lorem ipsum dolor sit amet, consectetur.
+              .span8
+                p: Lorem ipsum dolor sit amet.
+                pre: one\ntwo\nthree\n1234567890123456789012345678901234567890
+                p: Lorem ipsum dolor sit amet.
+    }
+  }
 }
