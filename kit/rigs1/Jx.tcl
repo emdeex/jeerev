@@ -2,7 +2,7 @@ Jm doc "Some useful extensions for Tcl."
 # This code is loaded by Jm.tcl early during startup, hence always available.
 
 # I18N is supported with [: "..."] as shorthand for [msgcat::mc "..."]
-interp alias {} : {} msgcat::mc
+interp alias {} : {} msgcat mc
 
 # shorthand for expr (braces are still required!)
 interp alias {} = {} expr

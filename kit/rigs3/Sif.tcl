@@ -67,13 +67,13 @@ proc HtmlElements {abbrev {content ""}} {
     # it takes a bit of work to extract attributes of the form "/name=..."
     # build a reverse list, so we can deal with slashes inside values
     set attRev {}
-    foreach a [lreverse [regexp -all -inline -indices {/[-\w]+=} $x]] {
+    foreach a [lreverse [regexp -all -inline -indices {/[-#\w]+=} $x]] {
       lassign $a from to
       lappend attRev [string range $x $to+1 end] [string range $x $from+1 $to-1]
       set x [string range $x 0 $from-1]
     }
     # no go through each of the elements in this group
-    foreach {- y} [regexp -all -inline {([#\.]?[\w\$]+)} $x] {
+    foreach {- y} [regexp -all -inline {([#\.]?[-\w\$]+)} $x] {
       switch [string index $y 0] {
         \#      { set id [string range $y 1 end] }
         .       { lappend classes [string range $y 1 end] }

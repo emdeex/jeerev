@@ -21,3 +21,4 @@ Examples
 * **history-test** - Collect some data to test the round-robin storage logic.
 * **graph-demo** - Show recent temperatures as graph in the browser.
 * **tree-demo** - Display all state variables as a tree in the browser.
+* **niner-demo** - Demo of the Niner theme with 3x3 page navigation.
