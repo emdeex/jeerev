@@ -26,7 +26,7 @@ Ju cachedVar infos . {
 
 variable info {
   includes {
-    bootstrap eventsource   ui knockout datatables kodtb flot
+    bootstrap eventsource pjax  ui knockout datatables kodtb flot
   }
   css {
     body {
@@ -140,6 +140,7 @@ variable info {
     }
   }
   js {
+    $('ul a').pjax('#container')
     var lastline = '';
     $.eventsource({
       url: 'events/niner',

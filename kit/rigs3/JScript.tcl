@@ -37,6 +37,8 @@ Ju cachedVar {urls snippets} . {
       http://twitter.github.com/bootstrap/assets/css/bootstrap-1.2.0.min.css
     coffee.js
       http://jashkenas.github.com/coffee-script/extras/coffee-script.js
+    pjax.js
+      GH:defunkt/jquery-pjax/heroku/jquery.pjax.js
   }
   variable snippets {
     kodtb.js {

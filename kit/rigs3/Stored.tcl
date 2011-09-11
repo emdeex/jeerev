@@ -9,9 +9,7 @@ variable datadir ./stored   ;# the location where all datafiles are stored
 Ju cachedVar mapInfo -once {
   variable mapInfo {}
   map info version 1
-}
-
-proc APP.HEARTBEAT {secs} {
+  map info jeemon $::startup::version
   SaveMaps
 }
 
