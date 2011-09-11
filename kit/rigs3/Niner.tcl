@@ -26,7 +26,7 @@ Ju cachedVar infos . {
 
 variable info {
   includes {
-    bootstrap eventsource pjax  ui knockout datatables kodtb flot
+    bootstrap eventsource  ui knockout datatables kodtb flot
   }
   css {
     body {
@@ -140,7 +140,14 @@ variable info {
     }
   }
   js {
-    $('ul a').pjax('#container')
+    $('ul a').click(function(event) {
+      window.history.replaceState(null, null, this.href);
+      $.getJSON(this.href + '.json', function(data) {
+        document.title = data.name + ' - Niner demo';
+        $('#container').html(data.html);
+      });
+      event.preventDefault();
+    });
     var lastline = '';
     $.eventsource({
       url: 'events/niner',
@@ -183,7 +190,7 @@ variable info {
               ul.tabs
                 % foreach {target name class} [HorTabLinks $pageId]
                   //FIXME can't use ".$class", it adds spurious curly braces
-                  li>a/class=$class/href=$target>h5: $name
+                  li>a/class=$class/href=/$target>h5: $name
           #corner>i: OK&nbsp;<br/>OK&nbsp;
   }
 }
@@ -270,6 +277,14 @@ proc /?: {pageId} {
   variable infos
   if {$pageId eq ""} { set pageId 1 } ;#FIXME, could be a WebServer regexp bug
   wibble pageResponse html [ExpandHandlerInfo $pageId Niner]
+}
+
+proc /?.json: {pageId} {
+  # Respond to "/" url requests.
+  variable infos
+  set name [pageTitle $pageId]
+  set html [DispatchToHandler $pageId]
+  wibble pageResponse text [Ju toJson [list name $name html $html] -dict]
 }
 
 proc WEBSSE.SESSION {mode type} {
