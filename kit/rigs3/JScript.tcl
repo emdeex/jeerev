@@ -42,25 +42,32 @@ Ju cachedVar {urls snippets} . {
   }
   variable snippets {
     kodtb.js {
-      // http://www.joshbuckley.co.uk/2011/07/knockout-js-datatable-bindings/
-      // Copyright (c) 2011, Josh Buckley (joshbuckley.co.uk).
-      // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-      ko.bindingHandlers.dataTable = {
-        init: function(element, valueAccessor){
-          var binding = ko.utils.unwrapObservable(valueAccessor());
-          if(binding.options){
-            $(element).dataTable(binding.options);
+      <script type='text/javascript'>jQuery(function(){
+        // http://www.joshbuckley.co.uk/2011/07/knockout-js-datatable-bindings/
+        // Copyright (c) 2011, Josh Buckley (joshbuckley.co.uk).
+        // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+        ko.bindingHandlers.dataTable = {
+          init: function(element, valueAccessor){
+            var binding = ko.utils.unwrapObservable(valueAccessor());
+            if(binding.options){
+              $(element).dataTable(binding.options);
+            }
+          },
+          update: function(element, valueAccessor){
+            var binding = ko.utils.unwrapObservable(valueAccessor());
+            if(!binding.data){
+              binding = { data: valueAccessor() }
+            }
+            $(element).dataTable().fnClearTable();
+            $(element).dataTable().fnAddData(binding.data());
           }
-        },
-        update: function(element, valueAccessor){
-          var binding = ko.utils.unwrapObservable(valueAccessor());
-          if(!binding.data){
-            binding = { data: valueAccessor() }
-          }
-          $(element).dataTable().fnClearTable();
-          $(element).dataTable().fnAddData(binding.data());
-        }
-      };
+        };
+      });</script>
+    }
+    960.css {
+  <link type='text/css' href='http://960.gs/css/reset.css' rel='stylesheet' />
+  <link type='text/css' href='http://960.gs/css/text.css' rel='stylesheet' />
+  <link type='text/css' href='http://960.gs/css/960.css' rel='stylesheet' />      
     }
   }
 }
@@ -75,12 +82,15 @@ proc includes {args} {
     if {$u ne ""} {
       lappend css "<link type='text/css' href='$u' rel='stylesheet' />"
       incr found
+    } elseif {[dict exists $snippets $x.css]} {
+      lappend css [dict get $snippets $x.css]
+      incr found
     }
     set u [GetUrl $x.js]
     if {$u ne ""} {
       lappend js "<script type='text/javascript' src='$u'></script>"
     } elseif {[dict exists $snippets $x.js]} {
-      lappend js [wrap [dict get $snippets $x.js]]
+      lappend js [dict get $snippets $x.js]
     } elseif {!$found} {
       error "unknown include: $x.js or $x.css"
     }

@@ -26,13 +26,9 @@ Ju cachedVar infos . {
 
 variable info {
   includes {
-    bootstrap eventsource  ui knockout datatables kodtb flot
+    960 eventsource ui datatables knockout kodtb flot
   }
   css {
-    body {
-      margin-bottom: 10px;
-      padding-left: 8px;
-    }
     /* Mark Allen's footer logic: http://mark-allen.net/notes/layout/footer/ */
     #footer {
       position: fixed;
@@ -67,6 +63,72 @@ variable info {
       text-align: right;
       border: 1px solid #eee;
     }
+    // from BS <
+    .tabs {
+      margin: 0 0 20px;
+      padding: 0;
+      list-style: none;
+      zoom: 1;
+      margin-bottom: 18px;
+    }
+    .tabs:before,
+    .tabs:after, {
+      display: table;
+      content: "";
+    }
+    .tabs:after {
+      clear: both;
+    }
+    .tabs > li {
+      float: left;
+    }
+    .tabs > li > a {
+      display: block;
+    }
+    .tabs {
+      width: 100%;
+      border-bottom: 1px solid #ddd;
+    }
+    .tabs > li {
+      position: relative;
+      top: 1px;
+    }
+    .tabs > li > a {
+      margin-right: 2px;
+      padding: 0 15px;
+      line-height: 35px;
+      -webkit-border-radius: 4px 4px 0 0;
+      -moz-border-radius: 4px 4px 0 0;
+      border-radius: 4px 4px 0 0;
+    }
+    .tabs > li > a:hover {
+      background-color: #eee;
+      border-bottom: 1px solid #ddd;
+      text-decoration: none;
+    }
+    .tabs > li.active > a {
+      background-color: #fff;
+      padding: 0 14px;
+      border: 1px solid #ddd;
+      border-bottom: 0;
+      color: #808080;
+    }
+    .tabs .menu-dropdown, .tabs .dropdown-menu {
+      top: 35px;
+      border-width: 1px;
+      -webkit-border-radius: 0 6px 6px 6px;
+      -moz-border-radius: 0 6px 6px 6px;
+      border-radius: 0 6px 6px 6px;
+    }
+    .tabs a.menu:after, .tabs .dropdown-toggle:after {
+      border-top-color: #999;
+      margin-top: 15px;
+      margin-left: 5px;
+    }
+    .tabs li.open a.menu:after, .tabs .dropdown.open .dropdown-toggle:after {
+      border-top-color: #555;
+    }
+    // from BS >
     .tabs {
       float: right;
       /* flip to hanging tags */
@@ -76,6 +138,8 @@ variable info {
       /* flip to hanging tags */
       top: 0;
       bottom: 1px;
+      /*XXX*/
+      margin-left: 1px;
     }
     .tabs > li > a {
       /* flip to hanging tags */
@@ -86,7 +150,7 @@ variable info {
       border-radius: 0 0 12px 12px;
       /*XXX color */
       /* centered and fixed width */
-      width: 8em;
+      width: 7em;
       text-align: center;
       padding: 0 3px;
       overflow: hidden;
@@ -130,7 +194,8 @@ variable info {
       border-bottom: 1px solid #eee;
     }
     .nest {
-      margin-left: -20px;
+      margin-left: -10px;
+      margin-right: -10px;
     }
     #log {
       margin-top: 5px;
@@ -144,7 +209,7 @@ variable info {
       window.history.replaceState(null, null, this.href);
       $.getJSON(this.href + '.json', function(data) {
         document.title = data.name + ' - Niner demo';
-        $('#container').html(data.html);
+        $('#contents').html(data.html);
       });
       event.preventDefault();
     });
@@ -166,32 +231,25 @@ variable info {
         [JScript includes {*}[dict get? $info includes]]
         [JScript wrap [dict get? $info js]]
         [JScript style [dict get? $info css]]
-      body>
-        #container
+      body
+        #contents.container_16
           [DispatchToHandler $pageId]
         #sider
-          //h3: T O P
           ul.tabs.vtabs
             % foreach {target name class} [VerTabLinks $pageId]
               //FIXME can't use ".$class", it adds spurious curly braces
-              li>a/class=$class/href=$target>h5: $name
-        #footer
-          .row
-            .span8.columns
-              p#log
-              //.alert-message.warning#msg
-              //  a.close/href=#: &times
-              //  p
-              //    strong>Heads up!
-              //    span: This is a warning message.
-            .span2.columns
-              p: We're ONLINE ...<br/>All systems GO!
-            .span6.columns
-              ul.tabs
-                % foreach {target name class} [HorTabLinks $pageId]
-                  //FIXME can't use ".$class", it adds spurious curly braces
-                  li>a/class=$class/href=/$target>h5: $name
-          #corner>i: OK&nbsp;<br/>OK&nbsp;
+              li>a/class=$class/href=$target>h6: $name
+        #footer.container_16
+          .grid_8
+            p#log
+          .grid_2
+            p: We're ONLINE!<br/>All systems go
+          .grid_6
+            ul.tabs
+              % foreach {target name class} [HorTabLinks $pageId]
+                //FIXME can't use ".$class", it adds spurious curly braces
+                li>a/class=$class/href=/$target>h6: $name
+        #corner>i: OK&nbsp;<br/>OK&nbsp;
   }
 }
 
@@ -284,7 +342,7 @@ proc /?.json: {pageId} {
   variable infos
   set name [pageTitle $pageId]
   set html [DispatchToHandler $pageId]
-  wibble pageResponse text [Ju toJson [list name $name html $html] -dict]
+  wibble pageResponse json [Ju toJson [list name $name html $html] -dict]
 }
 
 proc WEBSSE.SESSION {mode type} {

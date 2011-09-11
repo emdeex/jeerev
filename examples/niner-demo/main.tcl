@@ -29,10 +29,10 @@ proc NINER.INFOS {} {
     html-sif {
       % set map {1 ONE 2 TWO 3 THREE 4 FOUR 5 FIVE 6 SIX 7 SEVEN 8 EIGHT 9 NINE}
       .row
-         .span16.columns#header
+         .grid_16.columns#header
             h1: [Niner pageTitle $pageId]
             .nest
-              .span8
+              .grid_8
                 p: This is page [dict get $map $pageId].
                 h2: haha
                 p: Lorem ipsum dolor sit amet, consectetur \
@@ -45,7 +45,7 @@ proc NINER.INFOS {} {
                 h5: haha
                   p: Lorem ipsum dolor sit amet, consectetur.
                   p: Lorem ipsum dolor sit amet, consectetur.
-              .span8
+              .grid_8
                 p: Lorem ipsum dolor sit amet.
                 pre: one\ntwo\nthree\n1234567890123456789012345678901234567890
                 p: Lorem ipsum dolor sit amet.
