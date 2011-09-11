@@ -1,4 +1,5 @@
 Jm doc "A theme for a web site with 3x3 pages and tabs on the bottom + right."
+Jm needs WebSSE
 Webserver hasUrlHandlers
 
 variable main
@@ -25,7 +26,7 @@ Ju cachedVar infos . {
 
 variable info {
   includes {
-    bootstrap ui knockout eventsource datatables kodtb
+    bootstrap eventsource   ui knockout datatables kodtb flot
   }
   css {
     body {
@@ -131,8 +132,23 @@ variable info {
     .nest {
       margin-left: -20px;
     }
+    #log {
+    	margin-top: 5px;
+    	font: 11px Courier;
+    	overflow: hidden;
+    	white-space: nowrap;
+    }
   }
-  js {}
+  js {
+    var lastline = '';
+    $.eventsource({
+      url: 'events/niner',
+      message: function (data) {
+        $('#log').html(lastline + '<br/>' + data.sane);
+        lastline = data.sane;
+      }
+    });
+  }
   html-sif {
     !html
       head
@@ -154,8 +170,7 @@ variable info {
         #footer
           .row
             .span8.columns
-              p: this area can be used to display the previous line of status \
-                 text<br/>and here's some more room for the lastest log message!
+              p#log
               //.alert-message.warning#msg
               //  a.close/href=#: &times
               //  p
@@ -253,4 +268,24 @@ proc /?: {pageId} {
   variable infos
   if {$pageId eq ""} { set pageId 1 } ;#FIXME, could be a WebServer regexp bug
   wibble pageResponse html [ExpandHandlerInfo $pageId Niner]
+}
+
+proc WEBSSE.SESSION {mode type} {
+  # Respond to WebSSE hook events when a session is opened or closed.
+  variable pattern
+  if {$type eq "niner"} {
+    set cmd [dict get {open add close remove} $mode]
+    trace $cmd variable [Log vname sane] write [namespace which Tracer]
+  }
+}
+
+proc Tracer {a e op} {
+  variable nested
+  upvar $a v
+  # avoid runaway recursion
+  if {![info exists nested]} {
+    set nested ""
+    WebSSE propagate niner [Ju toJson [list $a $v] -dict]
+    unset nested
+  }
 }

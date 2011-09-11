@@ -165,7 +165,7 @@ proc WEBSSE.SESSION {mode type} {
   # Respond to WebSSE hook events when a session is opened or closed.
   variable pattern
   if {$type eq "table"} {
-    set cmd [string map {open subscribe close unsubscribe} $mode]
+    set cmd [dict get {open subscribe close unsubscribe} $mode]
     State $cmd $pattern [namespace which TrackState]
   }
 }

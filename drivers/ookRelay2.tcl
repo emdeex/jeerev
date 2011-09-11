@@ -62,6 +62,7 @@ proc Decode-KSX {event raw} {
       set temp [scan $t2$t1$t0 %d]
       set rhum [scan $t4$t3 %d]
       set wind [scan $t7$t6$t5 %d]
+      if {![string is int -strict $t10]} { set t10 0 } ;#FIXME why does it fail?
       set rain [+ [* 256 $t10] [* 16 $t9] $t8]
       if {$f & 0x8} { set temp -$temp }
       set rnow [expr {$f & 0x2 ? 1 : 0}]

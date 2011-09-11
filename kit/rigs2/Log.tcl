@@ -6,6 +6,8 @@ Jm doc "Logging, to be called as 'Log tag {msg}', where msg will be evaluated."
 variable mask   ;# can be set to a pattern to mask a group log types
 variable logfd  ;# which file descriptor to send log output to (normally stdout)
 variable errcnt ;# traceback error count
+variable last   ;# last log message, can be used with traces
+variable sane   ;# sanitized message (no non-printables and length max 80 ch)
 
 if {![info exists mask]} {
   set mask ""
@@ -54,11 +56,14 @@ proc reportLine {text} {
   # Report a line of text, truncated to 80 characters with unprintables removed.
   # text: the text message to log
   variable logfd
+  variable last $text ;# not truncated or sanitized
   if {[string length $text] > 80} {
     set text [string range $text 0 78]>
   }
-  regsub -all {[^ -~]} $text . text
-  chan puts $logfd $text
+  variable sane [regsub -all {[^ -~]} $text .]
+  if {$logfd ne ""} {
+    chan puts $logfd $sane
+  }
 }
 
 proc timestamp {{millis ""} {gmt 0}} {
@@ -133,4 +138,9 @@ proc traceback {{e ""} {o ""}} {
     }
     reportLine [string repeat - 80]
   }
+}
+
+proc vname {name} {
+  # Return the fully-qualified name of a variable for tracing purposes.
+  namespace which -variable $name
 }
