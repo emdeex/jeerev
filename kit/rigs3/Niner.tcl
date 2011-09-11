@@ -133,10 +133,10 @@ variable info {
       margin-left: -20px;
     }
     #log {
-    	margin-top: 5px;
-    	font: 11px Courier;
-    	overflow: hidden;
-    	white-space: nowrap;
+      margin-top: 5px;
+      font: 11px Courier;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
   js {
