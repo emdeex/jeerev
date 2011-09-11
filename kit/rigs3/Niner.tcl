@@ -238,20 +238,21 @@ proc VerTabLinks {id} {
   return $out
 }
 
-proc DispatchToHandler {pageId} {
+proc DispatchToHandler {id} {
+  # Generate page content via the designated handler.
   variable main
-  set owner [dict get $main owner]
-  set prefix [dict get $main pageMap: $pageId]
+  set prefix [dict get $main pageMap: $id]
   # determine which handler to use, to lookup the "infos" registration
   set handler [Tree at main pages:$prefix handler]
   if {$handler eq ""} {
-    set handler $owner
+    set handler [dict get $main owner]
   }
-  ExpandHandlerInfo $pageId $handler
+  ExpandHandlerInfo $id $handler
 }
 
 proc ExpandHandlerInfo {pageId handler} {
-  variable main
+  # Perform page generation, caching "html-sif" as "html" entry if needed.
+  variable main ;#TODO should not have to be present during expansion
   variable infos
   # careful: this "info" is not the variable with the same name!
   set info [dict get $infos [namespace which $handler]]
@@ -280,9 +281,10 @@ proc WEBSSE.SESSION {mode type} {
 }
 
 proc Tracer {a e op} {
+  # Called for each log message to propagate it to all clients via WebSSE.
   variable nested
   upvar $a v
-  # avoid runaway recursion
+  #FIXME is this really needed to avoid runaway recursion?
   if {![info exists nested]} {
     set nested ""
     WebSSE propagate niner [Ju toJson [list $a $v] -dict]
