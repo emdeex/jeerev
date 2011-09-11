@@ -30,6 +30,8 @@ proc start {args} {
   if {[info exists ::startup::opts] && [dict exists $startup::opts -main]} {
     Jm prepareRig ::main
     namespace eval ::main [dict get $startup::opts -main]
+    # list "main" as rig in auto_index for hooks to work
+    set ::auto_index(main) [list ::Jm::loadRig [file normalize $::argv0]]
   } else {
     # try to give a helpful error message if launching is going to fail
     if {![file exists [app path]/main.tcl]} {
