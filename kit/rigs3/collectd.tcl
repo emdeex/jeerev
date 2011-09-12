@@ -31,15 +31,15 @@ if {![info exists types]} {
 }
 
 proc listen {tag args} {
-  Ju default args -port 25826 -group 239.192.74.66
+  Ju default args -port 25826 -group 239.192.74.66 -command {State putDict}
   set s [udp_open $port]
   chan configure $s -mcastadd $group \
                       -buffering none -blocking 0 -translation binary
-  chan event $s readable [list [namespace which ReadUDP] $s $tag]
+  chan event $s readable [list [namespace which ReadUDP] $s $tag $command]
   return $s
 }
 
-proc ReadUDP {sock tag} {
+proc ReadUDP {sock tag cmd} {
   # Called whenever a UDP packet comes in.
   variable types
   variable level
@@ -109,9 +109,10 @@ proc ReadUDP {sock tag} {
   }
   set h [dict get $out host]
   set t [dict get $out time]
+  if {$t eq "_"} { set t [clock seconds] }
   dict unset out host
   dict unset out time
-  State putDict $out $t $tag:$h:
+  {*}$cmd $out $t $tag:$h:
 }
 
 proc Str {b} {

@@ -22,3 +22,4 @@ Examples
 * **graph-demo** - Show recent temperatures as graph in the browser.
 * **tree-demo** - Display all state variables as a tree in the browser.
 * **niner-demo** - Demo of the Niner theme with 3x3 page navigation.
+* **jeeudp-demo** - How to dispatch and decode RF12-over-UDP packets.
