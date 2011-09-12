@@ -33,8 +33,7 @@ if {![info exists types]} {
 proc listen {tag args} {
   Ju default args -port 25826 -group 239.192.74.66 -command {State putDict}
   set s [udp_open $port]
-  chan configure $s -mcastadd $group \
-                      -buffering none -blocking 0 -translation binary
+  chan configure $s -mcastadd $group -buffering none -translation binary
   chan event $s readable [list [namespace which ReadUDP] $s $tag $command]
   return $s
 }
@@ -47,7 +46,6 @@ proc ReadUDP {sock tag cmd} {
   variable path
 
   set data [chan read $sock]
-  if {$data eq ""} return  
   set peer [chan configure $sock -peer]
 
   set out {host ? time ?}
