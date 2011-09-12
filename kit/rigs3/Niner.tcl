@@ -2,8 +2,6 @@ Jm doc "A theme for a web site with 3x3 pages and tabs on the bottom + right."
 Jm needs WebSSE
 Webserver hasUrlHandlers
 
-variable main
-
 proc layout {tree} {
   # Set up page definitions for the Niner theme.
   variable main $tree
@@ -32,6 +30,7 @@ variable info {
     /* Mark Allen's footer logic: http://mark-allen.net/notes/layout/footer/ */
     #footer {
       position: fixed;
+      left: 0;
       bottom: 0;
       width: 100%;
       height: 38px;
@@ -40,10 +39,6 @@ variable info {
       /* counteract body margin */
       margin-left: -8px;
       padding-left: 8px;
-    }
-    #footer > * {
-      display: inline;
-      float: left;
     }
     #sider {
       position: fixed;

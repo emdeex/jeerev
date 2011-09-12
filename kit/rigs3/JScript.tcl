@@ -2,50 +2,50 @@ Jm doc "Support for jQuery, jQuery UI, etc."
 
 # public URLs for some common JavaScript and CSS files
 Ju cachedVar {urls snippets} . {
-  variable urls {
+  variable urls [Ju unComment {
+    # at JeeLabs.org/pub/
     core.js
-      JQ:jquery.min.js
+      JO:js/jquery.js
     ui.js
-      JQ:ui/1.8.15/jquery-ui.min.js
+      JO:js/jquery-ui.js
     ui.css
-      JQ:ui/1.8.15/themes/cupertino/jquery-ui.css
+      JO:css/jquery-ui.css
     mobile.js
       JQ:mobile/latest/jquery.mobile.js
+    coffee.js
+      JO:js/coffee-script.js
+    eventsource.js
+      JO:js/jquery.eventsource.js
+    flot.js
+      JO:js/jquery.flot.js
+    datatables.js
+      JO:js/jquery.dataTables.js
+    raphael.js
+      JO:js/raphael.js
+    dateformat.js
+      JO:js/jquery.dateFormat.js
+    knockout.js
+      JO:js/knockout.js
+    # elsewhere...
     tmpl.js
       MS:jquery.templates/beta1/jquery.tmpl.min.js
     validate.js
       MS:jquery.validate/1.8.1/jquery.validate.min.js
     tools.js
       http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js
-    knockout.js
-      CG:SteveSanderson/knockout/knockout-1.3.0beta.js
-    eventsource.js
-      GH:rwldrn/jquery.eventsource/master/jquery.eventsource.js
-    flot.js
-      GH:flot/flot/master/jquery.flot.js
-    datatables.js
-      http://www.datatables.net/download/build/jquery.dataTables.min.js
-    raphael.js
-      CF:raphael/1.5.2/raphael-min.js
-    dateformat.js
-      GH:phstc/jquery-dateFormat/master/jquery.dateFormat-1.0.js
     modernizr.js
       CF:modernizr/2.0.6/modernizr.min.js
     jstree.js
       http://static.jstree.com/v.1.0pre/jquery.jstree.js
-    bootstrap.css
-      http://twitter.github.com/bootstrap/assets/css/bootstrap-1.2.0.min.css
-    coffee.js
-      http://jashkenas.github.com/coffee-script/extras/coffee-script.js
     pjax.js
       GH:defunkt/jquery-pjax/heroku/jquery.pjax.js
-  }
-  variable snippets {
+  }]
+  variable snippets [Ju unComment {
     kodtb.js {
+      # http://www.joshbuckley.co.uk/2011/07/knockout-js-datatable-bindings/
+      # Copyright (c) 2011, Josh Buckley (joshbuckley.co.uk).
+      # License: MIT (http://www.opensource.org/licenses/mit-license.php)
       <script type='text/javascript'>jQuery(function(){
-        // http://www.joshbuckley.co.uk/2011/07/knockout-js-datatable-bindings/
-        // Copyright (c) 2011, Josh Buckley (joshbuckley.co.uk).
-        // License: MIT (http://www.opensource.org/licenses/mit-license.php)
         ko.bindingHandlers.dataTable = {
           init: function(element, valueAccessor){
             var binding = ko.utils.unwrapObservable(valueAccessor());
@@ -64,17 +64,30 @@ Ju cachedVar {urls snippets} . {
         };
       });</script>
     }
-    960.css {
-  <link type='text/css' href='http://960.gs/css/reset.css' rel='stylesheet' />
-  <link type='text/css' href='http://960.gs/css/text.css' rel='stylesheet' />
-  <link type='text/css' href='http://960.gs/css/960.css' rel='stylesheet' />      
+    jqtree.js {
+      JS< http://jeelabs.org/pub/js/jquery.jqGrid.locale-en.js >JS
+      JS< http://jeelabs.org/pub/js/jqtree.js'></script> >JS
     }
-  }
+    jqtree.css {
+      CSS< http://jeelabs.org/pub/css/jqtree-ui.css >CSS
+    }
+    960.css {
+      CSS< http://jeelabs.org/pub/css/960.reset.css >CSS
+      CSS< http://jeelabs.org/pub/css/960.text.css >CSS
+      CSS< http://jeelabs.org/pub/css/960.css >CSS    
+    }
+  }]
 }
 
 proc includes {args} {
   # Generate the HTML needed to insert a number of CSS and JavaScript files.
   variable snippets
+  set map {
+    "JS< "  "<script type='text/javascript' src='"
+    " >JS"  "'></script>"
+    "CSS< " "<link type='text/css' href='"
+    " >CSS" "' rel='stylesheet' />"
+  }
   set css {}
   foreach x [concat core $args] {
     set found 0
@@ -83,14 +96,14 @@ proc includes {args} {
       lappend css "<link type='text/css' href='$u' rel='stylesheet' />"
       incr found
     } elseif {[dict exists $snippets $x.css]} {
-      lappend css [dict get $snippets $x.css]
+      lappend css [string map $map [dict get $snippets $x.css]]
       incr found
     }
     set u [GetUrl $x.js]
     if {$u ne ""} {
       lappend js "<script type='text/javascript' src='$u'></script>"
     } elseif {[dict exists $snippets $x.js]} {
-      lappend js [dict get $snippets $x.js]
+      lappend js [string map $map [dict get $snippets $x.js]]
     } elseif {!$found} {
       error "unknown include: $x.js or $x.css"
     }
@@ -102,6 +115,7 @@ proc GetUrl {name} {
   # Expand some shorthand notations while lokking up a URL.
   variable urls
   string map {
+    JO: http://jeelabs.org/pub/
     JQ: http://code.jquery.com/
     GH: https://raw.github.com/
     CF: http://cdnjs.cloudflare.com/ajax/libs/
