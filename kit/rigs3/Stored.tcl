@@ -10,6 +10,9 @@ Ju cachedVar mapInfo -once {
   variable mapInfo {}
   map info version 1
   map info jeemon $::startup::version
+}
+
+proc APP.HEARTBEAT {secs} {
   SaveMaps
 }
 
