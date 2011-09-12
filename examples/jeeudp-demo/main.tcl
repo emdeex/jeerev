@@ -14,7 +14,7 @@ Driver register RF12-868.5.24 roomNode
 # report one line on the console for each decoded/submitted state change
 State subscribe * {apply {x { puts "$x = [State get $x]" }}}
 
-proc DecodeJeeUDP {info secs prefix} {
+proc DispatchJeeUdp {info when prefix} {
   # Unravel incoming collectd data and turn each item into a driver dispatch.
   # Example info:
   #   addr 192.168.1.110 RF12: {868.5: {OK: {38 294864670399922176}}}
@@ -22,7 +22,7 @@ proc DecodeJeeUDP {info secs prefix} {
   dict for {freq ok} $RF12 {
     set freq [string trim $freq :]
     # track the IP address <-> RF12 config association
-    State put [string trim $prefix :] RF12-$freq
+    State put ${prefix}$addr RF12-$freq
     Ju assert {[llength $ok] == 2}
     lassign [lindex $ok 1] hdr values
     # convert the 8-byte int values to raw data
@@ -31,8 +31,8 @@ proc DecodeJeeUDP {info secs prefix} {
     set raw [string range $bytes 1 $len]
     # dispatch the raw data as if it came in through the RF12demo driver
     set node RF12-$freq.[% $hdr 32]
-    Driver dispatch $node raw $raw
+    Driver dispatch $node raw $raw when $when
   }
 }
 
-collectd listen jeeudp -port 25827 -command [namespace which DecodeJeeUDP]
+collectd listen jeeudp -port 25827 -command [namespace which DispatchJeeUdp]
