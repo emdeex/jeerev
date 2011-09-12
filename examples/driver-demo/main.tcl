@@ -9,8 +9,8 @@ set device [Config connect:device usb-A700fdxv] ;# or COMn, or /dev/ttyUSBn
 Driver register $device autoSketch
 
 # these nodes are picked up from wireless packets
-Driver register RF12-868.5.3 radioBlip
 Driver register RF12-868.5.2 roomNode
+Driver register RF12-868.5.3 radioBlip
 Driver register RF12-868.5.4 roomNode
 Driver register RF12-868.5.5 roomNode
 Driver register RF12-868.5.6 roomNode

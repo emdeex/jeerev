@@ -30,7 +30,8 @@ if {![info exists types]} {
   }
 }
 
-proc listen {tag {group 239.192.74.66} {port 25826}} {
+proc listen {tag args} {
+  Ju default args -port 25826 -group 239.192.74.66
   set s [udp_open $port]
   chan configure $s -mcastadd $group \
                       -buffering none -blocking 0 -translation binary
@@ -39,7 +40,7 @@ proc listen {tag {group 239.192.74.66} {port 25826}} {
 }
 
 proc ReadUDP {sock tag} {
-  # Called whenever a UDP comes in.
+  # Called whenever a UDP packet comes in.
   variable types
   variable level
   variable tuples
