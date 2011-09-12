@@ -417,3 +417,10 @@ proc dedent {text {opt ""}} {
   }
   string trimleft $text
 }
+
+proc default {vname args} {
+  # Fill default values in for the dict given as first arg and extract as vars.
+  upvar $vname v
+  set v [dict merge $args $v]
+  uplevel [list dict extract $v {*}[dict keys $v]]
+}
