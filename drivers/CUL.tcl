@@ -32,8 +32,6 @@ proc decode {event message} {
   # Called on each incoming message.
   if {[regexp {^([A-Z])([0-9A-F]{4,})$} $message - type msg]} {
     Decode-$type $event [binary format H* $msg]
-  } else {
-    Log ? {$conn: $msg}
   }
 }
 
