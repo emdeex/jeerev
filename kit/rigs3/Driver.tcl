@@ -101,6 +101,10 @@ proc bitSlicer {raw args} {
 
 proc dispatch {device args} {
   variable registered
+  dict extract $args message
+  if {$message ne ""} {
+    app hook DRIVER.DISPATCH $device $message
+  }
   set driver [dict get? $registered $device]
   if {$driver ne ""} {
     # decode the incoming information via a freshly brewed event object
