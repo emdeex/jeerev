@@ -1,5 +1,7 @@
 Jm doc "Driver for the RF12demo sketch."
 
+Driver type serial -baud 57600
+
 proc decode {event device message} {
   # Deal with an incoming RF12 message.
   variable settings

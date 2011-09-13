@@ -6,7 +6,11 @@ proc doc {args} {
   while {[incr level -1] >= -5 && ![catch { set info [info frame $level] }]} {
     if {[dict exists $info file]} {
       #TODO could use cmd or uplevel to extract current class name, etc.
-      dict with info { set doc_strings($file,$line) $args }
+      set rig [string trim [uplevel namespace current] :]
+      dict with info { 
+        # lappend works because entry gets cleared on reload in prepareRig
+        dict lappend doc_strings $rig $file [list $line {*}$args]
+      }
       break
     }
   }

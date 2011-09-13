@@ -1,5 +1,7 @@
 Jm doc "Driver for the HMNODE2 power metering sketch."
 
+Driver type serial -baud 57600
+
 Driver values {
   *: {
     erate:  { desc "power now"         unit W             low 0  high 4000   }

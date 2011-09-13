@@ -1,5 +1,7 @@
 Jm doc "Support for auto-loading of plugins when sketches are activated."
 
+Driver type serial -baud 57600
+
 proc decode {event device message} {
   # Called on each incoming message.
   variable drivermap

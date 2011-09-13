@@ -43,6 +43,8 @@ namespace eval Jm {
   }
   
   proc prepareRig {ns} {
+    variable doc_strings
+    dict unset doc_strings [string trim $ns :]
     namespace eval $ns {
       namespace export -clear {[a-z]*}
       namespace ensemble create -unknown {apply {{ns t args} {

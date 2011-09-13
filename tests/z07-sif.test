@@ -162,9 +162,9 @@ test x07/html3 {html test 3 with expansion} {
   <head>
     <meta charset='utf-8' />
     <title>KAKU send</title>
-    <link type='text/css' href='http://code.jquery.com/ui/1.8.15/themes/cupertino/jquery-ui.css' rel='stylesheet' />
-    <script type='text/javascript' src='http://code.jquery.com/jquery.min.js'></script>
-    <script type='text/javascript' src='http://code.jquery.com/ui/1.8.15/jquery-ui.min.js'></script>
+    <link type='text/css' href='http://jeelabs.org/pub/css/jquery-ui.css' rel='stylesheet' />
+    <script type='text/javascript' src='http://jeelabs.org/pub/js/jquery.js'></script>
+    <script type='text/javascript' src='http://jeelabs.org/pub/js/jquery-ui.js'></script>
     <script type='text/javascript'>jQuery(function(){*JS*});</script>
   </head>
   <body>

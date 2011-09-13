@@ -1,5 +1,7 @@
 Jm doc "Driver for the CUL (busware.de) USB stick."
 
+Driver type serial -baud 9600
+
 Driver values {
   EM*: {
     avg:   { desc "power, average"    unit W            low 0    high 4000  }
@@ -19,14 +21,12 @@ Driver values {
   }
 }
 
-# proc connect {interface} {
-#   # Called for each interface of this type.
-#   # interface: name of the interface
-#   # Returns a dict with connection info.
-#   set conn [Serial connect $interface 9600]
-#   $conn send "X21" ;# initialize to report the proper info
-#   dict create type serial baudrate 9600 conn $conn
-# }
+proc connect {device} {
+  # Called to connect to a device of this type.
+  set conn [Serial connect $device 9600]
+  $conn send "X21" ;# initialize to report the proper info
+  return $conn
+}
 
 proc decode {event message} {
   # Called on each incoming message.

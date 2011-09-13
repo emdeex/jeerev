@@ -6,7 +6,6 @@ Jm autoLoader ./drivers
 
 # connected directly via USB
 set device [Config connect:device usb-A700fdxv] ;# or COMn, or /dev/ttyUSBn
-Driver register $device autoSketch
 
 # these nodes are picked up from wireless packets
 Driver register RF12-868.5.2 roomNode
@@ -22,5 +21,4 @@ Driver register RF12-868.5.24 roomNode
 State subscribe * {apply {x { puts "$x = [State get $x]" }}}
 
 # now we can connect to the JeeLink and start dispatching messages to drivers
-set conn [Serial connect $device 57600]
-objdefine $conn forward onReceive Driver dispatch $device message
+Driver connect $device autoSketch

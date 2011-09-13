@@ -1,7 +1,13 @@
 Jm doc "Framework for dispatching messages from devices to drivers and back."
 
-Ju cachedVar {locations values} -once {
-  variable locations {} values {}
+Ju cachedVar {locations values types} -once {
+  variable locations {} values {} types {}
+}
+
+proc type {type args} {
+  variable types
+  set driver [string trim [uplevel namespace current] :]
+  dict set types $driver $type: $args
 }
 
 proc register {device driver} {
@@ -34,6 +40,19 @@ proc getInfo {driver where what} {
       return $info
     }
   }
+}
+
+proc connect {device driver} {
+  variable types
+  register $device $driver
+  if {[namespace which ${driver}::connect] ne ""} {
+    set conn [$driver connect $device]
+  } elseif {[dict exists $types $driver serial:]} {
+    set conn [Serial connect $device [dict get $types $driver serial: -baud]]
+  } else {
+    return -code error "$driver: don't know how to connect to $device"
+  }
+  objdefine $conn forward onReceive Driver dispatch $device message
 }
 
 proc scaledInt {value decimals} {

@@ -1,5 +1,8 @@
 Jm doc "Decoder for the roomNode sketch."
 
+Driver type remote
+Driver type serial -baud 57600
+
 Driver values {
   *: {
     light:  { desc "light"                       low 0    high 100 }

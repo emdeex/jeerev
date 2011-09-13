@@ -1,5 +1,7 @@
 Jm doc "Decoder for the radioBlip sketch."
 
+Driver type remote
+
 Driver values {
   EM*: {
     avg:   { desc "power, average"    unit W            low 0    high 4000  }

@@ -1,5 +1,7 @@
 Jm doc "Decoder for the radioBlip sketch."
 
+Driver type remote
+
 Driver values {
   *: {
     ping: { desc "packets sent" unit counts low 0 high 999999999 }
