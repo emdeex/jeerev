@@ -79,13 +79,27 @@ proc Decode-KSX {event raw} {
   }
 }
 
-proc Decode-VISO {event raw} {
-  $event identify VISO
-  $event submit hex [binary encode hex $raw]
+proc Decode-FSX {event raw} {
+  # example: FSX a54a038fa839
+  # example: FSX abec01c04f3e4e
+  set cleaned [Driver bitFlipper [Driver bitRemover $raw 8 1]]
+  #FIXME decoding seems off, it was hacked to get the address right (?)
+  Driver bitSlicer $cleaned hc 16 ad 8 cmd 5 eb 1 bb 1 ae 1
+  set addr [+ [* $ad 2] $ae]
+  if {$eb} {
+    Driver bitSlicer $cleaned - 32 ext 8
+    set id X
+    set extra [list ext $ext]
+  } else {
+    set id ""
+    set extra {}    
+  }
+  $event identify FS20$id-[format %04X $hc].$addr
+  $event submit cmd [% $cmd 32] {*}$extra
 }
 
-proc Decode-FSX {event raw} {
-  $event identify FSX
+proc Decode-VISO {event raw} {
+  $event identify VISO
   $event submit hex [binary encode hex $raw]
 }
 

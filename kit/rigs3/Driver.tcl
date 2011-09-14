@@ -99,6 +99,13 @@ proc bitSlicer {raw args} {
   }
 }
 
+proc bitFlipper {raw} {
+  # Flip the bits in each byte.
+  # raw: the raw data bytes
+  binary scan $raw B* bits
+  binary format b* $bits
+}
+
 proc dispatch {device args} {
   variable registered
   dict extract $args message
