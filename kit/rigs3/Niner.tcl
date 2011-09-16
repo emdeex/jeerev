@@ -4,7 +4,7 @@ Webserver hasUrlHandlers
 
 proc layout {tree} {
   # Set up page definitions for the Niner theme.
-  variable main $tree
+  variable main [Ju unComment $tree]
   dict set main owner [uplevel namespace current]
   dict for {kx vx} [dict get $main pages:] {
     dict for {ky vy} $vx {

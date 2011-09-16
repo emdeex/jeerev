@@ -102,11 +102,16 @@ proc HtmlElements {abbrev {content ""}} {
     return [list "<[lindex $openTags 0] />"]
   }
   # opening elements are in original order, closing elements must be reversed
-  set open <[join $openTags ><]>
-  set close </[join [lreverse $closeTags] ></]>
-  # no content has only an opeming item, i.e. "<blah ...></blah>"
-  if {$content eq ""} {
-    return [list "$open$close"]
+  if {[llength $openTags] == 0} {
+    set open ""
+    set close ""
+  } else {
+    set open <[join $openTags ><]>
+    set close </[join [lreverse $closeTags] ></]>
+    # no content has only an opeming item, i.e. "<blah ...></blah>"
+    if {$content eq ""} {
+      return [list "$open$close"]
+    }
   }
   # with content we return three items, i.e. "<blah ...>" "..." "</blah>"
   #TODO i18n
@@ -132,7 +137,7 @@ proc HtmlExpand {line hasChildren} {
       }
     }
     default {
-      if {[regexp {^(.+?):\s(.*)$} $line - divs rest]} {
+      if {[regexp {^(.*?):\s(.*)$} $line - divs rest]} {
         set open [join [HtmlElements $divs $rest] ""]
       } else {
         if {$hasChildren} {

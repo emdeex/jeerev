@@ -125,7 +125,7 @@ proc GetUrl {name} {
 }
 
 proc coffee {code} {
-  #return "<script type='text/coffescript'>$code</script>"
+  return "<script type='text/coffescript'>$code</script>"
 }
 
 proc wrap {code} {

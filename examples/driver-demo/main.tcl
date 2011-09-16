@@ -13,6 +13,7 @@ Driver register RF12-868.5.3 radioBlip
 Driver register RF12-868.5.4 roomNode
 Driver register RF12-868.5.5 roomNode
 Driver register RF12-868.5.6 roomNode
+Driver register RF12-868.5.17 oneLong
 Driver register RF12-868.5.19 ookRelay2
 Driver register RF12-868.5.23 roomNode
 Driver register RF12-868.5.24 roomNode
