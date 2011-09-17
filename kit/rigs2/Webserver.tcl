@@ -81,7 +81,7 @@ proc dispatch {state} {
   variable routes ;# cachedVar, see below
   set path [dict get $state request uri]
   regsub {\?.*} $path {} path
-  Log web {path $path real-ip [dict get? [state] request header x-real-ip]}
+  Log web {path $path from [dict get? [state] request header x-forwarded-for]}
   foreach {re match} $routes {
     set args [regexp -inline $re $path]
     if {$args ne ""} {
