@@ -4,6 +4,14 @@ Ju cachedVar {locations values types} -once {
   variable locations {} values {} types {}
 }
 
+proc Driver {text} {
+  #TODO Jm doc-like behavior
+}
+
+proc load {path} {
+  Jm autoLoader $path * Drivers::
+}
+
 proc type {type args} {
   variable types
   set driver [string trim [uplevel namespace current] :]
@@ -12,7 +20,7 @@ proc type {type args} {
 
 proc register {device driver} {
   variable registered
-  Jm needs $driver
+  Jm needs Drivers::$driver
   dict set registered $device $driver
 }
 
@@ -45,17 +53,18 @@ proc getInfo {driver where what} {
 proc connect {device driver} {
   variable types
   register $device $driver
-  if {[namespace which ${driver}::connect] ne ""} {
-    set conn [$driver connect $device]
-  } elseif {[dict exists $types $driver serial:]} {
-    set conn [Serial connect $device [dict get $types $driver serial: -baud]]
+  set path Drivers::$driver
+  if {[namespace which ::${driver}::connect] ne ""} {
+    set conn [Drivers $driver connect $device]
+  } elseif {[dict exists $types $path serial:]} {
+    set conn [Serial connect $device [dict get $types $path serial: -baud]]
   } else {
     return -code error "$driver: don't know how to connect to $device"
   }
-  objdefine $conn forward onReceive Driver dispatch $device message
+  objdefine $conn forward onReceive Drivers dispatch $device message
 }
 
-proc scaledInt {value decimals} {
+proc bit {value decimals} {
   if {$decimals eq ""} { return $value }
   if {$value eq ""} { set value 0 }
   set factor [** 10.0 [- $decimals]]
@@ -148,7 +157,7 @@ Ju classDef Event {
   
   method call {subcmd} {
     # locate the decoder in the appropriate driver
-    set cmd [namespace which [dict get $data driver]::$subcmd]
+    set cmd [namespace which ::Drivers::[dict get $data driver]::$subcmd]
     if {$cmd eq ""} {
       error "not found: [dict get $data driver]::$subcmd"
     }
