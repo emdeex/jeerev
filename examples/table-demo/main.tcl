@@ -9,7 +9,7 @@ if {[app get -collectd 0]} {
   variable pattern reading:*
   Jm needs Replay
 
-  Driver locations {
+  Drivers locations {
     usb-USB0       house         
     usb-ACM0       office        
     usb-A600dVPp   office        
@@ -187,7 +187,7 @@ proc TrackState {param} {
   }
   if {[llength $fields] == 4} {
     lassign $fields - where driver what
-    dict extract [Driver getInfo $driver $where $what] \
+    dict extract [Drivers getInfo $driver $where $what] \
       desc scale location unit low high
     if {$location eq ""} {
       set location $where
@@ -198,7 +198,7 @@ proc TrackState {param} {
     if {$unit eq "" && $low ne "" && $high ne ""} {
       set unit "$low..$high"
     }
-    set scaled [Driver scaledInt $value $scale]
+    set scaled [scaledInt $value $scale]
     dict extract [State getInfo $param] m t
     set item [list $scaled $unit [ShortTime $m] [ShortTime $t]]
     # batch multiple changes into one before propagating them as SSE's

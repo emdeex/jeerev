@@ -1,8 +1,8 @@
-Jm doc "Driver for the HMNODE2 power metering sketch."
+Driver "Driver for the HMNODE2 power metering sketch."
 
-Driver type serial -baud 57600
+type serial -baud 57600
 
-Driver values {
+values {
   *: {
     erate:  { desc "power now"         unit W             low 0  high 4000   }
     etotal: { desc "power, cumulative" unit Wh   scale 1  low 0  high 999999 }
@@ -29,7 +29,7 @@ proc decode {event message} {
     #     uint16_t origin :2; // can deal with up to 4 units
     #     TxItem data[NSIGS]; // sensor data, 32 bits for each sensor
     # } payload;
-    Driver bitSlicer $raw \
+    bitSlicer $raw \
       seq 6 orig 2 c1 12 v1 2 w1 1 f1 1 r1 16 c2 12 v2 2 w2 1 f2 1 r2 16
     # rates are stored as a sort of pseudo floats, convert them back first
     set r1 [UnpackValue $r1]

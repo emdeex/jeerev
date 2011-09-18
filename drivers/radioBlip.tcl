@@ -1,8 +1,8 @@
-Jm doc "Decoder for the radioBlip sketch."
+Driver "Decoder for the radioBlip sketch."
 
-Driver type remote
+type remote
 
-Driver values {
+values {
   *: {
     ping: { desc "packets sent" unit counts low 0 high 999999999 }
     age:  { desc "node age"     unit days   low 0 high 9999      }
@@ -10,6 +10,6 @@ Driver values {
 }
 
 proc decode {event raw} {
-  Driver bitSlicer $raw ping 32
+  bitSlicer $raw ping 32
   $event submit ping $ping age [/ $ping [/ 86400 64]]
 }

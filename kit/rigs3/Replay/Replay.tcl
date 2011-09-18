@@ -35,7 +35,7 @@ Ju cachedVar interfaces -once {
   set devs [dict get $config devices:]
   dict for {k v} $devs {
     Jm needs $v
-    Driver register $k $v
+    Drivers register $k $v
   }
   Log replay {[dict size $devs] devices defined}
 }
@@ -64,9 +64,9 @@ proc Playback {} {
     lappend interfaces $dev
     set prefix [dict get? $config startup: $dev]
     if {$prefix ne ""} {
-      Driver dispatch $dev message $prefix
+      Drivers dispatch $dev message $prefix
     }
   }
   # report this as if it were a new reading which just came in
-  Driver dispatch $dev message $msg when [/ $now 1000] source replay
+  Drivers dispatch $dev message $msg when [/ $now 1000] source replay
 }

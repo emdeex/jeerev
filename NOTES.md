@@ -148,20 +148,20 @@ sending out wireless packets once a minute, containing a 4-byte sequence number:
     Jm doc "Decoder for the radioBlip sketch."
 
     proc decode {event raw} {
-      Driver bitSlicer $raw ping 32
+      bitSlicer $raw ping 32
       $event submit ping $ping age [/ $ping [/ 86400 64]]
     }
 
 The `Jm doc ...` line is recommended, it documents the purpose of this driver.
 By declaring a `decode` proc, the driver signals that it is able to decode
 incoming data. The actual association with one or more devices will be made
-elsewhere, using a call to `Driver register ...`.
+elsewhere, using a call to `Drivers register ...`.
 
 The first parameter is always an event object. The remaining args will be set to
 fields from the event when called, in this case the driver is only interested in
 a field called `raw`.
 
-`Driver bitSlicer ...` is a utility function to extract individual bits from a
+`bitSlicer ...` is a driver utility function to extract individual bits from a
 raw binary value. In this case a single local variable called `ping` will be
 set to the first 32 bits of data, interpreted as a little-endian integer.
 

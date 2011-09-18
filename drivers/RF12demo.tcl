@@ -1,6 +1,6 @@
-Jm doc "Driver for the RF12demo sketch."
+Driver "Driver for the RF12demo sketch."
 
-Driver type serial -baud 57600
+type serial -baud 57600
 
 proc decode {event device message} {
   # Deal with an incoming RF12 message.
@@ -11,6 +11,6 @@ proc decode {event device message} {
   } elseif {[string match "OK *" $message] && [info exists settings($device)]} {
     set data [lassign $message - hdr]
     set node $settings($device).[% $hdr 32]
-    Driver dispatch $node raw [binary format c* $data]
+    dispatch $node raw [binary format c* $data]
   }
 }

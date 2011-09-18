@@ -203,7 +203,7 @@ proc needs {args} {
   # Make sure all required modules are availabled amd loaded.
   # args: list of rigs to load before continuing
   foreach x $args {
-    if {[info commands $x] == ""} {
+    if {[info commands ::$x] == ""} {
       loadNow $x
     }
   }

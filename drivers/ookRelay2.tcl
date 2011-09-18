@@ -1,8 +1,8 @@
-Jm doc "Decoder for the radioBlip sketch."
+Driver "Decoder for the radioBlip sketch."
 
-Driver type remote
+type remote
 
-Driver values {
+values {
   EM*: {
     avg:   { desc "power, average"    unit W            low 0    high 4000  }
     max:   { desc "power, maximum"    unit W            low 0    high 4000  }
@@ -26,7 +26,7 @@ proc decode {event raw} {
     1 VISO 2 EMX 3 KSX 4 FSX 5 ORSC 6 CRES 7 KAKU 8 XRF 9 HEZ
   }
   while {$raw ne ""} {
-    Driver bitSlicer $raw type 4 size 4
+    bitSlicer $raw type 4 size 4
     set name [Ju get typeMap($type) OTHER]
     Decode-$name $event [string range $raw 1 $size]
     set raw [string range $raw $size+1 end]
@@ -36,7 +36,7 @@ proc decode {event raw} {
 proc Decode-EMX {event raw} {
   # see http://fhz4linux.info/tiki-index.php?page=EM+Protocol
   # example: EMX 0211726daefb214089007900
-  Driver bitSlicer [Driver bitRemover $raw 8 1] \
+  bitSlicer [bitRemover $raw 8 1] \
           type 8 unit 8 seq 8 tot 16 avg 16 max 16
   $event identify EM$type-$unit
   $event submit avg [* $avg 12] max [* $max 12] total $tot
@@ -46,7 +46,7 @@ proc Decode-KSX {event raw} {
   # see http://www.dc3yc.homepage.t-online.de/protocol.htm
   # example: KSX 374309e795104a4ab54c
   # example: KSX 31ca1aabacf401
-  Driver bitSlicer [Driver bitRemover $raw 4 1] \
+  bitSlicer [bitRemover $raw 4 1] \
           s 4 f 4 t0 4 t1 4 t2 4 t3 4 t4 4 t5 4 t6 4 t7 4 t8 4 t9 4 t10 4
   # the "scan" calls below are a way to get rid of extra leading zero's
   switch $s {
@@ -60,7 +60,7 @@ proc Decode-KSX {event raw} {
     }
     7 {
       # Log ksx {<$s$f-$t10$t9$t8-$t7$t6$t5-$t4$t3-$t2$t1$t0>\
-      #           [binary encode hex [Driver bitRemover $raw 4 1]]}
+      #           [binary encode hex [bitRemover $raw 4 1]]}
       set temp [scan $t2$t1$t0 %d]
       set rhum [scan $t4$t3 %d]
       set wind [scan $t7$t6$t5 %d]
@@ -72,7 +72,7 @@ proc Decode-KSX {event raw} {
       $event submit temp $temp humi $rhum wind $wind rain $rain rnow $rnow
     }
     default {
-      set cleaned [Driver bitRemover $raw 4 1]
+      set cleaned [bitRemover $raw 4 1]
       $event identify KSX-$s
       $event submit hex [binary encode hex $cleaned]
     }
@@ -82,12 +82,12 @@ proc Decode-KSX {event raw} {
 proc Decode-FSX {event raw} {
   # example: FSX a54a038fa839
   # example: FSX abec01c04f3e4e
-  set cleaned [Driver bitFlipper [Driver bitRemover $raw 8 1]]
+  set cleaned [bitFlipper [bitRemover $raw 8 1]]
   #FIXME decoding seems off, it was hacked to get the address right (?)
-  Driver bitSlicer $cleaned hc 16 ad 8 cmd 5 eb 1 bb 1 ae 1
+  bitSlicer $cleaned hc 16 ad 8 cmd 5 eb 1 bb 1 ae 1
   set addr [+ [* $ad 2] $ae]
   if {$eb} {
-    Driver bitSlicer $cleaned - 32 ext 8
+    bitSlicer $cleaned - 32 ext 8
     set id X
     set extra [list ext $ext]
   } else {

@@ -1,14 +1,14 @@
-Jm doc "Displays each incoming 4 bytes as a long, for testing purposes."
+Driver "Displays each incoming 4 bytes as a long, for testing purposes."
 
-Driver type remote
+type remote
 
-Driver values {
+values {
   *: {
     value: { desc "some value" }
   }
 }
 
 proc decode {event raw} {
-  Driver bitSlicer $raw value 32
+  bitSlicer $raw value 32
   $event submit value $value
 }

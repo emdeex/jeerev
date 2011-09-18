@@ -1,9 +1,9 @@
-Jm doc "Decoder for the roomNode sketch."
+Driver "Decoder for the roomNode sketch."
 
-Driver type remote
-Driver type serial -baud 57600
+type remote
+type serial -baud 57600
 
-Driver values {
+values {
   *: {
     light:  { desc "light"                       low 0    high 100 }
     moved:  { desc "motion"                      low 0    high 1   }
@@ -22,7 +22,7 @@ proc decode {event raw message} {
     #     int temp   :10; // temperature: -500..+500 (tenths)
     #     byte lobat :1;  // supply voltage dropped under 3.1V: 0..1
     # } payload;
-    Driver bitSlicer $raw l 8 m 1 h 7 t -10 b 1
+    bitSlicer $raw l 8 m 1 h 7 t -10 b 1
   } elseif {[string match "ROOM *" $message] && [llength $message] == 6} {
     lassign $message cmd l m h t b
   } else {

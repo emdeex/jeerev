@@ -81,7 +81,7 @@ proc GetHistory {param range step} {
   set data {}
   foreach {num min max sum} [History query $param $from $step $count] {
     if {$num > 0} {
-      set value [Driver scaledInt [/ $sum $num] 1] ;#FIXME hard-coded scale!
+      set value [scaledInt [/ $sum $num] 1] ;#FIXME hard-coded scale!
       lappend data [Ju toJson [list [* [+ $from $offsetTZ] 1000] $value] -list]
     }
     incr from $step

@@ -1,8 +1,8 @@
-Jm doc "Driver for the CUL (busware.de) USB stick."
+Driver "Driver for the CUL (busware.de) USB stick."
 
-Driver type serial -baud 9600
+type serial -baud 9600
 
-Driver values {
+values {
   EM*: {
     avg:   { desc "power, average"    unit W            low 0    high 4000  }
     max:   { desc "power, maximum"    unit W            low 0    high 4000  }
@@ -59,7 +59,7 @@ proc Decode-K {event raw} {
 
 proc Decode-E {event raw} {
   # example 02080A3CFE09000C0029
-  Driver bitSlicer $raw type 8 unit 8 seq 8 tot 16 avg 16 max 16
+  bitSlicer $raw type 8 unit 8 seq 8 tot 16 avg 16 max 16
   $event identify EM$type-$unit
   $event submit avg [* $avg 12] max [* $max 12] total $tot
 }
