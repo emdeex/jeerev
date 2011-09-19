@@ -1,5 +1,5 @@
 Jm doc "How to dispatch and decode RF12-over-UDP packets."
-Jm autoLoader ./drivers
+Drivers load ./drivers
 
 # these nodes are picked up from wireless packets via UDP
 Drivers register RF12-868.5.2 roomNode

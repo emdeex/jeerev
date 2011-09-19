@@ -1,5 +1,5 @@
 Jm doc "Replay some stored data to simplify development."
-Jm autoLoader ./drivers
+Drivers load ./drivers
 
 proc APP.READY {} {
   variable readings {}
@@ -34,7 +34,6 @@ Ju cachedVar interfaces -once {
   variable config
   set devs [dict get $config devices:]
   dict for {k v} $devs {
-    Jm needs $v
     Drivers register $k $v
   }
   Log replay {[dict size $devs] devices defined}
