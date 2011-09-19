@@ -64,7 +64,7 @@ proc connect {device driver} {
   objdefine $conn forward onReceive Drivers dispatch $device message
 }
 
-proc bit {value decimals} {
+proc scaledInt {value decimals} {
   if {$decimals eq ""} { return $value }
   if {$value eq ""} { set value 0 }
   set factor [** 10.0 [- $decimals]]
