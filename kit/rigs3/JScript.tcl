@@ -39,6 +39,10 @@ Ju cachedVar {urls snippets} . {
       http://static.jstree.com/v.1.0pre/jquery.jstree.js
     pjax.js
       GH:defunkt/jquery-pjax/heroku/jquery.pjax.js
+    tablesorter.js
+      http://tablesorter.com/__jquery.tablesorter.js
+    tablesorter.css
+      http://tablesorter.com/themes/blue/style.css
   }]
   variable snippets [Ju unComment {
     kodtb.js {
