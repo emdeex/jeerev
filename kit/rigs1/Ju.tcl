@@ -276,17 +276,15 @@ proc cacheClear {{match *.*}} {
 
 proc CacheTracer {context a e op} {
   # Called by cachedVar to fill in the variable, and then stop tracing.
-  if {[catch {
-    upvar $a v
-    if {$op eq "read" && ![info exists v]} {
-      variable cachedVars
-      lassign $context ns
-      lassign $cachedVars($context) tag script
-      namespace eval $ns $script
-    }
-    set cmd [list [namespace which CacheTracer] $context]
-    trace remove variable v {array read write} $cmd
-  } m]} { Log cache {$context - $m} ;puts $::errorInfo }
+  upvar $a v
+  if {$op eq "read" && ![info exists v]} {
+    variable cachedVars
+    lassign $context ns
+    lassign $cachedVars($context) tag script
+    namespace eval $ns $script
+  }
+  set cmd [list [namespace which CacheTracer] $context]
+  trace remove variable v {array read write} $cmd
 }
 
 proc pdict {_dict {_name ""}} {

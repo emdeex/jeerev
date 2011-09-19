@@ -11,6 +11,14 @@ interp alias {} = {} expr
 uplevel #0 namespace import tcl::mathop::*
 uplevel #0 namespace import tcl::mathfunc::*
 
+proc ::bgerror {msg} {
+  set header "$msg (ERROR #[incr ::errorCount])"
+  set footer "[clock format [clock seconds]] (ERROR #$::errorCount)"
+  puts stderr [string range "[string repeat - 79] $header" end-78 end]
+  puts stderr $::errorInfo
+  puts stderr [string range "[string repeat = 79] $footer" end-78 end]
+}
+
 # TclOO commands are considered part of the core, so let's make them global
 if {[namespace exists ::oo]} {
   uplevel #0 namespace import oo::*

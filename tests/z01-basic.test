@@ -107,6 +107,11 @@ test z01/msgcat {msgcat::mc command should be aliased in ::} {
   interp alias {} :
 } {msgcat mc}
 
+test z01/bgerror {background error handling} -body {
+  after idle error boo!
+  update
+} -match glob -errorOutput "---* boo! (ERROR #1)\nboo!\n*===* 2011 (ERROR #1)\n"
+
 unset ::env(JEEREV_RIG_DIRS)
 
 cleanupTests
