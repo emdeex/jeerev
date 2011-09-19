@@ -424,3 +424,17 @@ proc default {vname args} {
   set v [dict merge $args $v]
   uplevel [list dict extract $v {*}[dict keys $v]]
 }
+
+proc captureVars {{match *} {ns ""}} {
+  # Capture all existing variables in the given namespace.
+  if {$ns eq ""} {
+    set ns [uplevel namespace current]
+  }
+  set info {}
+  foreach x [info vars ${ns}::$match] {
+    if {[info exists $x]} {
+      dict set info [namespace tail $x] [set $x]
+    }
+  }
+  return $info
+}

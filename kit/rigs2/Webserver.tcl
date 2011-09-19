@@ -43,16 +43,22 @@ proc hasUrlHandlers {} {
                 {} namespace eval $ns { info commands /*: }
 }
 
-proc state {} {
-  # Returns entire state dict, should only be called inside a request coroutine.
+proc state {args} {
+  # Returns partial or entire state dict, use only while in a request coroutine.
   upvar #2 state state
-  return $state
+  dict get? $state {*}$args
+}
+
+proc addToState {args} {
+  # Add values to the state dict, can be used for per-connection storage.
+  upvar #2 state state
+  set keys [lrange $args 0 end-1]
+  dict set state {*}$keys [dict merge [state {*}$keys] [lindex $args end]]
 }
 
 proc input {} {
   # Returns a dict with the query or post variables in the current request.
-  dict extract [state] request
-  dict extract $request method query post
+  dict extract [state request] method query post
   if {$method eq "GET"} {
     set vars $query
   } elseif {$method eq "POST"} {
