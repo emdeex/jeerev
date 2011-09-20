@@ -5,7 +5,7 @@ Jm doc "Some useful extensions for Tcl."
 interp alias {} : {} msgcat mc
 
 # shorthand for expr (braces are still required!)
-interp alias {} = {} expr
+# interp alias {} = {} expr
 
 # let's take the plunge and make all math operators and functions global
 uplevel #0 namespace import tcl::mathop::*
