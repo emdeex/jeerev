@@ -6,7 +6,7 @@ proc APP.READY {} {
 
   # create a connection object
   set device [Config connect:device usb-A700fdxv]
-  variable conn [Serial connect $device 57600]
+  variable conn [Interfaces serial connect $device 57600]
 }
 
 variable js {

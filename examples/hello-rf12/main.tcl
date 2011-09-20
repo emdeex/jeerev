@@ -11,7 +11,7 @@ proc APP.READY {} {
 
   # create a connection object
   set device [Config connect:device usb-A700fdxv]
-  set conn [Serial connect $device 57600]
+  set conn [Interfaces serial connect $device 57600]
 
   # wait 1 sec for startup, then configure the JeeNode as specified
   after 1000 [list $conn send [Config connect:config "8b 5g 1i"]]

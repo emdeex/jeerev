@@ -36,6 +36,41 @@ proc values {data} {
   set values($driver) $data
 }
 
+proc view {{cmd ""} args} {
+  variable view
+  if {$cmd eq ""} {
+    return $view
+  }
+  View $cmd $view {*}$args
+}
+
+Ju cachedVar view . {
+  variable view [CollectViewInfo]
+}
+
+proc CollectViewInfo {} {
+  #TODO get rid of this proc when (if?) Ju cachedVar adds an "apply" layer
+  set data {}
+  dict for {ns cmd} [dict filter [array get ::auto_index] key Drivers::*] {
+    set name [namespace tail $ns]
+    set types {}
+    if {[dict exists $::Drivers::types $ns]} {
+      set row [dict get $::Drivers::types $ns]
+      foreach {k v} $row {
+        lappend types [string trim $k :]
+      }
+    }
+    lassign [Ju get ::Jm::rigs_loaded(::$ns)] file time
+    set title [Ju get ::Drivers::desc($name)]
+    set public {}
+    foreach x [lsort [info commands "::${ns}::\[a-z]*"]] {
+      lappend public [namespace tail $x]
+    }
+    lappend data $name [join [lsort $types] ", "] $file $time $title $public
+  }
+  View def name,types,file,time:I,title,public $data
+}
+
 proc getInfo {driver where what} {
   variable values
   variable locations
@@ -58,7 +93,8 @@ proc connect {device driver} {
   if {[namespace which ::${driver}::connect] ne ""} {
     set conn [Drivers $driver connect $device]
   } elseif {[dict exists $types $path serial:]} {
-    set conn [Serial connect $device [dict get $types $path serial: -baud]]
+    set baud [dict get $types $path serial: -baud]
+    set conn [Interfaces serial connect $device $baud]
   } else {
     return -code error "$driver: don't know how to connect to $device"
   }

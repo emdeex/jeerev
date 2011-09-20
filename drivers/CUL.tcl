@@ -23,7 +23,7 @@ values {
 
 proc connect {device} {
   # Called to connect to a device of this type.
-  set conn [Serial connect $device 9600]
+  set conn [Interfaces serial connect $device 9600]
   $conn send "X21" ;# initialize to report the proper info
   return $conn
 }
