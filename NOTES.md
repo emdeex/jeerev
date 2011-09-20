@@ -136,7 +136,8 @@ values of any state variable, as well as a few associated timestamps.
 of an application to respond to specific changes (e.g. code reloads, config
 changes, file changes, data triggers), and to pass around arbitrary information.
 Defining a hook is a matter of defining a proc with a certain naming convention
-(two or more uppercase identifiers separated by periods). Calling them is done through the `app hook ...` function.
+(two or more uppercase identifiers separated by periods). Calling them is done
+through the `app hook ...` function.
 
 Drivers
 -------

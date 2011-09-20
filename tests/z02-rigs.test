@@ -15,7 +15,7 @@ test z02/simple {simple rig loading} {
 
 test z02/no-rigs_extra {Jm::rigs_extra will already exist} {
   array names Jm::rigs_extra
-} ::Replay
+} {::Interfaces ::Replay}
 
 makeDirectory z02-rigs/two
 makeFile { puts two!; proc do {} { return two } } two.tcl z02-rigs/two
