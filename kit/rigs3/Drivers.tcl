@@ -1,11 +1,12 @@
 Jm doc "Framework for dispatching messages from devices to drivers and back."
 
-Ju cachedVar {locations values types} -once {
-  variable locations {} values {} types {}
+Ju cachedVar {locations types} -once {
+  variable locations {} types {}
 }
 
 proc Driver {text} {
-  #TODO Jm doc-like behavior
+  variable desc
+  set desc([namespace tail [uplevel namespace current]]) $text
 }
 
 proc load {path} {
@@ -31,14 +32,14 @@ proc locations {data} {
 
 proc values {data} {
   variable values
-  set driver [string trim [uplevel namespace current] :]
-  dict set values $driver $data
+  set driver [namespace tail [uplevel namespace current]]
+  set values($driver) $data
 }
 
 proc getInfo {driver where what} {
   variable values
   variable locations
-  dict for {pattern details} [dict get? $values $driver] {
+  dict for {pattern details} [Ju get values($driver)] {
     if {[string match $pattern $where:]} {
       set info [dict get? $details $what:]
       dict set info where $where

@@ -1,4 +1,4 @@
-Driver "Decoder for the radioBlip sketch."
+Driver "Driver for the OOK Relay v.2 sketch."
 
 type remote
 

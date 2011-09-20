@@ -1,4 +1,4 @@
-Driver "Support for auto-loading of plugins when sketches are activated."
+Driver "Automatically loads the matching driver when a sketch starts running."
 
 type serial -baud 57600
 

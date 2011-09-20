@@ -1,7 +1,8 @@
 Jm doc "Utility code for HTML page generation."
 
 proc Page {text} {
-  #TODO Jm doc-like behavior
+  variable desc
+  set desc([namespace tail [uplevel namespace current]]) $text
 }
 
 proc load {path} {

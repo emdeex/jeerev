@@ -26,6 +26,10 @@ Ju cachedVar {urls snippets} . {
       JO:js/jquery.dateFormat.js
     knockout.js
       JO:js/knockout.js
+    tablesorter.js
+      JO:js/jquery.tablesorter.js
+    tablesorter.css
+      JO:css/tablesorter.css
     # elsewhere...
     tmpl.js
       MS:jquery.templates/beta1/jquery.tmpl.min.js
@@ -39,10 +43,6 @@ Ju cachedVar {urls snippets} . {
       http://static.jstree.com/v.1.0pre/jquery.jstree.js
     pjax.js
       GH:defunkt/jquery-pjax/heroku/jquery.pjax.js
-    tablesorter.js
-      http://tablesorter.com/__jquery.tablesorter.js
-    tablesorter.css
-      http://tablesorter.com/themes/blue/style.css
   }]
   variable snippets [Ju unComment {
     kodtb.js {

@@ -14,3 +14,7 @@ proc decode {event device message} {
     dispatch $node raw [binary format c* $data]
   }
 }
+
+proc send {event} {
+  # not yet...
+}

@@ -94,6 +94,9 @@ namespace eval dict-extensions {
     # Extract specified values into variables, set to empty string if missing.
     # Note: all non-alphanumerics are stripped from the key when generating the
     # variable names. This allows extracting key "-a" to "a", "b:" to "b", etc.
+    if {[llength $args] == 0} {
+      set args [dict keys $value]
+    }
     foreach x $args {
       uplevel [list set [regsub -all {\W} $x {}] [dict get? $value $x]]
     }
