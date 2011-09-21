@@ -44,23 +44,11 @@ Ju cachedVar view . {
 }
 
 proc CollectViewInfo {} {
-  #TODO use view mixin
   variable values
   set novals [View def match,var,desc,unit,scale,low:I,high:I]
   set data {}
   dict for {ns cmd} [dict filter [array get ::auto_index] key Drivers::*] {
     set name [namespace tail $ns]
-    set types {}
-    if {[dict exists $::Drivers::types $ns]} {
-      set row [dict get $::Drivers::types $ns]
-      foreach {k v} $row {
-        lappend types [string trim $k :]
-      }
-    }
-    set functions {}
-    foreach x [lsort [info commands "::${ns}::\[a-z]*"]] {
-      lappend functions [namespace tail $x]
-    }
     set drinfo [Ju get values($name)]
     if {[dict size $drinfo] == 0} {
       set vals $novals
@@ -78,11 +66,31 @@ proc CollectViewInfo {} {
       }
       set vals [View def match,var,desc,unit,scale,low:I,high:I $vdata]
     }
-    set tvw [View def name $types]
-    set pvw [View def name $functions]
-    lappend data $name $tvw $pvw [View group $vals 0 vars]
+    lappend data $name [View group $vals 0 vars]
   }
-  View def name,interfaces:V,functions:V,values:V $data
+  View mixin [View def name,values:V $data] {
+    interfaces:V {v row} {
+      set rig Drivers::[View get $v $row name]
+      set interfaces {}
+      if {[dict exists $::Drivers::types $rig]} {
+        set row [dict get $::Drivers::types $rig]
+        foreach {k v} $row {
+          lappend interfaces [string trim $k :]
+        }
+      }
+      View def name $interfaces
+    }
+    functions:V {v row} {
+      set ns ::Drivers::[View get $v $row name]
+      View commands $ns {[a-z]*}
+    }
+    types {v row} {
+      join [View get $v $row interfaces * 0] ", "
+    }
+    public {v row} {
+      View get $v $row functions * 0
+    }
+  }
 }
 
 proc getInfo {driver where what} {

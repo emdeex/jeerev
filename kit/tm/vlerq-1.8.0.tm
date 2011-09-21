@@ -17,13 +17,13 @@ namespace eval View {
 proc Unknown {cmd op v args} {
   # resolve right now iso returning ns inscope to avoid inserting extra level
   set ns [namespace current]::[lindex $v 0]
-  return [namespace inscope $ns namespace which ^$op]
+  namespace inscope $ns namespace which ^$op
 }
 namespace ensemble create -unknown [namespace code Unknown]
 
 # create a new ref view with the specified size and structure
 proc new {rows {meta {ref {}}}} {
-  return [View wrap ref [View init data $rows $meta]]
+  View wrap ref [View init data $rows $meta]
 }
 
 # define a view from scratch
@@ -35,7 +35,7 @@ proc def {desc {data ""}} {
 
 # true if the view passed in is a meta view
 proc ismeta? {v} {
-  return [expr {[View meta $v] eq "ref {}"}]
+  expr {[View meta $v] eq "ref {}"}
 }
 
 # convert a Mk4tcl layout string to a meta-view
@@ -51,14 +51,14 @@ proc layout2meta {layout} {
       View append $meta $name $type $empty
     }
   }
-  return [View destroy $meta] ;# get rid of the modifiable wrapper
+  View destroy $meta ;# get rid of the modifiable wrapper
 }
 
 # convert a Metakit description string to a meta-view
 proc desc2meta {d} {
   # adapted from readkit.tcl, converts a Metakit description to a Mk4tcl layout
   set l [string map {] "\}\}" , " "} [regsub -all {(\w+)\s*\[} $d "\{\\1 \{"]]
-  return [layout2meta $l]
+  layout2meta $l
 }
 
 # loop to iterate over items in a view and collect the results
@@ -174,10 +174,10 @@ proc ^destroy {v} {
   # nothing
 }
 proc ^meta {v} {
-  return [lindex $v 1]
+  lindex $v 1
 }
 proc ^size {v} {
-  return [lindex $v 2]
+  lindex $v 2
 }
 
 # "data" meta size col0 col1 ...
@@ -203,11 +203,11 @@ namespace eval data {
   }
 
   proc ^at {v row col} {
-    return [lindex $v $col+3 $row]
+    lindex $v $col+3 $row
   }
   
   proc ^set/nd {v row col value} {
-    return [lset v $col+3 $row $value]
+    lset v $col+3 $row $value
   }
   proc ^replace/nd {v row count w} {
     set last [expr {$row+$count-1}]
@@ -215,7 +215,7 @@ namespace eval data {
     for {set c 0} {$c < $cols} {incr c} {
       lset v $c+3 [lreplace [lindex $v $c+3] $row $last {*}[OneCol $w $c]]
     }
-    return [lset v 2 [expr {[View size $v] - $count + [View size $w]}]]
+    lset v 2 [expr {[View size $v] - $count + [View size $w]}]
   }
   proc ^append/nd {v args} {
     set cols [View size [View meta $v]]
@@ -226,7 +226,7 @@ namespace eval data {
       set offset [expr {[incr i] % $cols + 3}]
       lset v $offset [linsert [lindex $v $offset] end $value]
     }
-    return [lset v 2 [llength [lindex $v 3]]]
+    lset v 2 [llength [lindex $v 3]]
   }
 }
 
@@ -247,7 +247,7 @@ namespace eval ref {
   proc ^wrap {- v} {
     set h "v[incr v::seq]ref"
     set v::vwh($h) [View deref $v]
-    return [list ref $h]
+    list ref $h
   }
   
   proc Descend {v} {
@@ -262,7 +262,7 @@ namespace eval ref {
     if {[lindex $v 1] eq ""} {
       return $v ;# can't deref, this is a recursive definition
     }
-    return [Descend $v]
+    Descend $v
   }
   proc ^destroy {v} {
     set oref $v::vwh([lindex $v 1])
@@ -272,10 +272,10 @@ namespace eval ref {
   }
 
   proc ^meta {v} {
-    return [View meta [Descend $v]]
+    View meta [Descend $v]
   }
   proc ^size {v} {
-    return [View size [Descend $v]]
+    View size [Descend $v]
   }
   proc ^at {v row col} {
     set m [View meta $v]
@@ -299,19 +299,19 @@ namespace eval ref {
     return $value
   }
   proc ^set/nd {v args} {
-    return [SubChange set/nd $v $args]
+    SubChange set/nd $v $args
   }
   proc ^set {v args} {
     set v::vwh([lindex $v 1]) [View set/nd $v {*}$args]
   }
   proc ^replace/nd {v args} {
-    return [SubChange replace/nd $v $args]
+    SubChange replace/nd $v $args
   }
   proc ^replace {v args} {
     set v::vwh([lindex $v 1]) [View replace/nd $v {*}$args]
   }
   proc ^append/nd {v args} {
-    return [SubChange append/nd $v $args]
+    SubChange append/nd $v $args
   }
   proc ^append {v args} {
     set v::vwh([lindex $v 1]) [View append/nd $v {*}$args]
@@ -330,11 +330,11 @@ namespace eval deriv {
   proc New {meta size args} {
     set cmd [info level -1]
     lset cmd 0 [namespace tail [lindex $cmd 0]]
-    return [linsert $args 0 deriv $meta $size $cmd]
+    linsert $args 0 deriv $meta $size $cmd
   }
 
   proc ^at {v row col} {
-    return [namespace inscope getter [list [lindex $v 3 0] $row $col {*}$v]]
+    namespace inscope getter [list [lindex $v 3 0] $row $col {*}$v]
   }
 }
 
@@ -431,22 +431,22 @@ proc html {v {styled 1}} {
 # define a view with one int column
 proc ints {data} {
   #TODO optional arg flags column name lookup mode, to convert any column names
-  return [View def :I $data]
+  View def :I $data
 }
 
 # shorthand to get the number of columns
 proc width {v} {
-  return [View size [View meta $v]]
+  View size [View meta $v]
 }
 
 # shorthand to get the list of names
 proc names {v} {
-  return [View get $v @ * 0]
+  View get $v @ * 0
 }
 
 # shorthand to get the list of types
 proc types {v} {
-  return [View get $v @ * 1]
+  View get $v @ * 1
 }
 
 # return a structure description without column names
@@ -463,12 +463,12 @@ proc structure {v} {
     }
     return $type
   }]
-  return [join $desc ""]
+  join $desc ""
 }
 
 # map rows of v using col 0 of w
 proc rowmap {v w} {
-  return [deriv::New [View meta $v] [View size $w]]
+  deriv::New [View meta $v] [View size $w]
 }
 proc deriv::getter::rowmap {row col - meta size cmd} {
   set v [lindex $cmd 1]
@@ -476,15 +476,15 @@ proc deriv::getter::rowmap {row col - meta size cmd} {
   if {$r < 0} {
     set r [View at [lindex $cmd 2] $row+$r 0]
   }
-  return [View at $v [expr {$r % [View size $v]}] $col]
+  View at $v [expr {$r % [View size $v]}] $col
 }
 
 # map columns of v using col 0 of w
 proc colmap {v w} {
-  return [deriv::New [View rowmap [View meta $v] $w] [View size $v]]
+  deriv::New [View rowmap [View meta $v] $w] [View size $v]
 }
 proc deriv::getter::colmap {row col - meta size cmd} {
-  return [View at [lindex $cmd 1] $row [View at [lindex $cmd 2] $col 0]]
+  View at [lindex $cmd 1] $row [View at [lindex $cmd 2] $col 0]
 }
 
 # cancatenate any number of views, which must all have the same structure
@@ -494,7 +494,7 @@ proc plus {v args} {
   foreach a $args {
     lappend counts [View size $a]
   }
-  return [deriv::New [View meta $v] [tcl::mathop::+ {*}$counts] $counts]
+  deriv::New [View meta $v] [tcl::mathop::+ {*}$counts] $counts
 }
 proc deriv::getter::plus {row col - meta size cmd counts} {
   set i 0
@@ -518,7 +518,7 @@ proc pair {v args} {
     lappend metas $m
     lappend widths [View size $m]
   }
-  return [deriv::New [View plus {*}$metas] $size $widths]
+  deriv::New [View plus {*}$metas] $size $widths
 }
 proc deriv::getter::pair {row col - meta size cmd widths} {
   set i 0
@@ -533,43 +533,42 @@ proc deriv::getter::pair {row col - meta size cmd widths} {
 
 # iota and step generator
 proc step {count {off 0} {step 1} {rate 1}} {
-  return [deriv::New [desc2meta :I] $count $off $step $rate]
+  deriv::New [desc2meta :I] $count $off $step $rate
 }
 proc deriv::getter::step {row col - meta size cmd off step rate} {
-  return [expr {$off + $step * ($row / $rate)}]
+  expr {$off + $step * ($row / $rate)}
 }
 
 # reverse the row order
 proc reverse {v} {
   set rows [View size $v]
-  return [View rowmap $v [View step $rows [expr {$rows-1}] -1]]
+  View rowmap $v [View step $rows [expr {$rows-1}] -1]
 }
 
 # return the first n rows
 proc first {v n} {
-  return [View pair $v [View new $n]]
+  View pair $v [View new $n]
 }
 
 # return the last n rows
 proc last {v n} {
-  return [View reverse [View first [View reverse $v] $n]]
+  View reverse [View first [View reverse $v] $n]
 }
 
 # repeat each row x times
 proc spread {v x} {
   set n [View size $v]
-  return [View rowmap $v [View step [expr {$n * $x}] 0 1 $x]]
+  View rowmap $v [View step [expr {$n * $x}] 0 1 $x]
 }
 
 # repeat the entire view x times
 proc times {v x} {
-  return [View rowmap $v [View step [expr {[View size $v] * $x}]]]
+  View rowmap $v [View step [expr {[View size $v] * $x}]]
 }
 
 # cartesian product
 proc product {v w} {
-  return [View pair [View spread $v [View size $w]] \
-                    [View times $w [View size $v]]]
+  View pair [View spread $v [View size $w]] [View times $w [View size $v]]
 }
 
 # return a set of ints except those listed in the map
@@ -584,12 +583,12 @@ proc omitmap {v n} {
       lappend m $i
     }
   }
-  return [View ints $m]
+  View ints $m
 }
 
 # omit the specified rows from the view
 proc omit {v w} {
-  return [View rowmap $v [View omitmap $w [View size $v]]]
+  View rowmap $v [View omitmap $w [View size $v]]
 }
 
 # a map with indices of only the first unique rows
@@ -602,17 +601,17 @@ proc uniqmap {v} {
       dict set m $r $i
     }
   }
-  return [View ints [dict values $m]]
+  View ints [dict values $m]
 }
 
 # return only the unique rows
 proc unique {v} {
-  return [View rowmap $v [View uniqmap $v]]
+  View rowmap $v [View uniqmap $v]
 }
 
 # relational projection
 proc project {v cols} {
-  return [View unique [View colmap $v [View ints [ColNum $v $cols]]]]
+  View unique [View colmap $v [View ints [ColNum $v $cols]]]
 }
 
 # projection, but by omitting the specified columns
@@ -630,7 +629,7 @@ proc omitCols {v cols} {
 
 # create a view with same structure but no content
 proc clone {v} {
-  return [View new 0 [View meta $v]]
+  View new 0 [View meta $v]
 }
 
 # collect indices of identical rows
@@ -654,27 +653,27 @@ proc isectmap {v w} {
       lappend m $i
     }
   }
-  return [View ints $m]
+  View ints $m
 }
 
 # set intersection
 proc intersect {v w} {
-  return [View rowmap $v [View isectmap $v $w]]
+  View rowmap $v [View isectmap $v $w]
 }
 
 # indices of all rows in v which are not in w
 proc exceptmap {v w} {
-  return [View omitmap [View isectmap $v $w] [View size $v]]
+  View omitmap [View isectmap $v $w] [View size $v]
 }
 
 # set exception
 proc except {v w} {
-  return [View rowmap $v [View exceptmap $v $w]]
+  View rowmap $v [View exceptmap $v $w]
 }
 
 # set union
 proc union {v w} {
-  return [View plus $v [View except $w $v]]
+  View plus $v [View except $w $v]
 }
 
 # return a groupmap
@@ -719,10 +718,10 @@ proc group {v cols {name ""}} {
   set meta [View new 0]
   View append $meta $name V [View meta $rest]
   set nest [deriv::New $meta [View size $gmap] $rest $gmap]
-  return [View pair [View rowmap $keys $head] $nest]
+  View pair [View rowmap $keys $head] $nest
 }
 proc deriv::getter::group {row col - meta size cmd rest gmap} {
-  return [View rowmap $rest [View at $gmap $row 0]]
+  View rowmap $rest [View at $gmap $row 0]
 }
 
 # ungroup a view on specified column
@@ -744,7 +743,7 @@ proc ungroup {v col} {
   set subs [View colmap $v [View ints $col]]
   set meta [View at [View meta $subs] 0 2]
   set flat [deriv::New $meta [View size $smap] $smap $subs]
-  return [View pair [View rowmap $rest $smap] $flat]
+  View pair [View rowmap $rest $smap] $flat
 }
 proc deriv::getter::ungroup {row col - meta size cmd smap subs} {
   set pos [View at $smap $row 0]
@@ -754,7 +753,7 @@ proc deriv::getter::ungroup {row col - meta size cmd smap subs} {
     set off [expr {-$pos}]
     set pos [View at $smap [expr {$row + $pos}] 0]
   }
-  return [View at [View at $subs $pos 0] $off $col]
+  View at [View at $subs $pos 0] $off $col
 }
 
 # join operator
@@ -772,16 +771,16 @@ proc ^join {v w {name ""}} {
   set meta [View new 0]
   View append $meta $name V [View meta $wrest]
   set nest [deriv::New $meta [View size $omap] $wrest $gmap $omap]
-  return [View pair $v $nest]
+  View pair $v $nest
 }
 proc deriv::getter::^join {row col - meta size cmd rest gmap omap} {
-  return [View rowmap $rest [View at $gmap [View at $omap $row 0] 0]]
+  View rowmap $rest [View at $gmap [View at $omap $row 0] 0]
 }
 
 # inner join
 proc ijoin {v w} {
   set x [View join $v $w]
-  return [View ungroup $x [expr {[View width $x] - 1}]]
+  View ungroup $x [expr {[View width $x] - 1}]
 }
 
 # make a shallow copy, return as new var view
@@ -801,10 +800,10 @@ proc ^rename {v args} {
   foreach {x y} $args {
     View set $m [ColNum $v $x] 0 $y
   }
-  return [deriv::New $m [View size $v]]
+  deriv::New $m [View size $v]
 }
 proc deriv::getter::^rename {row col - meta size cmd} {
-  return [View at [lindex $cmd 1] $row $col]
+  View at [lindex $cmd 1] $row $col
 }
 
 # blocked views
@@ -817,7 +816,7 @@ proc blocked {v} {
     lappend offsets [incr tally [View size [View at $v $i 0]]]
   }
   set meta [View at [View meta $v] 0 2]
-  return [deriv::New $meta $tally $offsets]
+  deriv::New $meta $tally $offsets
 }
 proc deriv::getter::blocked {row col - meta size cmd offsets} {
   set v [lindex $cmd 1]
@@ -831,7 +830,7 @@ proc deriv::getter::blocked {row col - meta size cmd offsets} {
   } elseif {$block > 0} {
     set row [expr {$row - $block - [lindex $offsets $block-1]}]
   }
-  return [View at [View at $v $block 0] $row $col]
+  View at [View at $v $block 0] $row $col
 }
 
 # a mixin view is like a TclOO mixin: it defines additional derived fields
@@ -935,7 +934,7 @@ namespace eval readkit {
   }
   
   proc ^size {v} {
-    return [Readkit vlen [Readkit access [lindex $v 2]]]
+    Readkit vlen [Readkit access [lindex $v 2]]
   }
   proc ^at {v row col} {
     set name [View at [lindex $v 1] $col 0]
@@ -943,7 +942,7 @@ namespace eval readkit {
       return [list readkit [View at [lindex $v 1] $col 2] \
                                     [lindex $v 2]!$row.$name]
     }
-    return [Readkit::Mvec [Readkit access [lindex $v 2]!$row] $name]
+    Readkit::Mvec [Readkit access [lindex $v 2]!$row] $name
   }
 }
 
@@ -1125,12 +1124,12 @@ namespace eval readkit::Readkit {
 
   proc Byte_seg {off len} {
     incr off $v::zero
-    return [Mmap $v::data $off $len]
+    Mmap $v::data $off $len
   }
 
   proc Int_seg {off cnt} {
     set vec [list 32r [Byte_seg $off [expr {4*$cnt}]]]
-    return [Mvec $vec 0 $cnt]
+    Mvec $vec 0 $cnt
   }
 
   proc Get_s {len} {
@@ -1204,7 +1203,7 @@ namespace eval readkit::Readkit {
       lappend names $name
       lappend types $type
     }
-    return [list $names $types]
+    list $names $types
   }
 
   proc NumVec {rows type} {
@@ -1230,7 +1229,7 @@ namespace eval readkit::Readkit {
     }
     switch $type F { set w 32f } D { set w 64f }
     incr off $v::zero
-    return [list $w $v::data $off $rows]
+    list $w $v::data $off $rows
   }
 
   proc Lazy_str {self rows type pos sizes msize moff index} {
@@ -1258,12 +1257,12 @@ namespace eval readkit::Readkit {
       set adj 0
     }
     set v::node($self) [list Get_str $soff $sizes $adj $rows]
-    return [Mvec $v::node($self) $index]
+    Mvec $v::node($self) $index
   }
 
   proc Get_str {soff sizes adj index} {
     set n [Mvec $sizes $index]
-    return [Byte_seg [lindex $soff $index] [incr n $adj]]
+    Byte_seg [lindex $soff $index] [incr n $adj]
   }
 
   proc Lazy_sub {self desc size off rows index} {
@@ -1277,12 +1276,12 @@ namespace eval readkit::Readkit {
       lappend subs [Prepare $types]
     }
     set v::node($self) [list Get_sub $names $subs $rows]
-    return [Mvec $v::node($self) $index]
+    Mvec $v::node($self) $index
   }
 
   proc Get_sub {names subs index} {
     lassign [lindex $subs $index] rows handlers
-    return [list Get_view $names $rows $handlers $rows]
+    list Get_view $names $rows $handlers $rows
   }
 
   proc Prepare {types} {
@@ -1310,11 +1309,11 @@ namespace eval readkit::Readkit {
         }
       }
     }
-    return [list $r $handlers]
+    list $r $handlers
   }
 
   proc Get_view {names rows handlers index} {
-    return [list Get_prop $names $rows $handlers $index [llength $names]]
+    list Get_prop $names $rows $handlers $index [llength $names]
   }
 
   proc Get_prop {names rows handlers index ident} {
@@ -1323,7 +1322,7 @@ namespace eval readkit::Readkit {
       error "unknown property: $ident"
     }
     set h [lindex $handlers $col]
-    return [Mvec $v::node($h) $index]
+    Mvec $v::node($h) $index
   }
 
   proc dbopen {db file {fd ""}} {
@@ -1363,12 +1362,12 @@ namespace eval readkit::Readkit {
 
   proc dblayout {db} {
     # return structure description
-    return [lindex $v::dbs($db) 2]
+    lindex $v::dbs($db) 2
   }
 
   proc Tree {db} {
     # datafile selection, first step in access navigation loop
-    return [lindex $v::dbs($db) 3]
+    lindex $v::dbs($db) 3
   }
 
   proc access {spec} {
@@ -1383,7 +1382,7 @@ namespace eval readkit::Readkit {
 
   proc vnames {view} {
     # return a list of property names
-    return [lindex $view 1]
+    lindex $view 1
   }
 
   proc vlen {view} {
@@ -1393,7 +1392,7 @@ namespace eval readkit::Readkit {
       puts 2-<[namespace tail [lindex $view 0]]>
       error "vlen?"
     }
-    return [lindex $view 2]
+    lindex $view 2
   }
 }
 
