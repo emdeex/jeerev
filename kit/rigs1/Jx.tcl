@@ -1,4 +1,4 @@
-Jm doc "A collection of globally useful extensions for Tcl."
+Jm doc "A collection of useful extensions for Tcl."
 # This code is loaded by Jm.tcl early during startup, hence always available.
 
 # I18N is supported with [: "..."] as shorthand for [msgcat::mc "..."]

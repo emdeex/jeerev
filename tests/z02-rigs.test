@@ -2,8 +2,7 @@ Jm doc "Tests for the rig mechanism."
 
 test z02/rigs_loaded {keys of Jm::rigs_loaded} {
   lsort [array names Jm::rigs_loaded]
-  #TODO why is Ju loaded?
-} {Jm Ju Jx app}
+} {Jm Jx app}
 
 makeDirectory z02-rigs
 makeFile { puts one!; proc do {} { return one } } one.tcl z02-rigs

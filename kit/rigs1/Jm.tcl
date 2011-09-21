@@ -208,19 +208,7 @@ proc needs {args} {
   }
 }
 
-proc view {{cmd ""} args} {
-  variable view
-  if {$cmd eq ""} {
-    return $view
-  }
-  View $cmd $view {*}$args
-}
-
-Ju cachedVar view . {
-  variable view [CollectViewInfo]
-}
-
-proc CollectViewInfo {} {
+proc VIEW {} {
   variable rigs_loaded
   set v [View mixin [View def name [array names rigs_loaded]] {
     details {v row} {

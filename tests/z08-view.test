@@ -1,5 +1,28 @@
 Jm doc "Tests for the View module."
 
+test z08/def-and-get {def and get separate} {
+  set v [View def A,B {1 2 3 4 5 6}]
+  View get $v
+} {1 2 3 4 5 6}
+
+test z08/dump {dump view} {
+  View dump $v
+} { \
+  A  B
+  -  -
+  1  2
+  3  4
+  5  6}
+
+test z08/html {html view} {
+  View html $v 0 ;# omit style info
+} {<table>
+<tr><th class="row"></th><th><i>A</i></th><th><i>B</i></th></tr>
+<tr><td align="right" class="row">0</td><td>1</td><td>2</td></tr>
+<tr><td align="right" class="row">1</td><td>3</td><td>4</td></tr>
+<tr><td align="right" class="row">2</td><td>5</td><td>6</td></tr>
+</table>}
+
 test z08/view {view setup} {
   set v [View def A,B:I,C {1 2 3 4 5 6}]
   View dump $v
@@ -43,5 +66,104 @@ test z08/omitcols {omitCols test} {
   -  -  --
   1  2  20
   4  8  50}
+
+test 0 {View should be an ensemble} {
+  namespace ensemble exists View
+} 1
+
+# copied from v8's view.test
+
+test z08/v8-1 {def and get nested} {
+  View get [View def A,B,C {1 2 3 4 5 6 7 8 9}]
+} {1 2 3 4 5 6 7 8 9}
+
+test z08/v8-2 {def and get separate} {
+  set v [View def A,B,C {1 2 3 4 5 6 7 8 9}]
+  View get $v
+} {1 2 3 4 5 6 7 8 9}
+
+test z08/v8-3 {get one row} {
+  View get $v 0 *
+} {1 2 3}
+
+test z08/v8-4 {get one tagged row} {
+  View get $v 0
+} {A 1 B 2 C 3}
+
+test z08/v8-5 {get all rows} {
+  View get $v *
+} {{1 2 3} {4 5 6} {7 8 9}}
+
+test z08/v8-6 {get one column} {
+  View get $v * 0
+} {1 4 7}
+
+test z08/v8-7 {view loop} {
+  View loop [View new 7] - {} { incr i }
+} {1 2 3 4 5 6 7}
+
+test z08/v8-8 {view loop index} {
+  View loop $v i {} { set i }
+} {0 1 2}
+
+test z08/v8-9 {view loop some columns} {
+  View loop $v - {x y} { return $x,$y }
+} {1,2 4,5 7,8}
+
+test z08/v8-10 {view loop all columns} {
+  View loop $v i {x y z} { return "$i:$x,$y,$z" }
+} {0:1,2,3 1:4,5,6 2:7,8,9}
+
+test z08/v8-11 {view loop break} {
+  View loop $v i x { if {$i eq 2} break; return $x }
+} {1 4}
+
+test z08/v8-12 {view loop continue} {
+  View loop $v i x { if {$i eq 1} continue; return $x }
+} {1 7}
+
+test z08/v8-13 {define view to test replace} {
+  set v [View def A,B {1 2 3 4 5 6}]
+  View get $v
+} {1 2 3 4 5 6}
+
+test z08/v8-14 {non-destructive replace middle row, same size} {
+  list [View get [View replace/nd $v 1 1 [View def C,D {a b}]]] [View get $v]
+} {{1 2 a b 5 6} {1 2 3 4 5 6}}
+
+test z08/v8-15 {replace first row, same size} {
+  View replace $v 0 1 [View def C,D {aa bb}]
+  View get $v
+} {aa bb 3 4 5 6}
+
+test z08/v8-16 {replace last row, same size} {
+  View replace $v 2 1 [View def C,D {cc dd}]
+  View get $v
+} {aa bb 3 4 cc dd}
+
+test z08/v8-17 {insert two rows} {
+  View replace $v 1 0 [View def C,D {ee ff gg hh}]
+  View get $v
+} {aa bb ee ff gg hh 3 4 cc dd}
+
+test z08/v8-18 {replace one row by two} {
+  View replace $v 3 1 [View def C,D {ii jj kk ll}]
+  View get $v
+} {aa bb ee ff gg hh ii jj kk ll cc dd}
+
+test z08/v8-19 {delete one row} {
+  View replace $v 3 1 [View def C,D {}]
+  View get $v
+} {aa bb ee ff gg hh kk ll cc dd}
+
+test z08/v8-20 {delete two rows} {
+  View replace $v 2 2 [View def C,D {}]
+  View get $v
+} {aa bb ee ff cc dd}
+
+test z08/v8-21 {delete all remaining rows} {
+  View replace $v 0 3 [View def C,D {}]
+  View get $v
+} {}
 
 cleanupTests

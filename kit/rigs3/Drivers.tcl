@@ -31,19 +31,7 @@ proc values {data} {
   set values($driver) $data
 }
 
-proc view {{cmd ""} args} {
-  variable view
-  if {$cmd eq ""} {
-    return $view
-  }
-  View $cmd $view {*}$args
-}
-
-Ju cachedVar view . {
-  variable view [CollectViewInfo]
-}
-
-proc CollectViewInfo {} {
+proc VIEW {} {
   variable values
   set novals [View def match,var,desc,unit,scale,low:I,high:I]
   set data {}
@@ -70,19 +58,16 @@ proc CollectViewInfo {} {
   }
   View mixin [View def name,values:V $data] {
     interfaces:V {v row} {
+      variable types
       set rig Drivers::[View get $v $row name]
       set interfaces {}
-      if {[dict exists $::Drivers::types $rig]} {
-        set row [dict get $::Drivers::types $rig]
-        foreach {k v} $row {
-          lappend interfaces [string trim $k :]
-        }
+      foreach {k v} [dict get? $types $rig] {
+        lappend interfaces [string trim $k :]
       }
       View def name $interfaces
     }
     functions:V {v row} {
-      set ns ::Drivers::[View get $v $row name]
-      View commands $ns {[a-z]*}
+      View commands ::Drivers::[View get $v $row name] {[a-z]*}
     }
     types {v row} {
       join [View get $v $row interfaces * 0] ", "
