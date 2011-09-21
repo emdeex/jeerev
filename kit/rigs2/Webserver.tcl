@@ -36,13 +36,6 @@ proc launch {port {root ""}} {
   wibble listen $port
 }
 
-proc hasUrlHandlers {} {
-  # Create a hook in the caller's context so that its "/*:" procs will be found.
-  set ns [uplevel namespace current]
-  interp alias {} ${ns}::WEBSERVER.PATHS \
-                {} namespace eval $ns { info commands /*: }
-}
-
 proc state {args} {
   # Returns partial or entire state dict, use only while in a request coroutine.
   upvar #2 state state
@@ -135,10 +128,8 @@ proc deliver {response} {
 
 Ju cachedVar paths . {
   variable paths {}
-  dict for {k v} [app hook WEBSERVER.PATHS] {
-    # takes a list of /... or ::...::/... commands
-    #TODO may need to also accept dicts if more info is needed
-    foreach x $v {
+  foreach ns [array names ::Jm::rigs_loaded] {
+    foreach x [info commands ::${ns}::/*:] {
       if {[regexp {^(:[^/]+:)?(/.*)$} $x - ns path]} {
         if {$ns ne ""} {
           set k [string trimright $ns :]
