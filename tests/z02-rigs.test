@@ -2,7 +2,8 @@ Jm doc "Tests for the rig mechanism."
 
 test z02/rigs_loaded {keys of Jm::rigs_loaded} {
   lsort [array names Jm::rigs_loaded]
-} {::Jm ::Jx ::app}
+  #TODO why is Ju loaded?
+} {Jm Ju Jx app}
 
 makeDirectory z02-rigs
 makeFile { puts one!; proc do {} { return one } } one.tcl z02-rigs
@@ -15,7 +16,7 @@ test z02/simple {simple rig loading} {
 
 test z02/no-rigs_extra {Jm::rigs_extra will already exist} {
   array names Jm::rigs_extra
-} {::Interfaces ::Replay}
+} {Interfaces Replay}
 
 makeDirectory z02-rigs/two
 makeFile { puts two!; proc do {} { return two } } two.tcl z02-rigs/two
@@ -27,7 +28,7 @@ test z02/nested {nested rig loading} {
 } blah1.txt
 
 test z02/rigs_extra {contents of Jm::rigs_extra} {
-  set Jm::rigs_extra(::two)
+  set Jm::rigs_extra(two)
 } blah2.txt
 
 test z02/notexist {commands should not exist at this point} {

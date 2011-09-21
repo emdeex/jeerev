@@ -1,4 +1,4 @@
-Driver "Decoder for the radioBlip sketch."
+Jm doc "Decoder for the radioBlip sketch."
 
 type remote
 

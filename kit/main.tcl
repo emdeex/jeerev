@@ -4,7 +4,7 @@ package require Tcl 8.5 ;# we'll need 8.6, but don't fail on 8.5 before app.tcl
 
 namespace eval Jm {
   variable root_dir [file dir [dict get [info frame 0] file]]
-  variable rigs_loaded  ;# array of rigs currelty loaded
+  variable rigs_loaded  ;# array of rigs currently loaded
   variable rigs_extra   ;# array of files skipped by autoloader
 
   namespace eval initial {
@@ -26,6 +26,7 @@ namespace eval Jm {
     # ns: namespace to load the file/rig into
     # Returns the name of the loaded rig.
     variable rigs_loaded
+    variable doc_strings
     set name [file root [file tail $path]]
     set newns ::${ns}$name
     #TODO change ::${ns}$name to ${ns}::$name - everywhere!
@@ -37,14 +38,13 @@ namespace eval Jm {
     }
     namespace inscope $newns namespace path $nspath  
     # now load the actual code from file and remember when it was last loaded
-    set rigs_loaded($newns) [list $path [file mtime $path]]
+    set rigs_loaded([string trim $newns :]) [list $path [file mtime $path]]
+    dict unset doc_strings $path
     namespace inscope $newns source $path
     return $name
   }
   
   proc prepareRig {ns} {
-    variable doc_strings
-    dict unset doc_strings [string trim $ns :]
     namespace eval $ns {
       namespace export -clear {[a-z]*}
       namespace ensemble create -unknown {apply {{ns t args} {
@@ -86,7 +86,7 @@ namespace eval Jm {
           set ::auto_index(${prefix}$name) [list ::Jm::loadRig $full $prefix]
         } elseif {[file exists [file join $full $name.tcl]]} {
           #TODO rigs_extra is not very useful this way, it forgets the top level
-          set rigs_extra(::${ns}${name}) [autoLoader $full * ${ns}${name}::]
+          set rigs_extra(${ns}${name}) [autoLoader $full * ${ns}${name}::]
         } else {
           lappend unused $tail
         }

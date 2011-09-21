@@ -1,4 +1,4 @@
-Driver "Driver for the HMNODE2 power metering sketch."
+Jm doc "Driver for the HMNODE2 power metering sketch."
 
 type serial -baud 57600
 

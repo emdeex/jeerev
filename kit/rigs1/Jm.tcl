@@ -6,10 +6,9 @@ proc doc {args} {
   while {[incr level -1] >= -5 && ![catch { set info [info frame $level] }]} {
     if {[dict exists $info file]} {
       #TODO could use cmd or uplevel to extract current class name, etc.
-      set rig [string trim [uplevel namespace current] :]
       dict with info { 
-        # lappend works because entry gets cleared on reload in prepareRig
-        dict lappend doc_strings $rig $file [list $line {*}$args]
+        # lappend works because entry gets cleared on reload in loadRig
+        dict set doc_strings $file $line {*}$args
       }
       break
     }
@@ -192,7 +191,7 @@ proc reloadRigs {} {
   foreach {k v} [array get rigs_loaded] {
     lassign $v path mtime
     if {[file exists $path] && [file mtime $path] > $mtime} {
-      loadRig $path [string trimleft [namespace parent $k]:: :]
+      loadRig $path [string trim [namespace parent ::$k]:: :]
       lappend result $k
     }
   }
@@ -207,4 +206,39 @@ proc needs {args} {
       loadNow $x
     }
   }
+}
+
+proc view {{cmd ""} args} {
+  variable view
+  if {$cmd eq ""} {
+    return $view
+  }
+  View $cmd $view {*}$args
+}
+
+Ju cachedVar view . {
+  variable view [CollectViewInfo]
+}
+
+proc CollectViewInfo {} {
+  variable rigs_loaded
+  set v [View mixin [View def name [array names rigs_loaded]] {
+    details {v row} {
+      variable rigs_loaded
+      set name [View get $v $row name]
+      return $rigs_loaded($name)
+    }
+    path {v row} {
+      lindex [View get $v $row details] 0
+    }
+    time:I {v row} {
+      lindex [View get $v $row details] 1
+    }
+    docs:V {v row} {
+      variable doc_strings
+      set path [View get $v $row path]
+      View def line:I,text [dict get? $doc_strings $path]
+    }
+  }]
+  set vloaded [View omitCol $v details]
 }

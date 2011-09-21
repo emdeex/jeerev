@@ -1,4 +1,4 @@
-Driver "Driver for the CUL (busware.de) USB stick."
+Jm doc "Driver for the CUL (busware.de) USB stick."
 
 type serial -baud 9600
 

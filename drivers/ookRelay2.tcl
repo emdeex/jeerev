@@ -1,4 +1,4 @@
-Driver "Driver for the OOK Relay v.2 sketch."
+Jm doc "Driver for the OOK Relay v.2 sketch."
 
 type remote
 

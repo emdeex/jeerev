@@ -1,4 +1,4 @@
-Driver "Connect to the Pachube service."
+Jm doc "Connect to the Pachube service."
 
 type ethernet
 

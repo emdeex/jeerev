@@ -1,6 +1,6 @@
 Jm doc "Support for web Server-Sent Events."
 # see also http://dev.w3.org/html5/eventsource/
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 Ju cachedVar listeners -once {
   variable listeners ""

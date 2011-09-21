@@ -4,11 +4,6 @@ Ju cachedVar {locations types} -once {
   variable locations {} types {}
 }
 
-proc Driver {text} {
-  variable desc
-  set desc([namespace tail [uplevel namespace current]]) $text
-}
-
 proc load {path} {
   Jm autoLoader $path * Drivers::
 }
@@ -49,7 +44,7 @@ Ju cachedVar view . {
 }
 
 proc CollectViewInfo {} {
-  #TODO get rid of this proc when (if?) Ju cachedVar adds an "apply" layer
+  #TODO use view mixin
   variable values
   set novals [View def match,var,desc,unit,scale,low:I,high:I]
   set data {}
@@ -62,11 +57,9 @@ proc CollectViewInfo {} {
         lappend types [string trim $k :]
       }
     }
-    lassign [Ju get ::Jm::rigs_loaded(::$ns)] file time
-    set title [Ju get ::Drivers::desc($name)]
-    set pub {}
+    set functions {}
     foreach x [lsort [info commands "::${ns}::\[a-z]*"]] {
-      lappend pub [namespace tail $x]
+      lappend functions [namespace tail $x]
     }
     set drinfo [Ju get values($name)]
     if {[dict size $drinfo] == 0} {
@@ -85,10 +78,11 @@ proc CollectViewInfo {} {
       }
       set vals [View def match,var,desc,unit,scale,low:I,high:I $vdata]
     }
-    set tlist [join [lsort $types] ", "]
-    lappend data $name $tlist $time $title $pub [View group $vals 0 vars]
+    set tvw [View def name $types]
+    set pvw [View def name $functions]
+    lappend data $name $tvw $pvw [View group $vals 0 vars]
   }
-  View def name,types,time:I,title,public,values:V $data
+  View def name,interfaces:V,functions:V,values:V $data
 }
 
 proc getInfo {driver where what} {

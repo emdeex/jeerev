@@ -1,4 +1,4 @@
-Driver "Displays each incoming 4 bytes as a long, for testing purposes."
+Jm doc "Displays each incoming 4 bytes as a long, for testing purposes."
 
 type remote
 

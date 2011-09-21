@@ -1,4 +1,4 @@
-Driver "Decoder for the roomNode sketch."
+Jm doc "Decoder for the roomNode sketch."
 
 type remote
 type serial -baud 57600

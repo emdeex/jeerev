@@ -1,5 +1,5 @@
 Jm doc "The simplest possible web server."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 proc /: {} {
   # Respond to "/" url requests.

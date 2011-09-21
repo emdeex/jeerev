@@ -1,6 +1,8 @@
 # This is 1.8.x, i.e. it includes changes made after 1.8.0:
 #   - added key lookup to the "get" operator, 2011-09-21
 #   - added a new "mixin" view operator for calculated columns
+#   - added omitCols, complement of project
+#   - added introspection ops: variables, namespaces, procs, commands, packages
 
 package provide vlerq 1.8.0
 
@@ -613,6 +615,19 @@ proc project {v cols} {
   return [View unique [View colmap $v [View ints [ColNum $v $cols]]]]
 }
 
+# projection, but by omitting the specified columns
+proc omitCols {v cols} {
+  set w [View width $v]
+  set c [ColNum $v $cols]
+  set o {}
+  for {set i 0} {$i < $w} {incr i} {
+    if {$i ni $c} {
+      lappend o $i
+    }
+  }
+  project $v $o
+}
+
 # create a view with same structure but no content
 proc clone {v} {
   return [View new 0 [View meta $v]]
@@ -826,17 +841,73 @@ proc mixin {v vexprs args} {
     lassign [split $def:S :] field type
     lappend desc $field:$type
   }
-  set m [desc2meta [join $desc ,]]
-  deriv::New [View plus [View meta $v] $m] [View size $v]
+  set mv [desc2meta [join $desc ,]]
+  set ns [uplevel namespace current]
+  deriv::New [View plus [View meta $v] $mv] [View size $v] $ns
 }
-proc deriv::getter::mixin {row col - meta size cmd} {
+proc deriv::getter::mixin {row col - meta size cmd ns} {
   set args [lassign $cmd - v vexprs]
   set w [View width $v]
   if {$col < $w} {
     return [View get $v $row $col]
   }
   lassign [lrange $vexprs [expr {3 * ($col - $w)}] end] - alist vex
-  apply [list $alist $vex] $v $row {*}$args
+  #FIXME reconstructs a new mixin in case of nested field refs, very expensive!
+  set v2 [namespace inscope $ns View {*}$cmd]
+  apply [list $alist $vex $ns] $v2 $row {*}$args
+}
+
+# all variables in given namespace
+proc variables {{ns ""} {match *}} {
+  if {$ns eq ""} {
+    set ns [uplevel namespace current]
+  }
+  set data {}
+  foreach x [info vars ${ns}::$match] {
+    lappend data [namespace tail $x]
+  }
+  View def variable $data
+}
+
+# all child namespaces of a given namespace
+proc namespaces {{ns ""}} {
+  if {$ns eq ""} {
+    set ns [uplevel namespace current]
+  }
+  set data {}
+  foreach x [namespace children ${ns}] {
+    lappend data [namespace tail $x]
+  }
+  View def namespace $data
+}
+
+# all procs in a given namespace
+proc procs {{ns ""} {match *}} {
+  if {$ns eq ""} {
+    set ns [uplevel namespace current]
+  }
+  set data {}
+  foreach x [info procs ${ns}::$match] {
+    lappend data [namespace tail $x]
+  }
+  View def proc $data
+}
+
+# all commands in a given namespace
+proc commands {{ns ""} {match *}} {
+  if {$ns eq ""} {
+    set ns [uplevel namespace current]
+  }
+  set data {}
+  foreach x [info commands ${ns}::$match] {
+    lappend data [namespace tail $x]
+  }
+  View def command $data
+}
+
+# list of all packages
+proc packages {} {
+  View def package [package names]
 }
 
 # END code/View~ops.tcl

@@ -1,10 +1,5 @@
 Jm doc "Utility code for HTML page generation."
 
-proc Page {text} {
-  variable desc
-  set desc([namespace tail [uplevel namespace current]]) $text
-}
-
 proc load {path} {
   Jm autoLoader $path * Pages::
 }

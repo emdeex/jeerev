@@ -1,7 +1,7 @@
 Jm doc "Allow peeking into a running application."
 Jm needs wibble
 namespace path ::wibble
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 proc pathAsNamespace {path} {
   # Convert the URI path into a namespace, with proper de-quoting.

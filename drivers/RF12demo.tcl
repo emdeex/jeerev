@@ -1,4 +1,4 @@
-Driver "Driver for the RF12demo sketch."
+Jm doc "Driver for the RF12demo sketch."
 
 type serial -baud 57600
 

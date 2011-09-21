@@ -1,5 +1,5 @@
 Jm doc "Display all state variables as a tree in the browser."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 variable js {
   var options = {

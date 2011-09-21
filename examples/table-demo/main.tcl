@@ -1,6 +1,5 @@
 Jm doc "Show readings as table in a browser with real-time updates."
-Jm needs WebSSE
-Webserver hasUrlHandlers
+Jm needs Webserver WebSSE
 
 if {[app get -collectd 0]} {  
   variable pattern sysinfo:*

@@ -1,5 +1,5 @@
 Jm doc "Collect and display data from a JeeNode running RF12demo."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 # This is a very basic demo, showing the last 25 received packets as plain text.
 # No formatting, no HTML, but enough for a quick test or for web-scraping.

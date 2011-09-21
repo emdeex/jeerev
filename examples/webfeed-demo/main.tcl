@@ -1,6 +1,5 @@
 Jm doc "How to feed readings into state variables via web requests."
-Jm needs WebFeed
-Webserver hasUrlHandlers
+Jm needs Webserver WebFeed
 
 # report one line on the console for each decoded/submitted state change
 State subscribe * {apply {x { puts "$x = [State get $x]" }}}

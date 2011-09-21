@@ -23,4 +23,25 @@ test z08/mixin {mixin test} {
   1  2  3  2  20  A-3-B
   4  5  6  8  50  A-6-B}
 
+test z08/nested-mixin {nested mixin test} {
+  set e {
+    D {v row} { expr {[View get $v $row A] * 2} }
+    E {v row} { expr {[View get $v $row D] * 3} }
+  }
+  View dump [View mixin $v $e]
+} { \
+  A  B  C  D  E 
+  -  -  -  -  --
+  1  2  3  2  6 
+  4  5  6  8  24}
+
+
+test z08/omitcols {omitCols test} {
+  View dump [View omitCols $w {F B C}]
+} { \
+  A  D  E 
+  -  -  --
+  1  2  20
+  4  8  50}
+
 cleanupTests

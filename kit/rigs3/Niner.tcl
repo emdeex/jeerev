@@ -1,6 +1,5 @@
 Jm doc "A theme for a web site with 3x3 pages and tabs on the bottom + right."
-Jm needs WebSSE
-Webserver hasUrlHandlers
+Jm needs Webserver WebSSE
 
 proc layout {tree} {
   # Set up page definitions for the Niner theme.

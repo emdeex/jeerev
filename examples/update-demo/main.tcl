@@ -1,6 +1,5 @@
 Jm doc "Demonstrate real-time web updates using Server-Sent Events."
-Jm needs WebSSE
-Webserver hasUrlHandlers
+Jm needs Webserver WebSSE
 
 proc APP.READY {} {
   # Called once during application startup.

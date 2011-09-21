@@ -13,6 +13,5 @@ Ju cachedVar view . {
 }
 
 proc CollectViewInfo {} {
-  #TODO get rid of this proc when (if?) Ju cachedVar adds an "apply" layer
   View def name,driver $::Drivers::registered
 }

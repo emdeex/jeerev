@@ -1,5 +1,5 @@
 Jm doc "Collect readings submitted as incoming web requests."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 proc /webfeed/*/*: {param value} {
   # Report a new reading from an incoming web request.

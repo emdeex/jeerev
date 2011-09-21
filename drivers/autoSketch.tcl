@@ -1,4 +1,4 @@
-Driver "Automatically loads the matching driver when a sketch starts running."
+Jm doc "Automatically loads the matching driver when a sketch starts running."
 
 type serial -baud 57600
 

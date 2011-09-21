@@ -1,5 +1,5 @@
 Jm doc "Manage historical data storage."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 variable collector  ;# key = param, value = list of values to aggregate
 

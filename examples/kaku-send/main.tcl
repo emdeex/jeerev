@@ -1,5 +1,5 @@
 Jm doc "Send a command to the KlikAanKlikUit remote control."
-Webserver hasUrlHandlers
+Jm needs Webserver
 
 proc APP.READY {} {
   # Called once during application startup.
