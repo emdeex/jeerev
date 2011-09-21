@@ -4,7 +4,7 @@ type remote
 type serial -baud 57600
 
 values {
-  *: {
+  ?*: {
     light:  { desc "light"                       low 0    high 100 }
     moved:  { desc "motion"                      low 0    high 1   }
     humi:   { desc "humidity"    unit %          low 0    high 100 }

@@ -3,7 +3,7 @@ Driver "Driver for the HMNODE2 power metering sketch."
 type serial -baud 57600
 
 values {
-  *: {
+  ?*: {
     erate:  { desc "power now"         unit W             low 0  high 9999   }
     etotal: { desc "power, cumulative" unit Wh   scale 1  low 0  high 999999 }
     grate:  { desc "gas now"           unit l/h           low 0  high 9999   }

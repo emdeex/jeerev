@@ -50,6 +50,8 @@ Ju cachedVar view . {
 
 proc CollectViewInfo {} {
   #TODO get rid of this proc when (if?) Ju cachedVar adds an "apply" layer
+  variable values
+  set novals [View def match,var,desc,unit,scale,low:I,high:I]
   set data {}
   dict for {ns cmd} [dict filter [array get ::auto_index] key Drivers::*] {
     set name [namespace tail $ns]
@@ -62,13 +64,31 @@ proc CollectViewInfo {} {
     }
     lassign [Ju get ::Jm::rigs_loaded(::$ns)] file time
     set title [Ju get ::Drivers::desc($name)]
-    set public {}
+    set pub {}
     foreach x [lsort [info commands "::${ns}::\[a-z]*"]] {
-      lappend public [namespace tail $x]
+      lappend pub [namespace tail $x]
     }
-    lappend data $name [join [lsort $types] ", "] $file $time $title $public
+    set drinfo [Ju get values($name)]
+    if {[dict size $drinfo] == 0} {
+      set vals $novals
+    } else {
+      set vdata {}
+      foreach {devtype dtinfo} $drinfo {
+        set dt [string trim $devtype :]
+        foreach {varname vninfo} $dtinfo {
+          set vn [string trim $varname :]
+          # puts "<$name $dt $vn> $vninfo"
+          lassign {} desc unit scale low high
+          dict extract $vninfo
+          lappend vdata $dt $vn $desc $unit $scale $low $high
+        }
+      }
+      set vals [View def match,var,desc,unit,scale,low:I,high:I $vdata]
+    }
+    set tlist [join [lsort $types] ", "]
+    lappend data $name $tlist $time $title $pub [View group $vals 0 vars]
   }
-  View def name,types,file,time:I,title,public $data
+  View def name,types,time:I,title,public,values:V $data
 }
 
 proc getInfo {driver where what} {

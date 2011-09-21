@@ -3,7 +3,7 @@ Driver "Displays each incoming 4 bytes as a long, for testing purposes."
 type remote
 
 values {
-  *: {
+  ?*: {
     value: { desc "some value" }
   }
 }

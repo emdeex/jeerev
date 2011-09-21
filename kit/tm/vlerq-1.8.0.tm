@@ -1,4 +1,5 @@
-# Generated, do not edit - $Id$
+# This is 1.8.x, i.e. it includes changes made after 1.8.0:
+#   - added key lookup in "get" operator, 2011-09-21
 
 package provide vlerq 1.8.0
 
@@ -147,6 +148,10 @@ proc get {v args} {
         }
       }
       default {
+        if {![string is integer -strict $row]} {
+          set row [lsearch -exact [OneCol $v] $row]
+          if {$row < 0} return
+        }
         switch $col {
           * { return [OneRow $v $row] }
           "" { return [OneRow $v $row -named] }
