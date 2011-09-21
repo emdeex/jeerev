@@ -1,5 +1,6 @@
 # This is 1.8.x, i.e. it includes changes made after 1.8.0:
-#   - added key lookup in "get" operator, 2011-09-21
+#   - added key lookup to the "get" operator, 2011-09-21
+#   - added a new "mixin" view operator for calculated columns
 
 package provide vlerq 1.8.0
 
@@ -816,6 +817,26 @@ proc deriv::getter::blocked {row col - meta size cmd offsets} {
     set row [expr {$row - $block - [lindex $offsets $block-1]}]
   }
   return [View at [View at $v $block 0] $row $col]
+}
+
+# a mixin view is like a TclOO mixin: it defines additional derived fields
+proc mixin {v vexprs args} {
+  set desc ""
+  foreach {def alist -} $vexprs {
+    lassign [split $def:S :] field type
+    lappend desc $field:$type
+  }
+  set m [desc2meta [join $desc ,]]
+  deriv::New [View plus [View meta $v] $m] [View size $v]
+}
+proc deriv::getter::mixin {row col - meta size cmd} {
+  set args [lassign $cmd - v vexprs]
+  set w [View width $v]
+  if {$col < $w} {
+    return [View get $v $row $col]
+  }
+  lassign [lrange $vexprs [expr {3 * ($col - $w)}] end] - alist vex
+  apply [list $alist $vex] $v $row {*}$args
 }
 
 # END code/View~ops.tcl
