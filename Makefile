@@ -1,5 +1,4 @@
 JMEXE = jeemon
-MACGUI = JeeMon-MacGUI
 DISTDIR = bussie:/home/pub/jeelabs.org/
 
 all: tabcheck test
@@ -21,7 +20,6 @@ wrap:
 # this target is for private use only
 dist: tabcheck fulltest wrap
 	rsync -a jeemon-rev $(DISTDIR)
-	if [ -f $(MACGUI).zip ]; then rsync -a $(MACGUI).zip $(DISTDIR); fi
 
 # called on F6 by TextMate on MacOSXh to refresh the current window in Camino
 testmate:
@@ -30,4 +28,4 @@ testmate:
 	  	  -e 'end tell'
 
 clean:
-	rm -rf jeemon-rev JeeMon.app $(MACGUI).zip
+	rm -f jeemon-rev
