@@ -144,3 +144,10 @@ proc vname {name} {
   # Return the fully-qualified name of a variable for tracing purposes.
   namespace which -variable $name
 }
+
+proc APP.HEARTBEAT {secs} {
+  # Make sure we get a full date in the log once an hour so the date is clear.
+  if {$secs % 3600 < 5} {
+    Log > {[clock format $secs]}
+  }
+}
