@@ -19,7 +19,7 @@ There are three ways to get these files and use them with JeeMon:
 Usage
 -----
 
-To run in development mode with all the JeeRev files unpacked, `jeemon` must be
+To run in development mode with all JeeRev files unpacked, `jeemon` must be
 launched from JeeRev's top-level directory so it'll see a `kit/main.tcl` file.
 
 Otherwise, the latest `jeemon-rev` release will automatically be downloaded by
