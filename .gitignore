@@ -4,5 +4,5 @@
 /logger*
 /stored
 /x
-.*
+.DS_Store
 config.txt
