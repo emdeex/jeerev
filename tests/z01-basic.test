@@ -7,12 +7,18 @@ makeDirectory z01/features
 makeDirectory z01-tmp
 
 test z01/noarg {fail when called without args} slow {
-  catch { exec [info nameofexe] z01 } e ;# slow due to delay in app::fail
+  set fd [open "| [info nameofexe] z01 2>@1"]
+  set e [gets $fd]
+  exec kill [pid $fd]
+  catch { close $fd } ;# throws an error while reporting the SIGTERM
   set e
 } {No application startup code found.}
 
 test z01/badarg {fail when called with one unknown cmd arg} slow {
-  catch { exec [info nameofexe] x } e
+  set fd [open "| [info nameofexe] e 2>@1"]
+  set e [gets $fd]
+  exec kill [pid $fd]
+  catch { close $f } ;# throws an error while reporting the SIGTERM
   set e
 } {No application startup code found.}
 
