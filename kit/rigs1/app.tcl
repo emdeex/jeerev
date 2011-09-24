@@ -203,7 +203,7 @@ proc FirstLaunchPageHandler {state} {
     
     dict set response content {
       <head><meta http-equiv="refresh" content="2; url=/"></head>
-      <body style='width: 100%; text-align: center; margin: 3em;'>
+      <body style='text-align: center; padding: 3em;'>
         <i>Setup complete. Just a second ...</i>
       </body>
     }

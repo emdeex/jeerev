@@ -5,6 +5,7 @@ Ju cachedVar {locations types} -once {
 }
 
 proc load {path} {
+  file mkdir $path
   Jm autoLoader $path * Drivers::
 }
 

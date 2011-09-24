@@ -1,13 +1,11 @@
 Jm doc "This is the default application."
 Jm needs Webserver
 
-file mkdir [app path drivers]
 file mkdir [app path features]
-file mkdir [app path pages]
+Jm autoLoader [app path features]
 
 Drivers load [app path drivers]
 Pages load [app path pages]
-Jm autoLoader [app path features]
 
 proc /: {} {
   # Respond to "/" url requests.

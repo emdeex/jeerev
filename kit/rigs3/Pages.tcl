@@ -1,6 +1,7 @@
 Jm doc "Utility code for HTML page generation."
 
 proc load {path} {
+  file mkdir $path
   Jm autoLoader $path * Pages::
 }
 
