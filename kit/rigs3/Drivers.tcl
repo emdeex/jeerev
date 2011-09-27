@@ -15,10 +15,9 @@ proc type {type args} {
   dict set types $driver $type: $args
 }
 
-proc register {device driver} {
-  variable registered
+proc register {device driver {location ""}} {
   Jm needs Drivers::$driver
-  dict set registered $device $driver
+  Devices put $device $driver $location
 }
 
 proc locations {data} {
@@ -161,12 +160,11 @@ proc bitFlipper {raw} {
 }
 
 proc dispatch {device args} {
-  variable registered
   dict extract $args message
   if {$message ne ""} {
     app hook DRIVER.DISPATCH $device $message
   }
-  set driver [dict get? $registered $device]
+  set driver [Jv Devices get $device driver]
   if {$driver ne ""} {
     # decode the incoming information via a freshly brewed event object
     set obj [Event new $driver $args]
