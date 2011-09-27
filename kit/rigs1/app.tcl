@@ -103,7 +103,7 @@ proc path {{tail ""}} {
 proc fail {msg {cleanup 0}} {
   # Catastrophic failure, print message and exit the application.
   # msg: the text to display
-  # cleanup: perform a controlled shotdown if non-zero
+  # cleanup: perform a controlled shutdown if non-zero
   puts stderr $msg
   update
   after 1000 ;# brief delay so the msg will be displayed before going away

@@ -8,7 +8,7 @@ Ju cachedVar views . {
   variable views {}
 }
 
-proc ::V {rig {cmd ""} args} {
+proc ::Jv {rig {cmd ""} args} {
   variable views
   if {[catch { dict get $views $rig } v]} {
     Jm needs $rig

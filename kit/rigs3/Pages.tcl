@@ -5,6 +5,33 @@ proc load {path} {
   Jm autoLoader $path * Pages::
 }
 
+variable vtableCss {
+  .vtable table { margin: 1px 0 0 0; }
+  .vtable th { text-align: center; background-color: #eee; }
+  .vtable th, .vtable td { padding: 0 3px; }
+  .vtable td > table { border: 1px solid lightgray; }
+}
+
+proc asTable {vw {nested 0}} {
+  wibble template [Sif html {
+    % if {!$nested}
+      [JScript style $::Pages::vtableCss]
+    table.vtable
+      thead
+        tr
+          % foreach x [View names $vw]
+            th>i: $x
+      tbody
+        % set t [View types $vw]
+        % foreach x [View get $vw *] 
+          tr
+            % foreach y $x z $t
+              % if {$z eq "V"} { set y [asTable $y 1] }
+              % if {$z in {I L F D}} { set align right } else { set align left }
+              td/style=text-align:$align: $y
+  }]
+}
+
 proc 'select {var label args} {
   wibble template [Sif html {
     label/for=s_$var: $label

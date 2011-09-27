@@ -31,6 +31,10 @@ Ju cachedVar {urls snippets} . {
     tablesorter.css
       JO:css/tablesorter.css
     # elsewhere...
+    ui-git.js
+      JQ:ui/jquery-ui-git.js
+    ui-git.css
+      JQ:ui/jquery-ui-git.css
     tmpl.js
       MS:jquery.templates/beta1/jquery.tmpl.min.js
     validate.js
