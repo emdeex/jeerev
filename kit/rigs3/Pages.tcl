@@ -32,6 +32,23 @@ proc asTable {vw {nested 0}} {
   }]
 }
 
+proc asJson {vw} {
+  set rows {}
+  set types [View types $vw]
+  foreach row [View get $vw *] {
+    set data {}
+    foreach x $row t $types {
+      switch $t {
+        I - L - F - D { lappend data $x }
+        V             { lappend data [asJson $x] }
+        default       { lappend data [Ju toJson $x -str] }
+      }
+    }
+    lappend rows [Ju toJson $data -list -flat]
+  }
+  Ju toJson $rows -list -flat
+}
+
 proc 'select {var label args} {
   wibble template [Sif html {
     label/for=s_$var: $label

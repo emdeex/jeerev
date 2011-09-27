@@ -26,6 +26,8 @@ Ju cachedVar {urls snippets} . {
       JO:js/jquery.dateFormat.js
     knockout.js
       JO:js/knockout.js
+    ko-mapping.js
+      JO:js/ko-mapping.js
     tablesorter.js
       JO:js/jquery.tablesorter.js
     tablesorter.css
@@ -143,4 +145,8 @@ proc wrap {code} {
 
 proc style {css} {
   return "<style type='text/css'>$css</style>"
+}
+
+proc template {id html} {
+  return "<script id='$id' type='text/html'>$html</script>"
 }
