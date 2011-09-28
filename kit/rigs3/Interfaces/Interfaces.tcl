@@ -2,8 +2,10 @@ Jm doc "Utility code for the different hardware interfaces."
 
 proc VIEW {} {
   set data {}
-  dict for {k v} [SysDep listSerialPorts] {
-    lappend data $k $v serial ""
+  foreach x [array names ::auto_index Interfaces::*] {
+    lappend data [namespace tail $x] [Jv $x]
   }
-  View def name,path,type,driver $data
+  #TODO the explicit subview info is needed for ungroup to work (vlerq issue #1)
+  set v [View def {type,interfaces[name,path]} $data]
+  View ungroup $v interfaces
 }

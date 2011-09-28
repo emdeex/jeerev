@@ -1,17 +1,17 @@
 Jm doc "Serial port handler."
 
-proc connect {port baud} {
-  # Create a new serial connection object.
-  Connection new [portToDevice $port] $baud
+proc VIEW {} {
+  View def name,path [SysDep listSerialPorts]
 }
 
-proc portToDevice {name} {
-  # Support some shorthand conventions for naming serial devices.
-  set map [SysDep listSerialPorts]
-  if {[dict exists $map $name]} {
-    set name [dict get $map $name]
+proc connect {port baud} {
+  # Create a new serial connection object.
+  set path [Jv Interfaces get $name path]
+  puts <$path>
+  if {$path eq ""} {
+    set path $name
   }
-  return $name
+  Connection new $path $baud
 }
 
 Ju classDef Connection {
