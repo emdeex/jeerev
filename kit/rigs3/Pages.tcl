@@ -32,19 +32,22 @@ proc asTable {vw {nested 0}} {
   }]
 }
 
-proc asJson {vw} {
-  set rows {}
+proc asJson {vw {opts {}}} {
+  set names [View names $vw]
   set types [View types $vw]
+  set coltype [expr {"-colnames" in $opts ? "-dict" : "-list"}]
+  set rows {}
   foreach row [View get $vw *] {
     set data {}
-    foreach x $row t $types {
+    foreach x $row n $names t $types {
+      if {$coltype eq "-dict"} { lappend data $n }
       switch $t {
         I - L - F - D { lappend data $x }
-        V             { lappend data [asJson $x] }
+        V             { lappend data [asJson $x {*}$opts] }
         default       { lappend data [Ju toJson $x -str] }
       }
     }
-    lappend rows [Ju toJson $data -list -flat]
+    lappend rows [Ju toJson $data $coltype -flat]
   }
   Ju toJson $rows -list -flat
 }
