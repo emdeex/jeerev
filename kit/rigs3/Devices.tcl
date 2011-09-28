@@ -14,8 +14,12 @@ proc VIEW {} {
   }  
 }
 
-proc put {name driver location} {
-  Stored map devices $name [list d $driver l $location]
+proc put {name {driver ""} {location ""}} {
+  if {$driver ne ""} {
+    Stored map devices $name [list d $driver l $location]
+  } else {
+    Stored map devices $name ""
+  }
   Ju cacheClear ;#FIXME much too broad to clear just the devices view!
   app hook DEVICES.CHANGE $name
 }

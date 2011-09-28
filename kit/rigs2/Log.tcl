@@ -20,7 +20,7 @@ namespace ensemble create -unknown {apply {{ns t args} { list ${ns}::DoIt $t }}}
 namespace export ? ;# also allow arbitrary single characters as log type
 
 proc mask {pattern} {
-  # Set the mask with which to ignore cretain log types.
+  # Set the mask with which to ignore certain log types.
   # mask: a glob-type mask, "" masks none, "*" masks all
   variable mask $pattern
 }
