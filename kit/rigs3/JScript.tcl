@@ -86,6 +86,11 @@ Ju cachedVar {urls snippets} . {
       CSS< http://jeelabs.org/pub/css/960.text.css >CSS
       CSS< http://jeelabs.org/pub/css/960.css >CSS    
     }
+    jsviews.js {
+      JS< http://jeelabs.org/pub/js/jsrender.js >JS
+      JS< http://jeelabs.org/pub/js/jquery.observable.js'></script> >JS
+      JS< http://jeelabs.org/pub/js/jquery.views.js'></script> >JS
+    }
   }]
 }
 
