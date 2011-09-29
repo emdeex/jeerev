@@ -1,0 +1,6 @@
+Todo:
+	- save Replay/logall.txt  as compressed file
+		current large file terribly slows down TextMate's todo list generator
+Bugs:
+	- devadm keeps calling Knockout, doubling accesses each time
+Archive:
