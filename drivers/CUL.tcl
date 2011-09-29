@@ -10,7 +10,7 @@ values {
   }
   S300*: {
     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
-    humi:  { desc "humidity"          unit %    scale 1 low 0    high 100   }
+    humi:  { desc "humidity"          unit %    scale 1 low 0    high 1000  }
   }
   KS300: {
     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
