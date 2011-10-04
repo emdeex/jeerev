@@ -7,5 +7,6 @@ proc VIEW {} {
   }
   #TODO the explicit subview info is needed for ungroup to work (vlerq issue #1)
   set v [View def {type,interfaces[name,path]} $data]
-  View ungroup $v interfaces
+  # reorder name as first field so key lookup works
+  View project [View ungroup $v interfaces] {name type path}
 }

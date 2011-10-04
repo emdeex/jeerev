@@ -609,6 +609,16 @@ proc unique {v} {
   View rowmap $v [View uniqmap $v]
 }
 
+# a map with indices of the first column in sorted order
+proc sortmap {v} {
+  View ints [lsort -indices -dict [OneCol $v]]
+}
+
+# return a view, sorted on its first column
+proc sort {v} {
+  View rowmap $v [View sortmap $v]
+}
+
 # relational projection
 proc project {v cols} {
   View unique [View colmap $v [View ints [ColNum $v $cols]]]
