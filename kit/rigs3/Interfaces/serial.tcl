@@ -1,13 +1,13 @@
 Jm doc "Serial port handler."
+Jm needs View ;# force loading so the "Jv" command gets defined
 
 proc VIEW {} {
   View def name,path [SysDep listSerialPorts]
 }
 
-proc connect {port baud} {
+proc connect {name baud} {
   # Create a new serial connection object.
   set path [Jv Interfaces get $name path]
-  puts <$path>
   if {$path eq ""} {
     set path $name
   }

@@ -23,3 +23,4 @@ Examples
 * **tree-demo** - Display all state variables as a tree in the browser.
 * **niner-demo** - Demo of the Niner theme with 3x3 page navigation.
 * **jeeudp-demo** - How to dispatch and decode RF12-over-UDP packets.
+* **ookScope2** - OOK Scope v2 - works with the ookScope.ino sketch.
