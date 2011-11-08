@@ -5,13 +5,13 @@ proc VIEW {} {
   View def name,path [SysDep listSerialPorts]
 }
 
-proc connect {name baud} {
+proc connect {name baud {timeout 0}} {
   # Create a new serial connection object.
   set path [Jv Interfaces get $name path]
   if {$path eq ""} {
     set path $name
   }
-  Connection new $path $baud
+  Connection new $path $baud $timeout
 }
 
 Ju classDef Connection {
