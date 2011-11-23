@@ -1,7 +1,55 @@
 Jm doc "Utility code for HTML page generation."
 
 proc load {path} {
+  file mkdir $path
   Jm autoLoader $path * Pages::
+}
+
+variable vtableCss {
+  .vtable table { margin: 1px 0 0 0; }
+  .vtable th { text-align: center; background-color: #eee; }
+  .vtable th, .vtable td { padding: 0 3px; }
+  .vtable td > table { border: 1px solid lightgray; }
+}
+
+proc asTable {vw {nested 0}} {
+  wibble template [Sif html {
+    % if {!$nested}
+      [JScript style $::Pages::vtableCss]
+    table.vtable
+      thead
+        tr
+          % foreach x [View names $vw]
+            th>i: $x
+      tbody
+        % set t [View types $vw]
+        % foreach x [View get $vw *] 
+          tr
+            % foreach y $x z $t
+              % if {$z eq "V"} { set y [asTable $y 1] }
+              % if {$z in {I L F D}} { set align right } else { set align left }
+              td/style=text-align:$align: $y
+  }]
+}
+
+proc asJson {vw {opts {}}} {
+  set names [View names $vw]
+  set types [View types $vw]
+  set coltype [expr {"-colnames" in $opts ? "-dict" : "-list"}]
+  set rows {}
+  foreach row [View get $vw *] {
+    set data {}
+    foreach x $row n $names t $types {
+      if {$coltype eq "-dict"} { lappend data $n }
+      switch $t {
+        I - L - F - D { lappend data $x }
+        V             { lappend data [asJson $x {*}$opts] }
+        default       { lappend data [Ju toJson $x -str] }
+      }
+    }
+    lappend rows [Ju toJson $data $coltype -flat]
+  }
+  Ju toJson $rows -list -flat
 }
 
 proc 'select {var label args} {

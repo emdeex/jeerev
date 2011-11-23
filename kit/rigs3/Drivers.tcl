@@ -5,6 +5,7 @@ Ju cachedVar {locations types} -once {
 }
 
 proc load {path} {
+  file mkdir $path
   Jm autoLoader $path * Drivers::
 }
 
@@ -14,10 +15,9 @@ proc type {type args} {
   dict set types $driver $type: $args
 }
 
-proc register {device driver} {
-  variable registered
+proc register {device driver {location ""}} {
   Jm needs Drivers::$driver
-  dict set registered $device $driver
+  Devices put $device $driver $location
 }
 
 proc locations {data} {
@@ -160,68 +160,5 @@ proc bitFlipper {raw} {
 }
 
 proc dispatch {device args} {
-  variable registered
-  dict extract $args message
-  if {$message ne ""} {
-    app hook DRIVER.DISPATCH $device $message
-  }
-  set driver [dict get? $registered $device]
-  if {$driver ne ""} {
-    # decode the incoming information via a freshly brewed event object
-    set obj [Event new $driver $args]
-    $obj identify $device
-    # copy all decoded data to state variables
-    State putDict [$obj call decode] [$obj get when 0] reading:
-    # get rid of the event object
-    $obj destroy
-  } else {
-    Log dispatch? {$device $args}
-  }
-}
-
-Ju classDef Event {
-  variable data
-  
-  constructor {driver values} {
-    # Construct a new structure with the specified contents
-    set data $values
-    dict set data driver $driver
-  }
-  
-  method get {field {default ""}} {
-    if {![dict exists $data $field]} {
-      return $default
-    }
-    dict get $data $field
-  }
-  
-  method identify {device} {
-    dict set data device $device
-  }
-  
-  method call {subcmd} {
-    # locate the decoder in the appropriate driver
-    set cmd [namespace which ::Drivers::[dict get $data driver]::$subcmd]
-    if {$cmd eq ""} {
-      error "not found: [dict get $data driver]::$subcmd"
-    }
-    # pre-extract values if there are extra named arguments
-    set extra [lrange [info args $cmd] 1 end]
-    # call the decoder
-    try {
-      $cmd [self] {*}[Ju map dict get? $data $extra]
-    } on error {e o} {
-      Log call? {$subcmd - [Ju map dict get? $data $extra]}
-      puts $e
-      puts $o
-    }
-    # return the submitted results
-    dict filter $data key *:
-  }
-  
-  method submit {args} {
-    foreach {k v} $args {
-      dict set data [dict get $data device]:[dict get $data driver]: $k $v
-    }
-  }
+  app hook DRIVERS.DISPATCH $device $args
 }

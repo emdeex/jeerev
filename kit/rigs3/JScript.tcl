@@ -26,11 +26,17 @@ Ju cachedVar {urls snippets} . {
       JO:js/jquery.dateFormat.js
     knockout.js
       JO:js/knockout.js
+    ko-mapping.js
+      JO:js/ko-mapping.js
     tablesorter.js
       JO:js/jquery.tablesorter.js
     tablesorter.css
       JO:css/tablesorter.css
     # elsewhere...
+    ui-git.js
+      JQ:ui/jquery-ui-git.js
+    ui-git.css
+      JQ:ui/jquery-ui-git.css
     tmpl.js
       MS:jquery.templates/beta1/jquery.tmpl.min.js
     validate.js
@@ -79,6 +85,11 @@ Ju cachedVar {urls snippets} . {
       CSS< http://jeelabs.org/pub/css/960.reset.css >CSS
       CSS< http://jeelabs.org/pub/css/960.text.css >CSS
       CSS< http://jeelabs.org/pub/css/960.css >CSS    
+    }
+    jsviews.js {
+      JS< http://jeelabs.org/pub/js/jsrender.js >JS
+      JS< http://jeelabs.org/pub/js/jquery.observable.js'></script> >JS
+      JS< http://jeelabs.org/pub/js/jquery.views.js'></script> >JS
     }
   }]
 }
@@ -139,4 +150,8 @@ proc wrap {code} {
 
 proc style {css} {
   return "<style type='text/css'>$css</style>"
+}
+
+proc template {id html} {
+  return "<script id='$id' type='text/html'>$html</script>"
 }

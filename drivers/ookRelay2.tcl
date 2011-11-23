@@ -10,7 +10,7 @@ values {
   }
   S300*: {
     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
-    humi:  { desc "humidity"          unit %    scale 1 low 0    high 100   }
+    humi:  { desc "humidity"          unit %    scale 1 low 0    high 1000  }
   }
   KS300: {
     temp:  { desc "temperature"       unit °C   scale 1 low -250 high 500   }
@@ -23,7 +23,7 @@ values {
 
 proc decode {event raw} {
   array set typeMap {
-    1 VISO 2 EMX 3 KSX 4 FSX 5 ORSC 6 CRES 7 KAKU 8 XRF 9 HEZ
+    1 VISO 2 EMX 3 KSX 4 FSX 5 ORSC 6 CRES 7 KAKU 8 XRF 9 HEZ 10 ELRO
   }
   while {$raw ne ""} {
     bitSlicer $raw type 4 size 4
@@ -126,6 +126,16 @@ proc Decode-XRF {event raw} {
 proc Decode-HEZ {event raw} {
   $event identify HEZ
   $event submit hex [binary encode hex $raw]
+}
+
+proc Decode-ELRO {event raw} {
+  # binary scan $raw cu* message
+  # puts m-$message
+  #TODO verify unit id, figure out amp scale (16 vs 32)
+  # data: 200 8 1 229 2 32 0 0 216 81 33
+  bitSlicer $raw - 8 id 4 - 12 voltage 8 current 12 - 4 power 16
+  $event identify ELRO-$id
+  $event submit voltage $voltage current $current power $power
 }
 
 proc Decode-OTHER {event raw} {

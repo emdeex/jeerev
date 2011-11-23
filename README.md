@@ -7,10 +7,7 @@ the (new) [development notes][3].
 Status
 ------
 
-This is JeeRev 1.0 - it has been frozen and given a version number even though
-this is an *arbitrary* point in time... just to have a baseline to branch from.
-There's no documentation, almost none of this code is going to remain the same,
-but I'm nevertheless using JeeRev on a daily basis. *Caveat lector!*
+This is the development branch... *things change, break, and evolve here.*
 
 Download
 --------

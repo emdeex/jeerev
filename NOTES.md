@@ -89,7 +89,7 @@ This is the structure of the development area in the code repository:
     kit/          all the core code, can be wrapped up as a `jeemon-rev` file
       main.tcl    this is the first file executed by the jeemon runtime
       ...         most files are Tcl scripts which get auto-loaded on demand
-    macosx/       files to build jeemon as a GUI application on Mac OS X
+    pages/        source code for pages used by http://tools.jeelabs.org/
     tests/        test suites for (so far only a small) part of the code
     Makefile      helps with a few common tasks during development
     NOTES.md      this document

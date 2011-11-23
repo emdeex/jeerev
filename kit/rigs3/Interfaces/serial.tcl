@@ -1,17 +1,17 @@
 Jm doc "Serial port handler."
+Jm needs View ;# force loading so the "Jv" command gets defined
 
-proc connect {port baud} {
-  # Create a new serial connection object.
-  Connection new [portToDevice $port] $baud
+proc VIEW {} {
+  View def name,path [SysDep listSerialPorts]
 }
 
-proc portToDevice {name} {
-  # Support some shorthand conventions for naming serial devices.
-  set map [SysDep listSerialPorts]
-  if {[dict exists $map $name]} {
-    set name [dict get $map $name]
+proc connect {name baud {timeout 0}} {
+  # Create a new serial connection object.
+  set path [Jv Interfaces get $name path]
+  if {$path eq ""} {
+    set path $name
   }
-  return $name
+  Connection new $path $baud $timeout
 }
 
 Ju classDef Connection {

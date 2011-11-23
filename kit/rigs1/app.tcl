@@ -3,7 +3,8 @@ Jm doc "Start up as a modular app, using hooks to connect features together."
 variable period 60000   ;# rate at which the heartbeath hook is called (ms)
 
 proc start {args} {
-  global argv exit
+  global argv argv0 exit
+  variable ::startup::opts
   
   set needVsn v1.5
   if {![namespace exists ::startup]} {
@@ -27,37 +28,37 @@ proc start {args} {
   # argv is now a dict and should not be changed any further beyond this point
 
   # handle special case if the "main" rig is embedded in the startup file
-  if {[info exists ::startup::opts] && [dict exists $startup::opts -main]} {
+  if {[info exists opts] && [dict exists $opts -main]} {
     Jm prepareRig ::main
-    namespace eval ::main [dict get $startup::opts -main]
-    # list "main" as rig in auto_index for hooks to work
-    set ::auto_index(main) [list ::Jm::loadRig [file normalize $::argv0]]
-  } else {
-    # try to give a helpful error message if launching is going to fail
-    if {![file exists [app path]/main.tcl]} {
-      set help {? help -? -h --help --usage}
-      if {[llength $argv] == 2 && [lindex $argv 1] in $help} {
-        puts stderr \
-    "JeeMon is a portable runtime for Physical Computing and Home Automation."
-        puts stderr \
-    "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
-        set exe [file root [file tail [info nameofexe]]]
-        app fail "Usage: $exe ?-app? <dir> ?-option <value> ...?"
-      } elseif {[catch { console show }]} {
-        app fail "No application startup code found."
-      } else {
-        puts stderr "No application startup code found."
-        set ::tcl_interactive 1
-        return ;# leave console open
-      }
-    }
-
-    # ready to launch the main.tcl script, and optional feature rigs for it
-    Jm autoLoader [app path features]
-    Jm autoLoader [app path] main.tcl ;# only autoload one file
-    Jm loadNow main
+    namespace eval ::main [dict get $opts -main]
+    # add "main" as rig in auto_index for hooks to work
+    set ::auto_index(main) [list ::Jm::loadRig [file normalize $argv0]]
+    return
   }
-  
+
+  # if main.tcl doesn't exist, print a help message or start first-time config
+  if {![file exists [app path]/main.tcl]} {
+    # if we asked for help, give it now and exit
+    set help {? help -? -h --help --usage}
+    if {[llength $argv] == 2 && [lindex $argv 1] in $help} {
+      app fail [HelpMessage]
+    }
+    # no default specified, start a first-time configuration process
+    puts stderr "No application startup code found."
+    FirstLaunchStart
+    vwait exit
+    if {![file exists [app path]/main.tcl]} {
+      app fail "Initial configuration cancelled." $exit
+    }
+    FirstLaunchStop
+    unset exit
+    # configuration succeeded, resume starting main.tcl as usual
+  }
+  # the normal startup process is to load a main.tcl file found in the top dir
+  Jm autoLoader [app path features]
+  Jm autoLoader [app path] main.tcl ;# only autoload one file
+  Jm loadNow main
+
   # preliminary loading has been completed, go start the hook-based event loop
   app hook APP.BOOT {*}$argv
   app hook APP.INIT
@@ -73,6 +74,15 @@ proc start {args} {
 
   # this is the sole "official" exit point for all well-behaved applications
   exit $exit
+}
+
+proc HelpMessage {} {
+  set h1
+    "JeeMon is a portable runtime for Physical Computing and Home Automation."
+  set h2
+    "       (see http://jeelabs.org/jeemon and https://github.com/jcw/jeemon)"
+  set exe [file root [file tail [info nameofexe]]]
+  return "$h1\n$h2\nUsage: $exe ?-app? <dir> ?-option <value> ...?"
 }
 
 proc get {key {default ""}} {
@@ -93,10 +103,10 @@ proc path {{tail ""}} {
 proc fail {msg {cleanup 0}} {
   # Catastrophic failure, print message and exit the application.
   # msg: the text to display
-  # cleanup: perform a controlled shotdown if non-zero
+  # cleanup: perform a controlled shutdown if non-zero
   puts stderr $msg
   update
-  after 1000 ;# slight delay so the msg can always be read, even if only briefly
+  after 1000 ;# brief delay so the msg will be displayed before going away
   if {$cleanup} {
     set ::exit $cleanup ;# will terminate the vwait in app start
   } else {
@@ -141,4 +151,63 @@ proc Heartbeat {} {
   if {$remain > $period - 1000} {
     app hook APP.HEARTBEAT [/ $ms 1000]
   }
+}
+
+# Logic to deal with the first-time startup of JeeMon.
+#
+#   the basic idea is to present a webserver and create a "main.tcl" file
+#   as long as main.tcl exists, this logic will never be activated again
+
+proc FirstLaunchStart {} {  
+  Log app {is now running in first-time configuration mode}
+  catch { console show }
+  # set ::tcl_interactive 1
+  set port 8181
+  Log web {server starting on http://127.0.0.1:$port/}
+  wibble handle / [namespace which FirstLaunchPageHandler]
+  variable listener [wibble listen $port]
+}
+
+proc FirstLaunchStop {} {
+  Log app {leaving first-time configuration mode}
+  variable listener
+  close $listener
+  set ::wibble::zonehandlers {} ;# clean up
+}
+
+proc FirstLaunchPageHandler {state} {
+  dict set response status 200
+  dict set response header content-type {"" text/html charset utf-8}
+
+  set reply [dict get $state options suffix]
+  if {$reply eq ""} {
+    dict set response content {
+      <body style='text-align: center; padding: 3em;'>
+        <h3>Welcome to JeeMon</h3>
+        <p>Do you want to use a "HomeApp" setup from now on?</p>
+        <p><a href="Home">YES please.</a></p>
+        <p><a href="no">NO thanks.</a></p>
+      </body>
+    }
+  } else {
+    set ::exit 0 ;# terminate first-time config mode
+
+    if {$reply eq "no"} {
+      set cmd "app fail {No default app has been defined for JeeMon.}"
+    } else {
+      set cmd "Log main.tcl {in \[pwd]}\nJm needs ${reply}App"
+    }
+
+    Log app {creating [app path]/main.tcl}
+    Ju writeFile [app path]/main.tcl "# default JeeMon startup file\n$cmd\n"
+    
+    dict set response content {
+      <head><meta http-equiv="refresh" content="2; url=/"></head>
+      <body style='text-align: center; padding: 3em;'>
+        <i>Setup complete. Just a second ...</i>
+      </body>
+    }
+  }
+  
+  wibble sendresponse $response
 }

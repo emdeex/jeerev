@@ -5,6 +5,18 @@ proc keys {{match *}} {
   lsort [dict keys [Stored map state] $match]
 }
 
+proc children {{prefix ""}} {
+  # Return a sorted list of names of the direct children with given prefix.
+  set prefix [string trim $prefix :]
+  if {$prefix ne ""} { append prefix : }
+  set children {}
+  foreach x [dict keys [Stored map state] $prefix*] {
+    set tail [string range $x [string length $prefix] end]
+    lappend children [regsub {:.*} $tail {}]
+  }
+  lsort -unique $children
+}
+
 proc get {path} {
   # Get the value of a state variable.
   dict get? [Stored map state $path] v

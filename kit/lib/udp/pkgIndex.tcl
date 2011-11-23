@@ -1,7 +1,7 @@
 package require platform
 
 switch [platform::generic] {
-  windows-ix86 {
+  win32-ix86 {
     package ifneeded udp 1.0.9 [list load [file join $dir udp109.dll]]
   }
   macosx-ix86 - macosx-ppc {

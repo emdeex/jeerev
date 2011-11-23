@@ -1,4 +1,4 @@
-Jm doc "System-/machine-/OS-dependent code, to try and keep the rest portable."
+Jm doc "System-/machine-/OS-dependent code, this keep the rest portable."
 
 if {[string match Windows* $::tcl_platform(os)]} {
   package require registry
