@@ -17,7 +17,7 @@ proc start {{rig ""} {match *}} {
     puts "  $rig - no rig found with this name"
   } else {
     # Locate all the public procs in a rig, optionally matching a pattern
-    foreach x [lsort [info commands "::${rig}::\[a-z]*"]] {
+    foreach x [lsort [info procs "::${rig}::\[a-z]*"]] {
       set args [info args $x]
       set body [info body $x]
       set name [namespace tail $x]
