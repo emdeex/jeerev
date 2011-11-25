@@ -12,7 +12,7 @@
 # serial device can (normally) also be specified as "usb-XXXXXXXX".
 
 connect: {
-  device A700fdxv
+  device usb-A700fdxv
   config "8b 5g 1i"
 }
 
