@@ -180,7 +180,9 @@ proc FirstLaunchPageHandler {state} {
   dict set response header content-type {"" text/html charset utf-8}
 
   set reply [dict get $state options suffix]
-  if {$reply eq ""} {
+  if {$reply eq "favicon.ico"} {
+    dict set response content ""
+  } elseif {$reply eq ""} {
     dict set response content {
       <body style='text-align: center; padding: 3em;'>
         <h3>Welcome to JeeMon</h3>
