@@ -2,6 +2,7 @@
 /JeeMon.app
 /JeeMon-MacGUI.zip
 /logger*
+/node_modules
 /stored
 /x
 .DS_Store
