@@ -3,6 +3,9 @@
 # Serial device and configuration of the JeeNode running RF12demo.
 #
 # Example settings for Windows, Mac OSX, and Linux, respectively:
+# 4b=433Mhz 8b=868Mhz 9b=915Mhz
+# 5g=network group 5
+# 1i=node id 1
 #
 #     connect: { config "8b 5g 1i" device COM7 }
 #     connect: { config "8b 5g 1i" device /dev/tty.usbserial-A700fdxv }
